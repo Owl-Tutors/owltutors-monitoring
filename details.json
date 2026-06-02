@@ -8,8 +8,8 @@
     "screenshot": "screenshots/client_dashboard.png"
   },
   "test_contact_form_callback_submission": {
-    "message": "Callback enquiry submitted and redirected to job 199724",
-    "job_id": "199724",
+    "message": "Callback enquiry submitted and redirected to job 199809",
+    "job_id": "199809",
     "screenshot": "screenshots/job_callback_submission.png"
   },
   "test_contact_form_renders": {
@@ -27,29 +27,29 @@
   "test_requested_tutor_cart": {
     "message": "Tutor shortlist populated with 3 tutors and submit link updated",
     "tutor_ids": [
-      "21894",
-      "38848",
-      "9948"
+      "25018",
+      "18399",
+      "16048"
     ],
     "screenshot": "screenshots/tutor_cart.png"
   },
   "test_contact_form_tutor_submission": {
-    "message": "Tutor enquiry submitted and redirected to job 199726",
-    "job_id": "199726",
+    "message": "Tutor enquiry submitted and redirected to job 199811",
+    "job_id": "199811",
     "screenshot": "screenshots/job_tutor_submission.png"
   },
   "test_contact_form_something_else": {
-    "message": "'Something else' enquiry submitted and redirected to job 199728",
-    "job_id": "199728",
+    "message": "'Something else' enquiry submitted and redirected to job 199813",
+    "job_id": "199813",
     "screenshot": "screenshots/job_something_else.png"
   },
   "test_contact_form_requested_tutors": {
-    "message": "Requested tutors flow submitted and redirected to job 199730",
-    "job_id": "199730",
+    "message": "Requested tutors flow submitted and redirected to job 199815",
+    "job_id": "199815",
     "tutor_ids": [
-      "21894",
-      "38848",
-      "9948"
+      "25018",
+      "18399",
+      "16048"
     ],
     "screenshot": "screenshots/job_requested_tutors.png"
   },

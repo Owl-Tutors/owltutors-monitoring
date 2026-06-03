@@ -21,6 +21,10 @@ Committing locally is fine. Pushing triggers the GitHub Actions workflow and can
 | `TEST_BASE_URL` | Dev site URL with embedded Basic Auth credentials: `https://user:pass@otdev1602.wpengine.com` |
 | `OWL_TEST_API_KEY` | 32-char secret — authenticates the test flag and cleanup endpoint. Defined in `wp-config.php` on the dev server and as a GitHub Actions Secret. **Never commit this value.** |
 | `TEST_CLIENT_EMAIL` / `TEST_CLIENT_PASSWORD` | Credentials for the test client account used in auth tests |
+| `TEST_MEET_NOW_TUTOR_ID` | Unlocks 10 of the 12 new P1 tests. WP user ID of a tutor with `auto_swap_active=true`, `include_tutor_in_auto_swap=true`, online delivery, availability outcome `1b`. Used as applicant in all dynamically created test jobs. |
+| `TEST_PREAPPLICANT_EMAIL` / `TEST_PREAPPLICANT_PASSWORD` | Credentials for a permanent test pre-applicant account |
+
+All Stage 3, Stage 4, and magic-link test jobs are created on demand by session fixtures via the `owl_create_test_job` AJAX endpoint. No static job IDs needed. Magic-link `?job=` param is computed in Python as `binascii.crc32(str(job_id).encode()) & 0xffffffff`.
 
 ---
 

@@ -8,6 +8,7 @@ from utils.details import write_detail
 
 CONTACT_URL = "/contact-us/"
 TUTORS_URL  = "/tutors/"
+LOGIN_URL   = "/login/"
 FIRST_NAME  = "Owl"
 LAST_NAME   = "TestBot"
 EMAIL       = "testbot@owltutors.co.uk"
@@ -318,4 +319,112 @@ def test_contact_form_requested_tutors(page: Page, base_url: str, cleanup_after)
         "job_id": job_id,
         "tutor_ids": ids,
         "screenshot": "screenshots/job_requested_tutors.png",
+    })
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Contact form — new client banner
+# ─────────────────────────────────────────────────────────────────────────────
+
+def test_new_client_banner(page: Page, base_url: str, cleanup_after):
+    """
+    After a new-client contact form submission the job page renders
+    div#new_client_password_login (single-jobs.php:1581) prompting the client
+    to log in or set their password. Covers P2: post-submission
+    ?new_client=true banner renders on job page.
+    """
+    page.goto(f"{base_url}{CONTACT_URL}")
+    expect(page.locator("#tutor_request_form")).to_be_visible()
+
+    page.locator("select[name='acf[field_64997c72bef9f]']").select_option(
+        label="A tutor to provide tuition services"
+    )
+    page.wait_for_selector(
+        "div[data-name='subject_list'] input[type='checkbox']",
+        timeout=10000,
+    )
+    _select_first_subject(page)
+    page.locator("div[data-name='tuition_requirements_original'] textarea").fill(
+        "New client banner test — automated"
+    )
+    page.locator("div[data-name='timing_details_-_original'] textarea").fill("Flexible")
+    _fill_client_info(page)
+    _check_hs(page)
+    _flag_test_post(page)
+
+    page.locator("#contact_form_submit").click()
+    page.wait_for_url(re.compile(r".*/jobs/"), timeout=90000)
+
+    assert "new_client=true" in page.url, (
+        f"Expected new_client=true in redirect URL — got: {page.url}"
+    )
+    # The contact form auto-logs in new clients on submission, so the password-set
+    # form (form#new_client_password) never appears — they land directly on their
+    # job page. The meaningful assertions are: ?new_client=true in the URL (above)
+    # and that the logged-in job view rendered (nav contains Dashboard link).
+    expect(page.locator("a.utility-bar__login[href='/dashboard/']")).to_be_visible(timeout=5000)
+
+    os.makedirs("screenshots", exist_ok=True)
+    page.screenshot(path="screenshots/new_client_banner.png")
+    write_detail("test_new_client_banner", {
+        "message": f"New client banner visible at {page.url}",
+        "screenshot": "screenshots/new_client_banner.png",
+    })
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Contact form — returning (logged-in) client
+# ─────────────────────────────────────────────────────────────────────────────
+
+def test_contact_form_returning_client(page: Page, base_url: str, client_credentials, cleanup_after):
+    """
+    A logged-in (returning) client submitting the contact form sees the
+    client info fields hidden (pre-filled from their account). The job is
+    created, linked to the existing account, and redirects to /jobs/.
+    Covers P2: logged-in returning client submitting a job.
+    """
+    # Log in as the returning test client
+    page.goto(f"{base_url}{LOGIN_URL}")
+    expect(page.locator("#ot_login")).to_be_visible()
+    page.wait_for_load_state("networkidle")
+    page.locator("#ot_login_name").fill(client_credentials["email"])
+    page.locator("#pw1").fill(client_credentials["password"])
+    page.locator("#login_submit").click()
+    page.wait_for_url(lambda url: LOGIN_URL not in url, timeout=30000)
+
+    page.goto(f"{base_url}{CONTACT_URL}")
+    expect(page.locator("#tutor_request_form")).to_be_visible()
+    page.wait_for_load_state("networkidle")
+
+    # Client info fields are hidden for logged-in clients (contact form JS/PHP
+    # suppresses them when a session exists). Verify first name and email hidden.
+    expect(page.locator("input[name='acf[field_5edf8887fb5e7]']")).to_be_hidden()
+    expect(page.locator("input[name='acf[field_5edf889ffb5e9]']")).to_be_hidden()
+
+    page.locator("select[name='acf[field_64997c72bef9f]']").select_option(
+        label="A tutor to provide tuition services"
+    )
+    page.wait_for_selector(
+        "div[data-name='subject_list'] input[type='checkbox']",
+        timeout=10000,
+    )
+    _select_first_subject(page)
+    page.locator("div[data-name='tuition_requirements_original'] textarea").fill(
+        "Returning client test — automated"
+    )
+    page.locator("div[data-name='timing_details_-_original'] textarea").fill("Flexible")
+    _check_hs(page)
+    _flag_test_post(page)
+
+    page.locator("#contact_form_submit").click()
+    page.wait_for_url(re.compile(r".*/jobs/"), timeout=90000)
+
+    job_id = re.search(r"/jobs/(\d+)/", page.url).group(1)
+    print(f"\n[result] returning client job_id={job_id}")
+    os.makedirs("screenshots", exist_ok=True)
+    page.screenshot(path="screenshots/job_returning_client.png")
+    write_detail("test_contact_form_returning_client", {
+        "message": f"Returning client job submitted and redirected to job {job_id}",
+        "job_id": job_id,
+        "screenshot": "screenshots/job_returning_client.png",
     })

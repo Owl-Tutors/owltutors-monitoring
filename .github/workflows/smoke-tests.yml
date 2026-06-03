@@ -29,6 +29,11 @@ jobs:
           TEST_CLIENT_PASSWORD: ${{ secrets.TEST_CLIENT_PASSWORD }}
           OWL_TEST_API_KEY: ${{ secrets.OWL_TEST_API_KEY }}
           TEST_TUTOR_IDS: ${{ secrets.TEST_TUTOR_IDS }}
+          TEST_MEET_NOW_TUTOR_ID: ${{ secrets.TEST_MEET_NOW_TUTOR_ID }}
+          TEST_TUTOR_EMAIL: ${{ secrets.TEST_TUTOR_EMAIL }}
+          TEST_TUTOR_PASSWORD: ${{ secrets.TEST_TUTOR_PASSWORD }}
+          TEST_PREAPPLICANT_EMAIL: ${{ secrets.TEST_PREAPPLICANT_EMAIL }}
+          TEST_PREAPPLICANT_PASSWORD: ${{ secrets.TEST_PREAPPLICANT_PASSWORD }}
         run: pytest --json-report --json-report-file=pytest-report.json -v
         continue-on-error: true
 

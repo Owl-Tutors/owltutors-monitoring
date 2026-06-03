@@ -8,8 +8,8 @@
     "screenshot": "screenshots/client_dashboard.png"
   },
   "test_contact_form_callback_submission": {
-    "message": "Callback enquiry submitted and redirected to job 199817",
-    "job_id": "199817",
+    "message": "Callback enquiry submitted and redirected to job 199825",
+    "job_id": "199825",
     "screenshot": "screenshots/job_callback_submission.png"
   },
   "test_contact_form_renders": {
@@ -34,24 +34,29 @@
     "screenshot": "screenshots/tutor_cart.png"
   },
   "test_contact_form_tutor_submission": {
-    "message": "Tutor enquiry submitted and redirected to job 199819",
-    "job_id": "199819",
+    "message": "Tutor enquiry submitted and redirected to job 199827",
+    "job_id": "199827",
     "screenshot": "screenshots/job_tutor_submission.png"
   },
   "test_contact_form_something_else": {
-    "message": "'Something else' enquiry submitted and redirected to job 199821",
-    "job_id": "199821",
+    "message": "'Something else' enquiry submitted and redirected to job 199829",
+    "job_id": "199829",
     "screenshot": "screenshots/job_something_else.png"
   },
   "test_contact_form_requested_tutors": {
-    "message": "Requested tutors flow submitted and redirected to job 199823",
-    "job_id": "199823",
+    "message": "Requested tutors flow submitted and redirected to job 199831",
+    "job_id": "199831",
     "tutor_ids": [
       "25018",
       "18399",
       "16048"
     ],
     "screenshot": "screenshots/job_requested_tutors.png"
+  },
+  "test_contact_form_returning_client": {
+    "message": "Returning client job submitted and redirected to job 199835",
+    "job_id": "199835",
+    "screenshot": "screenshots/job_returning_client.png"
   },
   "test_blog_listing_loads": {
     "message": "Blog listing page loaded with article cards visible",
@@ -81,6 +86,15 @@
     "message": "Homepage loaded with hero section visible",
     "screenshot": "screenshots/homepage.png"
   },
+  "test_meet_now_form_auto_selects_type": {
+    "message": "Meet-now form state correct: type hidden, home delivery disabled, jobs board hidden",
+    "screenshot": "screenshots/meet_now_form_state.png"
+  },
+  "test_meet_now_submission": {
+    "message": "Meet-now form submitted, redirected to job 199837",
+    "job_id": "199837",
+    "screenshot": "screenshots/meet_now_submission.png"
+  },
   "test_papers_load": {
     "message": "Exam papers catalogue loaded with paper cards visible",
     "screenshot": "screenshots/papers_load.png"
@@ -92,6 +106,14 @@
   "test_papers_load_more": {
     "message": "Load More clicked \u2014 6 initial papers expanded to 107, scrolled to newly loaded content",
     "screenshot": "screenshots/papers_load_more.png"
+  },
+  "test_tutor_registration_page_loads": {
+    "message": "Tutor registration form visible at /tutor-section/application/",
+    "screenshot": "screenshots/tutor_registration_page.png"
+  },
+  "test_tutor_registration_submits": {
+    "message": "Registration submitted and redirected to https://otdev1602.wpengine.com/tutor-section/application/?newpreapp=true",
+    "screenshot": "screenshots/tutor_registration_submit.png"
   },
   "test_school_listing_page_loads": {
     "message": "School entrance guide listing page loaded with filter form visible",
@@ -144,5 +166,17 @@
   "test_full_search_subject_level_home_location": {
     "message": "Full pipeline search ran: English, Home delivery, Balham",
     "screenshot": "screenshots/search_full_pipeline.png"
+  },
+  "test_tutor_dashboard_loads": {
+    "message": "Tutor dashboard loaded with correct header and container",
+    "screenshot": "screenshots/tutor_dashboard.png"
+  },
+  "test_tutor_dashboard_jobs_board": {
+    "message": "Tutor jobs board tab pane visible and active",
+    "screenshot": "screenshots/tutor_jobs_board.png"
+  },
+  "test_tutor_dashboard_timesheet_entry": {
+    "message": "Tutor timesheet entry pane present in DOM",
+    "screenshot": "screenshots/tutor_timesheet_entry.png"
   }
 }

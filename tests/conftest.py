@@ -199,40 +199,35 @@ def meet_now_tutor_id():
 
 
 @pytest.fixture(scope="session")
-def stage3_job_id(
+def stage3_job(
     browser, base_url, api_key,
-    client_credentials, tutor_credentials, meet_now_tutor_id,
+    tutor_credentials, meet_now_tutor_id,
 ):
-    """
-    Real end-to-end Stage 3 job — mirrors exactly how users actually use the site:
+    """Creates a Stage 3 test job via the realistic end-to-end flow.
 
-    1. Client logs in and submits the contact form (Japanese, IB Standard Level,
-       Online delivery) with the ot_test_post flag so emails are suppressed.
-    2. Tutor logs in in a separate browser context, navigates to the job URL,
-       and submits the two-step application form.
+    1. A logged-OUT client submits the contact form using a freshly generated
+       UUID email, creating a brand-new WP account (client_created_job_no_pw_login=true,
+       _ot_test_user=1). The job lands on 'Stage 2 - Ready no tutors'.
+    2. The test tutor logs in in a separate browser context and submits the
+       two-step application form.
     3. owl_advance_test_job marks the applicant as forwarded and sets Stage 3.
+    4. The magic link is used once in a setup page to auto-login the new client
+       and complete the #passwordModal set-password step, establishing a known
+       password. Tests then use _login() with client_email + client_password.
 
-    The job carries _ot_test_post=1 and is cleaned up by the cleanup_after fixture
-    in test_meet_now.py or test_recruitment.py (whichever runs last in the session).
-
-    Requires: TEST_TUTOR_EMAIL, TEST_TUTOR_PASSWORD, TEST_MEET_NOW_TUTOR_ID,
-              TEST_CLIENT_EMAIL, TEST_CLIENT_PASSWORD, OWL_TEST_API_KEY.
+    Yields a dict: {"job_id": str, "client_email": str, "client_password": str}.
     """
     import re as _re
+    import uuid as _uuid
+    import binascii
     from utils.advance_job import advance_test_job
 
     LOGIN_URL = "/login/"
+    CLIENT_PASSWORD = "Owl1Tutor!Test2026"
+    client_email = f"testbot.stage3.{_uuid.uuid4().hex[:8]}@owltutors.co.uk"
 
-    # ── Step 1: client creates job via contact form ────────────────────────
+    # ── Step 1: logged-out client submits contact form ────────────────────
     client_ctx, client_page = _new_authed_page(browser)
-
-    client_page.goto(f"{base_url}{LOGIN_URL}")
-    client_page.wait_for_selector("#ot_login")
-    client_page.wait_for_load_state("networkidle")
-    client_page.locator("#ot_login_name").fill(client_credentials["email"])
-    client_page.locator("#pw1").fill(client_credentials["password"])
-    client_page.locator("#login_submit").click()
-    client_page.wait_for_url(lambda url: LOGIN_URL not in url, timeout=30000)
 
     client_page.goto(f"{base_url}/contact-us/")
     client_page.locator("select[name='acf[field_64997c72bef9f]']").select_option(
@@ -264,21 +259,21 @@ def stage3_job_id(
 
     client_page.locator(
         "div[data-name='tuition_requirements_original'] textarea"
-    ).fill("Test requirements for automated end-to-end monitoring test — Japanese IB")
+    ).fill("Test requirements for automated end-to-end monitoring test -- Japanese IB")
     client_page.locator(
         "div[data-name='timing_details_-_original'] textarea"
     ).fill("Flexible timing")
 
-    # Client info fields
+    # Personal info — generated email creates a fresh account
     client_page.locator("input[name='acf[field_5edf8887fb5e7]']").fill("Owl")
     client_page.locator("input[name='acf[field_5edf8899fb5e8]']").fill("TestBot")
-    client_page.locator("input[name='acf[field_5edf889ffb5e9]']").fill("testbot@owltutors.co.uk")
+    client_page.locator("input[name='acf[field_5edf889ffb5e9]']").fill(client_email)
     client_page.locator("input[name='acf[field_5a573454bb670]']").fill("07700900000")
     client_page.locator(
         "div[data-name='i_confirm_there_are_no_health_and_safety_issues'] input[type='checkbox']"
     ).check()
 
-    # Inject ot_test_post flag (suppresses emails, flags job for cleanup)
+    # Inject ot_test_post flag (suppresses emails, flags job and user for cleanup)
     client_page.evaluate(
         """(k) => {
             document.getElementById('ot_test_post').value = '1';
@@ -292,61 +287,97 @@ def stage3_job_id(
     client_page.locator("#contact_form_submit").click()
     client_page.wait_for_url(_re.compile(r".*/jobs/"), timeout=90000)
     job_id = _re.search(r"/jobs/(\d+)/", client_page.url).group(1)
-    print(f"\n[stage3_job_id] job created: {job_id}")
+    print(f"\n[stage3_job] job created: {job_id} (client: {client_email})")
+    client_ctx.close()
 
-    # ── Step 2: tutor applies in a separate browser context ────────────────
+    # ── Step 2: tutor logs in and applies in a separate context ───────────
     tutor_ctx, tutor_page = _new_authed_page(browser)
 
     tutor_page.goto(f"{base_url}{LOGIN_URL}")
     tutor_page.wait_for_selector("#ot_login")
-    tutor_page.wait_for_load_state("networkidle")
+    tutor_page.wait_for_load_state("domcontentloaded")
     tutor_page.locator("#ot_login_name").fill(tutor_credentials["email"])
     tutor_page.locator("#pw1").fill(tutor_credentials["password"])
     tutor_page.locator("#login_submit").click()
-    tutor_page.wait_for_url(lambda url: LOGIN_URL not in url, timeout=30000)
+    tutor_page.wait_for_url(lambda url: LOGIN_URL not in url, timeout=90000)
 
     tutor_page.goto(f"{base_url}/jobs/{job_id}/")
 
-    # Click "Apply to this job" — reveals the hidden form wrapper
     tutor_page.locator("p.applyforrole a").click()
     tutor_page.wait_for_selector("div.app_form_wrapper", state="visible", timeout=10000)
 
-    # Fill the application form
     tutor_page.locator("textarea#stage2_why_am_i_suitable").fill(
         "Experienced Japanese IB tutor. Automated test application."
     )
     tutor_page.locator("select#stage2_delivery").select_option("Online")
 
-    # Step 1 submit: "Review application" — POSTs form, PHP re-renders review page
-    tutor_page.locator("input.tutor_job_app_form_presubmit").click()
-    tutor_page.wait_for_load_state("networkidle", timeout=30000)
+    # Step 1: review — POSTs form, PHP re-renders review page
+    tutor_page.locator("input.tutor_job_app_form_presubmit").click(timeout=90000)
+    tutor_page.wait_for_load_state("domcontentloaded", timeout=30000)
 
-    # Step 2 submit: "Submit application" — on review page, enabled by #agree_terms
-    # The checkbox starts checked by default; click it to trigger the JS enable handler
+    # Step 2: submit — checkbox must change to trigger the JS enable handler
     agree = tutor_page.locator("input#agree_terms")
     if agree.count() > 0:
         if not agree.is_checked():
             agree.check()
         else:
-            # Checkbox is already checked but the JS enable handler fires on change —
-            # uncheck and recheck to guarantee the submit button is enabled
             agree.uncheck()
             agree.check()
 
     submit = tutor_page.locator("input.tutor_job_app_form_submit")
     submit.wait_for(state="visible", timeout=10000)
-    submit.click()
-    tutor_page.wait_for_load_state("networkidle", timeout=30000)
+    submit.click(timeout=90000)
+    tutor_page.wait_for_load_state("domcontentloaded", timeout=30000)
     tutor_ctx.close()
-    print(f"\n[stage3_job_id] tutor applied to job {job_id}")
+    print(f"\n[stage3_job] tutor applied to job {job_id}")
 
     # ── Step 3: advance to Stage 3 via monitoring endpoint ────────────────
     advance_test_job(base_url, api_key, job_id, meet_now_tutor_id)
-    print(f"\n[stage3_job_id] job {job_id} advanced to Stage 3")
+    print(f"\n[stage3_job] job {job_id} advanced to Stage 3")
 
-    yield job_id
+    # ── Step 4: use the connect button to set a known password ───────────
+    # The wp_login action hook (owltheme/functions.php) fires during job creation
+    # auto-login and sets last_login immediately, so the magic link skips
+    # auto-login and renders the informational Stage 3 view instead. That view
+    # still shows the "Connect with tutor" button; clicking it fires
+    # ot_job_identify_modal which returns the set-password form because
+    # using_default_pw=true on the fresh client. Fill it here to establish
+    # known credentials that tests can then use with _login().
+    crc32_val = binascii.crc32(str(job_id).encode()) & 0xffffffff
+    magic_link_url = f"{base_url}/jobs/{job_id}/?job={crc32_val}&email={client_email}"
 
-    client_ctx.close()
+    setup_ctx, setup_page = _new_authed_page(browser)
+    setup_page.goto(magic_link_url)
+    setup_page.wait_for_selector("button.connect_with_tutor", timeout=15000)
+    setup_page.locator("button.connect_with_tutor").first.click()
+    setup_page.wait_for_selector("#passwordModal.show, .dash_modal.show", timeout=15000)
+    setup_page.locator("#inlinepassword").fill(CLIENT_PASSWORD)
+    setup_page.locator("#passwordModal button[type='submit']").click()
+    setup_page.wait_for_url(lambda url: "client_set_pw=true" in url, timeout=30000)
+    setup_ctx.close()
+    print(f"\n[stage3_job] password set for {client_email}")
+
+    # ── Step 5: set client_status=Active ──────────────────────────────────
+    # New clients are Inactive by default. Active status causes
+    # ot_job_identify_modal to return the accept-terms form rather than the
+    # add-payment-method form, enabling the full Stage 4 connect flow.
+    import requests as _requests
+    token = _basic_auth_token()
+    _headers = {"Authorization": f"Basic {token}"} if token else {}
+    _resp = _requests.post(
+        f"{base_url}/wp-admin/admin-ajax.php",
+        data={"action": "owl_set_client_active", "api_key": api_key, "email": client_email},
+        headers=_headers,
+        timeout=15,
+    )
+    _resp.raise_for_status()
+    import json as _json
+    _data = _json.loads(_resp.content.decode("utf-8-sig"))
+    if not _data.get("success"):
+        raise RuntimeError(f"owl_set_client_active failed: {_data}")
+    print(f"\n[stage3_job] client {client_email} set to Active")
+
+    yield {"job_id": job_id, "client_email": client_email, "client_password": CLIENT_PASSWORD}
 
 
 @pytest.fixture(scope="session")
@@ -394,13 +425,33 @@ def magic_link_params(base_url, api_key, meet_now_tutor_id):
 
 
 @pytest.fixture(scope="session")
-def preapplicant_credentials():
-    """Credentials for a permanent test pre-applicant account on the dev site.
-    Set TEST_PREAPPLICANT_EMAIL and TEST_PREAPPLICANT_PASSWORD."""
-    email    = os.environ.get("TEST_PREAPPLICANT_EMAIL", "")
-    password = os.environ.get("TEST_PREAPPLICANT_PASSWORD", "")
-    if not (email and password):
-        pytest.skip(
-            "TEST_PREAPPLICANT_EMAIL/PASSWORD not set — skipping pre-applicant tests"
-        )
-    return {"email": email, "password": password}
+def preapplicant_credentials(browser, base_url, api_key):
+    """Create a fresh pre-applicant for this test session via the registration form.
+
+    Uses a UUID-based email flagged with _ot_test_user=1 so the cleanup endpoint
+    deletes the account at the end of any run that calls cleanup_after.
+    No TEST_PREAPPLICANT_EMAIL/PASSWORD env vars required.
+    """
+    import uuid as _uuid
+
+    APPLICATION_URL = "/tutor-section/application/"
+    email    = f"testbot.preapp.{_uuid.uuid4().hex[:8]}@owltutors.co.uk"
+    password = "Owl1Tutor!Test2026"
+
+    ctx, reg_page = _new_authed_page(browser)
+    reg_page.goto(f"{base_url}{APPLICATION_URL}")
+    reg_page.wait_for_selector("#signupform", state="visible", timeout=10000)
+    reg_page.locator("#email").fill(email)
+    reg_page.locator("#pw1").fill(password)
+    reg_page.evaluate(
+        """(k) => {
+            document.getElementById('ot_test_user').value = '1';
+            document.getElementById('ot_test_api_key_reg').value = k;
+        }""",
+        api_key,
+    )
+    reg_page.evaluate("document.getElementById('signupform').submit()")
+    reg_page.wait_for_url(re.compile(r".*/tutor-section/application/"), timeout=30000)
+    ctx.close()
+
+    yield {"email": email, "password": password}

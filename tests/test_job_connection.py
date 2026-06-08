@@ -13,11 +13,13 @@ def _login(page: Page, base_url: str, email: str, password: str):
     """Log in via the front-end login form."""
     page.goto(f"{base_url}{LOGIN_URL}")
     expect(page.locator("#ot_login")).to_be_visible()
-    page.wait_for_load_state("networkidle")
+    page.wait_for_load_state("domcontentloaded")
     page.locator("#ot_login_name").fill(email)
     page.locator("#pw1").fill(password)
     page.locator("#login_submit").click()
-    page.wait_for_url(lambda url: LOGIN_URL not in url, timeout=30000)
+    # 90s: the post-login redirect can be slow (client may be sent to an existing
+    # job page; the load event needs time to settle on a cold server).
+    page.wait_for_url(lambda url: LOGIN_URL not in url, timeout=90000)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -25,7 +27,7 @@ def _login(page: Page, base_url: str, email: str, password: str):
 # ─────────────────────────────────────────────────────────────────────────────
 
 def test_stage3_job_renders_applicant_cards(
-    page: Page, base_url: str, stage3_job_id, client_credentials
+    page: Page, base_url: str, stage3_job
 ):
     """
     Logged-in client on a Stage 3 job sees applicant cards, the sort dropdown,
@@ -33,8 +35,8 @@ def test_stage3_job_renders_applicant_cards(
     Covers P1: 'Stage 3 job page renders applicant cards and sort dropdown'
     and 'Logged-in client on Stage 3 job sees tutors to review dashboard state'.
     """
-    _login(page, base_url, client_credentials["email"], client_credentials["password"])
-    page.goto(f"{base_url}{JOB_URL}{stage3_job_id}/")
+    _login(page, base_url, stage3_job["client_email"], stage3_job["client_password"])
+    page.goto(f"{base_url}{JOB_URL}{stage3_job['job_id']}/")
 
     expect(page.locator(".applicants")).to_be_visible()
     expect(page.locator(".applicant_box").first).to_be_visible()
@@ -44,8 +46,8 @@ def test_stage3_job_renders_applicant_cards(
     os.makedirs("screenshots", exist_ok=True)
     page.screenshot(path="screenshots/stage3_applicant_cards.png")
     write_detail("test_stage3_job_renders_applicant_cards", {
-        "message": f"Stage 3 job {stage3_job_id} rendered applicant cards and sort dropdown",
-        "job_id": stage3_job_id,
+        "message": f"Stage 3 job {stage3_job['job_id']} rendered applicant cards and sort dropdown",
+        "job_id": stage3_job["job_id"],
         "screenshot": "screenshots/stage3_applicant_cards.png",
     })
 
@@ -55,15 +57,15 @@ def test_stage3_job_renders_applicant_cards(
 # ─────────────────────────────────────────────────────────────────────────────
 
 def test_connect_with_tutor_triggers_modal(
-    page: Page, base_url: str, stage3_job_id, client_credentials
+    page: Page, base_url: str, stage3_job
 ):
     """
     Clicking the 'Connect with tutor' button fires the ot_job_identify_modal
     AJAX and renders a modal (accept-terms, payment, or login depending on state).
     Covers P1: '"Connect with tutor" button present, triggers ot_job_identify_modal AJAX'.
     """
-    _login(page, base_url, client_credentials["email"], client_credentials["password"])
-    page.goto(f"{base_url}{JOB_URL}{stage3_job_id}/")
+    _login(page, base_url, stage3_job["client_email"], stage3_job["client_password"])
+    page.goto(f"{base_url}{JOB_URL}{stage3_job['job_id']}/")
 
     btn = page.locator("button.connect_with_tutor").first
     expect(btn).to_be_visible()
@@ -83,7 +85,7 @@ def test_connect_with_tutor_triggers_modal(
         "message": (
             f"ot_job_identify_modal fired for job {job_id_attr} / tutor {tutor_id_attr}"
         ),
-        "job_id": stage3_job_id,
+        "job_id": stage3_job["job_id"],
         "screenshot": "screenshots/connect_tutor_modal.png",
     })
 
@@ -93,7 +95,7 @@ def test_connect_with_tutor_triggers_modal(
 # ─────────────────────────────────────────────────────────────────────────────
 
 def test_accept_terms_modal_renders(
-    page: Page, base_url: str, stage3_job_id, client_credentials
+    page: Page, base_url: str, stage3_job
 ):
     """
     The modal that appears after clicking 'Connect with tutor' has rendered
@@ -102,8 +104,8 @@ def test_accept_terms_modal_renders(
     interactive element.
     Covers P1: 'Accept-terms modal renders with tutor photo, name, and rate'.
     """
-    _login(page, base_url, client_credentials["email"], client_credentials["password"])
-    page.goto(f"{base_url}{JOB_URL}{stage3_job_id}/")
+    _login(page, base_url, stage3_job["client_email"], stage3_job["client_password"])
+    page.goto(f"{base_url}{JOB_URL}{stage3_job['job_id']}/")
 
     page.locator("button.connect_with_tutor").first.click()
     page.wait_for_selector(".modal.show, .dash_modal.show", timeout=15000)
@@ -122,8 +124,8 @@ def test_accept_terms_modal_renders(
     os.makedirs("screenshots", exist_ok=True)
     page.screenshot(path="screenshots/accept_terms_modal.png")
     write_detail("test_accept_terms_modal_renders", {
-        "message": f"Stage 3 modal rendered with content for job {stage3_job_id}",
-        "job_id": stage3_job_id,
+        "message": f"Stage 3 modal rendered with content for job {stage3_job['job_id']}",
+        "job_id": stage3_job["job_id"],
         "screenshot": "screenshots/accept_terms_modal.png",
     })
 
@@ -133,7 +135,7 @@ def test_accept_terms_modal_renders(
 # ─────────────────────────────────────────────────────────────────────────────
 
 def test_logged_out_stage3_sees_login_modal(
-    page: Page, base_url: str, stage3_job_id
+    page: Page, base_url: str, stage3_job
 ):
     """
     A logged-out visitor on a Stage 3 job page who clicks 'Connect with tutor'
@@ -141,7 +143,7 @@ def test_logged_out_stage3_sees_login_modal(
     Covers P1: 'Logged-out client on Stage 3 job sees login modal with tutor photo
     and correct redirect_to'.
     """
-    page.goto(f"{base_url}{JOB_URL}{stage3_job_id}/")
+    page.goto(f"{base_url}{JOB_URL}{stage3_job['job_id']}/")
     expect(page.locator("button.connect_with_tutor").first).to_be_visible()
     page.locator("button.connect_with_tutor").first.click()
 
@@ -154,8 +156,8 @@ def test_logged_out_stage3_sees_login_modal(
     os.makedirs("screenshots", exist_ok=True)
     page.screenshot(path="screenshots/stage3_login_modal.png")
     write_detail("test_logged_out_stage3_sees_login_modal", {
-        "message": f"Logged-out user saw login modal on Stage 3 job {stage3_job_id}",
-        "job_id": stage3_job_id,
+        "message": f"Logged-out user saw login modal on Stage 3 job {stage3_job['job_id']}",
+        "job_id": stage3_job["job_id"],
         "screenshot": "screenshots/stage3_login_modal.png",
     })
 
@@ -165,7 +167,7 @@ def test_logged_out_stage3_sees_login_modal(
 # ─────────────────────────────────────────────────────────────────────────────
 
 def test_stripe_return_auto_triggers_modal(
-    page: Page, base_url: str, stage3_job_id, client_credentials
+    page: Page, base_url: str, stage3_job
 ):
     """
     Navigating to a Stage 3 job with ?payment_method_added=true&from_stripe=true
@@ -173,9 +175,9 @@ def test_stripe_return_auto_triggers_modal(
     Covers P1: 'Stripe-return flow — page load with payment_method_added=true&
     from_stripe=true auto-triggers modal without click'.
     """
-    _login(page, base_url, client_credentials["email"], client_credentials["password"])
+    _login(page, base_url, stage3_job["client_email"], stage3_job["client_password"])
     page.goto(
-        f"{base_url}{JOB_URL}{stage3_job_id}/"
+        f"{base_url}{JOB_URL}{stage3_job['job_id']}/"
         "?payment_method_added=true&from_stripe=true"
     )
     # Modal should open automatically — no button click required
@@ -185,10 +187,69 @@ def test_stripe_return_auto_triggers_modal(
     page.screenshot(path="screenshots/stripe_return_modal.png")
     write_detail("test_stripe_return_auto_triggers_modal", {
         "message": (
-            f"Stripe-return params auto-opened modal on job {stage3_job_id}"
+            f"Stripe-return params auto-opened modal on job {stage3_job['job_id']}"
         ),
-        "job_id": stage3_job_id,
+        "job_id": stage3_job["job_id"],
         "screenshot": "screenshots/stripe_return_modal.png",
+    })
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Stage 3 → Stage 4 — accept terms (MUST run last among Stage 3 tests:
+# advances the shared stage3_job one-way to Stage 4)
+# ─────────────────────────────────────────────────────────────────────────────
+
+def test_accept_terms_advances_to_stage4(
+    page: Page, base_url: str, stage3_job
+):
+    """
+    Logged-in Active client accepts terms and connects with the tutor,
+    advancing the job to Stage 4. The client_status=Active is set in the
+    stage3_job fixture (Step 5) so ot_job_identify_modal returns the
+    accept-terms form rather than the add-payment-method form.
+
+    NOTE: this test consumes stage3_job — it must run after all other
+    Stage 3 tests in this session. Pytest runs tests in file order so
+    placing it here (after the other Stage 3 blocks) ensures that ordering.
+
+    Covers P1: 'Accept terms advancing to Stage 4'.
+    """
+    _login(page, base_url, stage3_job["client_email"], stage3_job["client_password"])
+    page.goto(f"{base_url}{JOB_URL}{stage3_job['job_id']}/")
+
+    btn = page.locator("button.connect_with_tutor").first
+    expect(btn).to_be_visible()
+    btn.click()
+
+    # Client is Active — ot_job_identify_modal returns accept-terms modal
+    page.wait_for_selector("#acceptTermsModal.show", timeout=15000)
+    terms_cb = page.locator("input[name='accept_terms']")
+    expect(terms_cb).to_be_visible(timeout=5000)
+    terms_cb.check()
+
+    # Submit — JS fires ot_job_modal_actions AJAX then sets window.location.href
+    # to the same URL, so wait_for_url fires immediately on the pre-reload page.
+    # expect_navigation starts listening before the click and waits for the reload.
+    with page.expect_navigation(wait_until="load", timeout=30000):
+        page.locator(".keep_inline_content[data-modaltype='accept_terms']").click(timeout=60000)
+
+    # Job is now Stage 4 — "Your chosen tutor" section should be visible
+    connected_section = page.locator(
+        "section[aria-label='Connected tutor information']"
+    )
+    expect(connected_section).to_be_visible()
+    expect(connected_section.locator("h2")).to_contain_text("Your chosen tutor")
+
+    # Wait for any modal overlay to clear, then scroll to the tutor section
+    # so the screenshot shows the Stage 4 chosen-tutor details cleanly.
+    page.wait_for_selector(".modal.show", state="hidden", timeout=5000)
+    connected_section.scroll_into_view_if_needed()
+    os.makedirs("screenshots", exist_ok=True)
+    page.screenshot(path="screenshots/stage4_from_accept_terms.png")
+    write_detail("test_accept_terms_advances_to_stage4", {
+        "message": f"Job {stage3_job['job_id']} advanced to Stage 4 after accepting terms",
+        "job_id": stage3_job["job_id"],
+        "screenshot": "screenshots/stage4_from_accept_terms.png",
     })
 
 
@@ -238,6 +299,12 @@ def test_client_stage4_job_shows_connected_tutor(
     """
     _login(page, base_url, client_credentials["email"], client_credentials["password"])
     page.goto(f"{base_url}{JOB_URL}{stage4_job_id}/")
+
+    os.makedirs("screenshots", exist_ok=True)
+    page.screenshot(path="screenshots/stage4_debug.png", full_page=True)
+    print(f"\n[stage4] url after navigate: {page.url}")
+    print(f"\n[stage4] page title: {page.title()}")
+    print(f"\n[stage4] logged_in_dash_window present: {page.locator('#logged_in_dash_window').count() > 0}")
 
     connected_section = page.locator(
         "section[aria-label='Connected tutor information']"

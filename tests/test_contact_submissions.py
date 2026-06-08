@@ -1,5 +1,6 @@
 import os
 import re
+import uuid
 import pytest
 from playwright.sync_api import Page, expect
 
@@ -45,10 +46,10 @@ def _flag_test_post(page: Page):
     )
 
 
-def _fill_client_info(page: Page):
+def _fill_client_info(page: Page, email: str = EMAIL):
     page.locator("input[name='acf[field_5edf8887fb5e7]']").fill(FIRST_NAME)
     page.locator("input[name='acf[field_5edf8899fb5e8]']").fill(LAST_NAME)
-    page.locator("input[name='acf[field_5edf889ffb5e9]']").fill(EMAIL)
+    page.locator("input[name='acf[field_5edf889ffb5e9]']").fill(email)
     page.locator("input[name='acf[field_5a573454bb670]']").fill(PHONE)
 
 
@@ -333,6 +334,10 @@ def test_new_client_banner(page: Page, base_url: str, cleanup_after):
     to log in or set their password. Covers P2: post-submission
     ?new_client=true banner renders on job page.
     """
+    # Fresh email each run — test requires a genuinely new account to get
+    # ?new_client=true; reusing a fixed address breaks after the first run.
+    fresh_email = f"testbot.newclient.{uuid.uuid4().hex[:8]}@owltutors.co.uk"
+
     page.goto(f"{base_url}{CONTACT_URL}")
     expect(page.locator("#tutor_request_form")).to_be_visible()
 
@@ -348,7 +353,7 @@ def test_new_client_banner(page: Page, base_url: str, cleanup_after):
         "New client banner test — automated"
     )
     page.locator("div[data-name='timing_details_-_original'] textarea").fill("Flexible")
-    _fill_client_info(page)
+    _fill_client_info(page, fresh_email)
     _check_hs(page)
     _flag_test_post(page)
 

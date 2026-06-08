@@ -8,8 +8,8 @@
     "screenshot": "screenshots/client_dashboard.png"
   },
   "test_contact_form_callback_submission": {
-    "message": "Callback enquiry submitted and redirected to job 199923",
-    "job_id": "199923",
+    "message": "Callback enquiry submitted and redirected to job 199978",
+    "job_id": "199978",
     "screenshot": "screenshots/job_callback_submission.png"
   },
   "test_contact_form_renders": {
@@ -27,35 +27,35 @@
   "test_requested_tutor_cart": {
     "message": "Tutor shortlist populated with 3 tutors and submit link updated",
     "tutor_ids": [
-      "25018",
-      "18399",
-      "16048"
+      "281",
+      "20023",
+      "387"
     ],
     "screenshot": "screenshots/tutor_cart.png"
   },
   "test_contact_form_tutor_submission": {
-    "message": "Tutor enquiry submitted and redirected to job 199925",
-    "job_id": "199925",
+    "message": "Tutor enquiry submitted and redirected to job 199980",
+    "job_id": "199980",
     "screenshot": "screenshots/job_tutor_submission.png"
   },
   "test_contact_form_something_else": {
-    "message": "'Something else' enquiry submitted and redirected to job 199927",
-    "job_id": "199927",
+    "message": "'Something else' enquiry submitted and redirected to job 199982",
+    "job_id": "199982",
     "screenshot": "screenshots/job_something_else.png"
   },
   "test_contact_form_requested_tutors": {
-    "message": "Requested tutors flow submitted and redirected to job 199929",
-    "job_id": "199929",
+    "message": "Requested tutors flow submitted and redirected to job 199984",
+    "job_id": "199984",
     "tutor_ids": [
-      "25018",
-      "18399",
-      "16048"
+      "281",
+      "20023",
+      "387"
     ],
     "screenshot": "screenshots/job_requested_tutors.png"
   },
   "test_contact_form_returning_client": {
-    "message": "Returning client job submitted and redirected to job 199933",
-    "job_id": "199933",
+    "message": "Returning client job submitted and redirected to job 199988",
+    "job_id": "199988",
     "screenshot": "screenshots/job_returning_client.png"
   },
   "test_blog_listing_loads": {
@@ -91,8 +91,8 @@
     "screenshot": "screenshots/meet_now_form_state.png"
   },
   "test_meet_now_submission": {
-    "message": "Meet-now form submitted, redirected to job 199937",
-    "job_id": "199937",
+    "message": "Meet-now form submitted, redirected to job 199992",
+    "job_id": "199992",
     "screenshot": "screenshots/meet_now_submission.png"
   },
   "test_papers_load": {
@@ -112,7 +112,7 @@
     "screenshot": "screenshots/tutor_registration_page.png"
   },
   "test_tutor_registration_submits": {
-    "message": "Registration submitted and redirected to https://otdev1602.wpengine.com/tutor-section/application/?register-errors=email_exists",
+    "message": "Registration submitted and redirected to https://otdev1602.wpengine.com/tutor-section/application/?newpreapp=true",
     "screenshot": "screenshots/tutor_registration_submit.png"
   },
   "test_school_listing_page_loads": {

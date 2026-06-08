@@ -316,6 +316,8 @@ def test_client_stage4_job_shows_connected_tutor(
     Covers P1: 'Logged-in client on Stage 4 job sees tutor selected dashboard state'.
     """
     _login(page, base_url, client_credentials["email"], client_credentials["password"])
+    print(f"\n[stage4] url after login: {page.url}")
+    print(f"\n[stage4] nav dashboard link present (logged-in indicator): {page.locator('a.utility-bar__login[href=\"/dashboard/\"]').count() > 0}")
     page.goto(f"{base_url}{JOB_URL}{stage4_job_id}/")
 
     os.makedirs("screenshots", exist_ok=True)
@@ -323,6 +325,7 @@ def test_client_stage4_job_shows_connected_tutor(
     print(f"\n[stage4] url after navigate: {page.url}")
     print(f"\n[stage4] page title: {page.title()}")
     print(f"\n[stage4] logged_in_dash_window present: {page.locator('#logged_in_dash_window').count() > 0}")
+    print(f"\n[stage4] page content (first 1000 chars): {page.content()[:1000]}")
 
     connected_section = page.locator(
         "section[aria-label='Connected tutor information']"

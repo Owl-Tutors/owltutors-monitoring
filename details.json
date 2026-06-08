@@ -8,8 +8,8 @@
     "screenshot": "screenshots/client_dashboard.png"
   },
   "test_contact_form_callback_submission": {
-    "message": "Callback enquiry submitted and redirected to job 199978",
-    "job_id": "199978",
+    "message": "Callback enquiry submitted and redirected to job 199994",
+    "job_id": "199994",
     "screenshot": "screenshots/job_callback_submission.png"
   },
   "test_contact_form_renders": {
@@ -34,18 +34,18 @@
     "screenshot": "screenshots/tutor_cart.png"
   },
   "test_contact_form_tutor_submission": {
-    "message": "Tutor enquiry submitted and redirected to job 199980",
-    "job_id": "199980",
+    "message": "Tutor enquiry submitted and redirected to job 199996",
+    "job_id": "199996",
     "screenshot": "screenshots/job_tutor_submission.png"
   },
   "test_contact_form_something_else": {
-    "message": "'Something else' enquiry submitted and redirected to job 199982",
-    "job_id": "199982",
+    "message": "'Something else' enquiry submitted and redirected to job 199998",
+    "job_id": "199998",
     "screenshot": "screenshots/job_something_else.png"
   },
   "test_contact_form_requested_tutors": {
-    "message": "Requested tutors flow submitted and redirected to job 199984",
-    "job_id": "199984",
+    "message": "Requested tutors flow submitted and redirected to job 200000",
+    "job_id": "200000",
     "tutor_ids": [
       "281",
       "20023",
@@ -53,9 +53,13 @@
     ],
     "screenshot": "screenshots/job_requested_tutors.png"
   },
+  "test_new_client_banner": {
+    "message": "New client banner visible at https://otdev1602.wpengine.com/jobs/200002/?new_client=true&generate_lead=true&c=943480756&job_status=1&job_create_type=regular",
+    "screenshot": "screenshots/new_client_banner.png"
+  },
   "test_contact_form_returning_client": {
-    "message": "Returning client job submitted and redirected to job 199988",
-    "job_id": "199988",
+    "message": "Returning client job submitted and redirected to job 200004",
+    "job_id": "200004",
     "screenshot": "screenshots/job_returning_client.png"
   },
   "test_blog_listing_loads": {
@@ -91,8 +95,8 @@
     "screenshot": "screenshots/meet_now_form_state.png"
   },
   "test_meet_now_submission": {
-    "message": "Meet-now form submitted, redirected to job 199992",
-    "job_id": "199992",
+    "message": "Meet-now form submitted, redirected to job 200008",
+    "job_id": "200008",
     "screenshot": "screenshots/meet_now_submission.png"
   },
   "test_papers_load": {

@@ -16,7 +16,14 @@ def base_url():
 
 
 def _basic_auth_token() -> str | None:
-    """Return a Basic Auth token from TEST_BASE_URL credentials, or None."""
+    """Return a Basic Auth token, or None if no credentials are configured.
+    Prefers TEST_HTTP_USER/TEST_HTTP_PASS over URL-embedded credentials to
+    avoid regex breakage when the password contains special characters like '@'.
+    """
+    user = os.environ.get("TEST_HTTP_USER", "")
+    pw   = os.environ.get("TEST_HTTP_PASS", "")
+    if user and pw:
+        return base64.b64encode(f"{user}:{pw}".encode()).decode()
     raw = os.environ.get("TEST_BASE_URL", "")
     match = re.match(r"https?://([^:@]+):([^@]+)@", raw)
     if match:
@@ -27,13 +34,15 @@ def _basic_auth_token() -> str | None:
 @pytest.fixture(scope="session")
 def browser_context_args(browser_context_args):
     """Supply http_credentials so Playwright can respond to any 401 challenges."""
-    raw = os.environ.get("TEST_BASE_URL", "")
-    match = re.match(r"https?://([^:@]+):([^@]+)@", raw)
-    if match:
-        return {
-            **browser_context_args,
-            "http_credentials": {"username": match.group(1), "password": match.group(2)},
-        }
+    user = os.environ.get("TEST_HTTP_USER", "")
+    pw   = os.environ.get("TEST_HTTP_PASS", "")
+    if not (user and pw):
+        raw = os.environ.get("TEST_BASE_URL", "")
+        match = re.match(r"https?://([^:@]+):([^@]+)@", raw)
+        if match:
+            user, pw = match.group(1), match.group(2)
+    if user and pw:
+        return {**browser_context_args, "http_credentials": {"username": user, "password": pw}}
     return browser_context_args
 
 
@@ -363,7 +372,9 @@ def stage3_job(
     # add-payment-method form, enabling the full Stage 4 connect flow.
     import requests as _requests
     token = _basic_auth_token()
-    _headers = {"Authorization": f"Basic {token}"} if token else {}
+    _headers = {"User-Agent": "Mozilla/5.0 (compatible; owltutors-monitoring/1.0)"}
+    if token:
+        _headers["Authorization"] = f"Basic {token}"
     _resp = _requests.post(
         f"{base_url}/wp-admin/admin-ajax.php",
         data={"action": "owl_set_client_active", "api_key": api_key, "email": client_email},
@@ -377,7 +388,7 @@ def stage3_job(
         raise RuntimeError(f"owl_set_client_active failed: {_data}")
     print(f"\n[stage3_job] client {client_email} set to Active")
 
-    yield {"job_id": job_id, "client_email": client_email, "client_password": CLIENT_PASSWORD}
+    yield {"job_id": job_id, "client_email": client_email, "client_password": CLIENT_PASSWORD, "tutor_id": meet_now_tutor_id}
 
 
 @pytest.fixture(scope="session")

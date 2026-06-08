@@ -6,6 +6,12 @@ import requests
 
 def _parse_base_url(base_url: str):
     """Return (clean_url, auth_tuple_or_None) stripping credentials from the URL."""
+    # Prefer explicit TEST_HTTP_USER/TEST_HTTP_PASS — avoids regex breakage
+    # when the password contains special characters such as '@'.
+    user = os.environ.get("TEST_HTTP_USER", "")
+    pw   = os.environ.get("TEST_HTTP_PASS", "")
+    if user and pw:
+        return base_url, (user, pw)
     match = re.match(r"(https?://)([^:@]+):([^@]+)@(.+)", base_url)
     if match:
         clean = match.group(1) + match.group(4)

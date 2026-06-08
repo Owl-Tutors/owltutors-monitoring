@@ -5,14 +5,17 @@ import re
 import requests
 
 
+_UA = {"User-Agent": "Mozilla/5.0 (compatible; owltutors-monitoring/1.0)"}
+
+
 def _auth_headers(base_url: str) -> dict:
     """Return Authorization header dict from credentials embedded in TEST_BASE_URL."""
     raw = os.environ.get("TEST_BASE_URL", base_url)
     match = re.match(r"https?://([^:@]+):([^@]+)@", raw)
     if match:
         token = base64.b64encode(f"{match.group(1)}:{match.group(2)}".encode()).decode()
-        return {"Authorization": f"Basic {token}"}
-    return {}
+        return {"Authorization": f"Basic {token}", **_UA}
+    return dict(_UA)
 
 
 def create_test_job(

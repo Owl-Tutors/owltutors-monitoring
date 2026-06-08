@@ -6,12 +6,21 @@ import requests
 
 
 def _auth_headers(base_url: str) -> dict:
+    # Prefer explicit TEST_HTTP_USER/TEST_HTTP_PASS secrets — avoids regex
+    # breakage when the password contains special characters such as '@'.
+    user = os.environ.get("TEST_HTTP_USER", "")
+    pw   = os.environ.get("TEST_HTTP_PASS", "")
+    _UA = {"User-Agent": "Mozilla/5.0 (compatible; owltutors-monitoring/1.0)"}
+    if user and pw:
+        token = base64.b64encode(f"{user}:{pw}".encode()).decode()
+        return {"Authorization": f"Basic {token}", **_UA}
+    # Fallback: parse credentials embedded in TEST_BASE_URL
     raw = os.environ.get("TEST_BASE_URL", base_url)
     match = re.match(r"https?://([^:@]+):([^@]+)@", raw)
     if match:
         token = base64.b64encode(f"{match.group(1)}:{match.group(2)}".encode()).decode()
-        return {"Authorization": f"Basic {token}"}
-    return {}
+        return {"Authorization": f"Basic {token}", **_UA}
+    return _UA
 
 
 def advance_test_job(

@@ -34,6 +34,8 @@ jobs:
           TEST_TUTOR_PASSWORD: ${{ secrets.TEST_TUTOR_PASSWORD }}
           TEST_PREAPPLICANT_EMAIL: ${{ secrets.TEST_PREAPPLICANT_EMAIL }}
           TEST_PREAPPLICANT_PASSWORD: ${{ secrets.TEST_PREAPPLICANT_PASSWORD }}
+          TEST_HTTP_USER: ${{ secrets.TEST_HTTP_USER }}
+          TEST_HTTP_PASS: ${{ secrets.TEST_HTTP_PASS }}
         run: pytest --json-report --json-report-file=pytest-report.json -v
         continue-on-error: true
 

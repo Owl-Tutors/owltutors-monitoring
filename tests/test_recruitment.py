@@ -1,4 +1,4 @@
-﻿import os
+import os
 import re
 import uuid
 import pytest
@@ -48,9 +48,9 @@ def _flag_test_user(page: Page):
     )
 
 
-# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-# Registration â€” page loads
-# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+# Registration -- page loads
+# â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
 def test_tutor_registration_page_loads(page: Page, base_url: str):
     """
@@ -71,9 +71,9 @@ def test_tutor_registration_page_loads(page: Page, base_url: str):
     })
 
 
-# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-# Registration â€” full submission
-# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+# Registration -- full submission
+# â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
 def test_tutor_registration_submits(page: Page, base_url: str, cleanup_after):
     """
@@ -93,17 +93,17 @@ def test_tutor_registration_submits(page: Page, base_url: str, cleanup_after):
     page.locator("#email").fill(TEST_REG_EMAIL)
     page.locator("#pw1").fill(TEST_REG_PASSWORD)
 
-    # Inject test flag â€” PHP checks ot_test_user + ot_test_api_key_reg before
+    # Inject test flag -- PHP checks ot_test_user + ot_test_api_key_reg before
     # setting _ot_test_user=1 on the new user (only on otdev1602/owltutors.test)
     _flag_test_user(page)
 
-    # Submit directly (bypass reCAPTCHA â€” PHP doesn't validate it for registration)
+    # Submit directly (bypass reCAPTCHA -- PHP doesn't validate it for registration)
     page.evaluate("document.getElementById('signupform').submit()")
 
     # Should redirect to the application page with ?newpreapp=true
     page.wait_for_url(re.compile(r".*/tutor-section/application/"), timeout=30000)
     assert "tutor-section/application" in page.url, (
-        f"Registration did not redirect to application page â€” got: {page.url}"
+        f"Registration did not redirect to application page -- got: {page.url}"
     )
 
     print(f"\n[result] registration redirect: {page.url}")
@@ -115,9 +115,9 @@ def test_tutor_registration_submits(page: Page, base_url: str, cleanup_after):
     })
 
 
-# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-# Pre-applicant â€” application page sections
-# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+# Pre-applicant -- application page sections
+# â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
 def test_preapplicant_application_page_loads(
     page: Page, base_url: str, preapplicant_credentials
@@ -162,9 +162,9 @@ def test_preapplicant_application_page_loads(
     })
 
 
-# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 # Full application flow
-# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
 def _show_section(page: Page, section_id: str):
     """Activate a section tab pane directly via JS.
@@ -195,7 +195,7 @@ def _wait_for_section(page: Page, section_id: str) -> None:
     """Wait for a section tab-pane to be visible after a page reload.
 
     PHP's show_form_location logic (first incomplete section) does not always
-    resolve to the expected next section â€” e.g. if the previous section's score
+    resolve to the expected next section -- e.g. if the previous section's score
     hasn't fully propagated before the redirect. If the natural wait times out,
     fall back to _show_section to force the pane visible via JS.
     """
@@ -210,7 +210,7 @@ def _wait_for_section(page: Page, section_id: str) -> None:
 def _save_section(page: Page, section_id: str):
     """Click Save & continue inside the specified section's form and wait for reload.
 
-    Must target value='Save & continue' explicitly â€” most sections also render
+    Must target value='Save & continue' explicitly -- most sections also render
     a 'Previous' input[name='formDirection'] that appears first in the DOM.
     """
     form = page.locator(f"div#{section_id} form")
@@ -305,8 +305,8 @@ def test_tutor_full_application_flow(page: Page, base_url: str, cleanup_after):
     """
     End-to-end tutor application flow:
       1. Register as new pre-applicant at /tutor-section/application/
-      2. Fill all 9 form sections (personal details â†’ interview booking)
-      3. Submit application â†’ user promoted to 'applicant'
+      2. Fill all 9 form sections (personal details â†' interview booking)
+      3. Submit application â†' user promoted to 'applicant'
       4. Screenshots: registration, mid-progress, applicant state
       5. User deleted by cleanup endpoint (_ot_test_user=1)
 
@@ -321,7 +321,7 @@ def test_tutor_full_application_flow(page: Page, base_url: str, cleanup_after):
     email   = f"testbot.fullapp.{run_id}@owltutors.co.uk"
     password = "Owl1Tutor!Test2026"
 
-    # â”€â”€ 1. Register â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    # â"€â"€ 1. Register â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
     page.goto(f"{base_url}{APPLICATION_URL}")
     expect(page.locator("#signupform")).to_be_visible()
     page.locator("#email").fill(email)
@@ -335,9 +335,9 @@ def test_tutor_full_application_flow(page: Page, base_url: str, cleanup_after):
     page.screenshot(path="screenshots/recruit_01_registered.png")
     print(f"\n[recruit] registered: {email}")
 
-    # â”€â”€ 2. Personal Details â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    # â"€â"€ 2. Personal Details â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
     # PHP sets show_form_location='personalDetails' for new users; JS adds show/active.
-    # Do NOT call _show_section â€” it strips/re-adds classes and can cause ACF to lose
+    # Do NOT call _show_section -- it strips/re-adds classes and can cause ACF to lose
     # its event handler bindings. Wait for the section to be naturally visible instead.
     _wait_for_section(page, "personalDetails")
     form = page.locator("form#personalDetailsForm")
@@ -352,7 +352,7 @@ def test_tutor_full_application_flow(page: Page, base_url: str, cleanup_after):
     country_sel.select_option("United Kingdom") if country_sel.count() > 0 else None
     _save_section(page, "personalDetails")
 
-    # â”€â”€ 3. Supporting Documents â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    # â"€â"€ 3. Supporting Documents â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
     _wait_for_section(page, "supportingDocuments")
     form = page.locator("form#supportingDocumentsForm")
     # QTS country
@@ -375,14 +375,14 @@ def test_tutor_full_application_flow(page: Page, base_url: str, cleanup_after):
     # Screenshot: mid-progress
     page.screenshot(path="screenshots/recruit_02_docs.png")
 
-    # â”€â”€ 4. Teaching Experience â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    # â"€â"€ 4. Teaching Experience â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
     _wait_for_section(page, "teachingExperience")
     section = page.locator("div#teachingExperience")
     section.locator("div[data-name='years_of_classroom_teaching_experience'] input").fill("5")
     section.locator("div[data-name='please_describe_your_teaching_experience'] textarea").fill(
         "Five years teaching secondary Maths in UK state schools. Automated test."
     )
-    # Motivations â€” check first available option
+    # Motivations -- check first available option
     mot_cb = section.locator(
         "div[data-name='motivations_for_tutoring'] input[type='checkbox']"
     ).first
@@ -390,7 +390,7 @@ def test_tutor_full_application_flow(page: Page, base_url: str, cleanup_after):
         mot_cb.check()
     # Teaching experience repeater.
     # Real field name: 'please_describe_your_teaching_experience_repeater' (not 'last_10_years').
-    # data-min=1 means ACF renders one empty row by default â€” no add needed.
+    # data-min=1 means ACF renders one empty row by default -- no add needed.
     # Date fields are ACF date pickers: hidden input stores Ymd; .input is the display text.
     row = section.locator(
         "[data-name='please_describe_your_teaching_experience_repeater']"
@@ -416,7 +416,7 @@ def test_tutor_full_application_flow(page: Page, base_url: str, cleanup_after):
             if (et) et.value = '01/07/2023';
         })();
     """)
-    # Tuition subjects â€” non-required; check if present, skip if not found/visible
+    # Tuition subjects -- non-required; check if present, skip if not found/visible
     maths_cb = section.locator(
         "div[data-name='subject_list'] input[type='checkbox'][value='Maths']"
     )
@@ -424,35 +424,55 @@ def test_tutor_full_application_flow(page: Page, base_url: str, cleanup_after):
         maths_cb.first.check(timeout=5000)
     _save_section(page, "teachingExperience")
 
-    # â”€â”€ 5. Delivery â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    # â"€â"€ 5. Delivery â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
     _wait_for_section(page, "delivery")
     page.locator(
         "div#delivery div[data-name='delivery'] input[type='checkbox'][value='Online']"
     ).check()
     _save_section(page, "delivery")
 
-    # â”€â”€ 6. Availability â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-    _wait_for_section(page, "availability")
-    avail = page.locator("div#availability")
+    # â"€â"€ 6. Availability â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+    # v10.2.0: ACF form now only renders for_how_many_years_do_you_plan_on_being_a_tutor
+    # (the two capacity fields were removed from the form). The slot grid is also required
+    # for the availability section to score as complete — save one slot via AJAX before
+    # _save_section so that PHP sees recruitment_availability_slots on the reload.
+    _wait_for_section(page, 'availability')
+    avail = page.locator('div#availability')
     avail.locator(
-        "div[data-name='what_is_your_total_tuition_capacity_in_hours_per_week'] input"
-    ).fill("10")
-    avail.locator(
-        "div[data-name='of_your_total_tuition_capacity_how_many_of_these_hours_can_you_tutor_for_owl_tutors_in_hours_per_week'] input"
-    ).fill("8")
-    avail.locator(
-        "div[data-name='for_how_many_years_do_you_plan_on_being_a_tutor'] input"
-    ).fill("3")
-    _save_section(page, "availability")
+        '[data-name=for_how_many_years_do_you_plan_on_being_a_tutor] input'
+    ).fill('3')
 
-    # â”€â”€ 7. Rates â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    # Wait for the [tutor_availability] shortcode to render and localize TutorAvail.
+    page.wait_for_selector('#tutor_availability_holder', state='attached', timeout=10000)
+    page.evaluate(
+        '() => new Promise((resolve, reject) => {'
+        '    const avail = window.TutorAvail || {};'
+        '    const fd = new FormData();'
+        "    fd.append('action', 'tutor_availability_save');"
+        "    fd.append('nonce', avail.nonce || '');"
+        "    fd.append('tutor_id', String(avail.tutorId || ''));"
+        "    fd.append('slots', JSON.stringify({'0': [16]}));"
+        "    fd.append('extra_capacity', '0');"
+        "    fd.append('timezone', 'Europe/London');"
+        "    fd.append('notes', '');"
+        "    fd.append('date_free', '');"
+        '    fetch(avail.ajaxUrl || "/wp-admin/admin-ajax.php", { method: "POST", body: fd })'
+        '        .then(r => r.json())'
+        '        .then(data => data.success ? resolve(data) : reject(data))'
+        '        .catch(reject);'
+        '})'
+    )
+    page.wait_for_timeout(300)
+    _save_section(page, 'availability')
+
+    # â"€â"€ 7. Rates â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
     _wait_for_section(page, "rates")
     rates = page.locator("div#rates")
     rates.locator("div[data-name='minimum_net_home_pay_rate'] select").select_option("30")
     rates.locator("div[data-name='minimum_net_online_pay_rate'] select").select_option("30")
     _save_section(page, "rates")
 
-    # â”€â”€ 8. Qualifications â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    # â"€â"€ 8. Qualifications â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
     _wait_for_section(page, "qualifications")
     quals = page.locator("div#qualifications")
     # Group sub-fields (data-name = sub-field name, not group-prefixed)
@@ -470,7 +490,7 @@ def test_tutor_full_application_flow(page: Page, base_url: str, cleanup_after):
     ).fill("2018")
     _save_section(page, "qualifications")
 
-    # â”€â”€ 9. References â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    # â"€â"€ 9. References â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
     _wait_for_section(page, "references")
     form = page.locator("form#referencesForm")
     # Line manager repeater: data-min=1 data-max=1, row-0 already exists.
@@ -514,7 +534,7 @@ def test_tutor_full_application_flow(page: Page, base_url: str, cleanup_after):
     page.locator(ref_sel1).locator("div[data-name='email_address'] input").fill("referee2@owltest.co.uk")
     _save_section(page, "references")
 
-    # â”€â”€ 10. Interview Booking â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    # â"€â"€ 10. Interview Booking â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
     _wait_for_section(page, "interviewBooking")
     # ACF date-time pickers: two inputs per field (hidden .input-alt for POST value,
     # visible .input for display only). fill() causes strict-mode violation and
@@ -546,7 +566,7 @@ def test_tutor_full_application_flow(page: Page, base_url: str, cleanup_after):
     # Screenshot: all sections filled, submit button should now be visible
     page.screenshot(path="screenshots/recruit_03_complete.png")
 
-    # â”€â”€ 11. Submit application â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    # â"€â"€ 11. Submit application â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
     # The #isappreadyForm only renders when overall_score == 1 (all sections complete)
     submit_form = page.locator("form#isappreadyForm")
     expect(submit_form).to_be_visible(timeout=5000)
@@ -566,18 +586,18 @@ def test_tutor_full_application_flow(page: Page, base_url: str, cleanup_after):
     submit_form.locator("#SubmitButton").click()
     page.wait_for_load_state("networkidle", timeout=30000)
 
-    # â”€â”€ 12. Verify applicant state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-    # After promotion the page reloads as 'applicant' role â€” header changes
+    # â"€â"€ 12. Verify applicant state â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+    # After promotion the page reloads as 'applicant' role -- header changes
     expect(page.locator("header.bg-navy h1")).to_contain_text(
         re.compile(r"Welcome back|application", re.IGNORECASE), timeout=10000
     )
 
     # Screenshot: applicant dashboard / next steps
     page.screenshot(path="screenshots/recruit_04_applicant.png")
-    print(f"\n[recruit] application submitted â€” user promoted to applicant")
+    print(f"\n[recruit] application submitted -- user promoted to applicant")
 
     write_detail("test_tutor_full_application_flow", {
-        "message": "Full tutor application flow completed â€” pre-applicant promoted to applicant",
+        "message": "Full tutor application flow completed -- pre-applicant promoted to applicant",
         "screenshot": "screenshots/recruit_04_applicant.png",
     })
 

@@ -11,11 +11,29 @@ def write_results(report_path: str):
     results = {}
     for test in report.get("tests", []):
         name = test["nodeid"].split("::")[-1].split("[")[0]
-        outcome = test["outcome"]  # "passed", "failed", "error"
-        call = test.get("call", {})
+        outcome = test["outcome"]  # "passed", "failed", "error", "skipped"
+        call  = test.get("call", {})
+        setup = test.get("setup", {})
+
+        if outcome == "passed":
+            status  = "pass"
+            message = "OK"
+        elif outcome == "skipped":
+            # Skip reason lives in setup.longrepr for fixture-skipped tests
+            # (pytest.skip() in a fixture fires before the call phase exists).
+            raw = setup.get("longrepr") or call.get("longrepr") or "Skipped"
+            # longrepr is sometimes a 3-tuple (file, line, reason)
+            if isinstance(raw, (list, tuple)) and len(raw) >= 3:
+                raw = raw[2]
+            status  = "skip"
+            message = str(raw)[:300]
+        else:
+            status  = "fail"
+            message = str(call.get("longrepr", ""))[:300]
+
         results[name] = {
-            "status":      "pass" if outcome == "passed" else "fail",
-            "message":     str(call.get("longrepr", "OK"))[:300] if outcome != "passed" else "OK",
+            "status":      status,
+            "message":     message,
             "duration_ms": int(call.get("duration", 0) * 1000),
         }
 

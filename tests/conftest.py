@@ -1,13 +1,32 @@
 import base64
 import os
 import re
+import uuid as _uuid
 import pytest
 from playwright.sync_api import Browser
+
+
+_LIVE_DOMAIN   = "owltutors.co.uk"
+_ALLOW_LIVE_ENV = "OWL_TEST_ALLOW_LIVE"
 
 
 @pytest.fixture(scope="session")
 def base_url():
     raw = os.environ["TEST_BASE_URL"]
+    # Hard block: prevent accidental form-submission tests against production.
+    # The PHP dev gate lets form submissions through on live (jobs/users are created for real)
+    # but silently skips test-flagging and rejects cleanup — leaving real data behind.
+    # Set OWL_TEST_ALLOW_LIVE=1 only when running read-only tests (e.g. GA4) against live.
+    if _LIVE_DOMAIN in raw and not os.environ.get(_ALLOW_LIVE_ENV):
+        raise RuntimeError(
+            f"\n\n*** SAFETY BLOCK — production site detected ***\n"
+            f"TEST_BASE_URL contains '{_LIVE_DOMAIN}'.\n"
+            f"Form-submission tests create real jobs and user accounts on production;\n"
+            f"the PHP cleanup endpoint is dev-only so they cannot be deleted.\n\n"
+            f"To run READ-ONLY tests against the live site (e.g. GA4 checks only):\n"
+            f"  set {_ALLOW_LIVE_ENV}=1 and pass -k 'ga4' to restrict to those tests.\n"
+            f"Never run the full suite against the live site.\n"
+        )
     # Strip user:pass@ from the URL. Embedding credentials in the navigation URL
     # causes Chrome to include them when resolving relative paths, so fetch('/wp-admin/admin-ajax.php')
     # resolves to https://user:pass@host/... and Chrome refuses to construct the Request.
@@ -87,7 +106,7 @@ def log_ajax(page, request):
                 body = response.text()
             except Exception:
                 body = "<unreadable>"
-            responses.append(f"  [response {response.status}] {response.url} → {body[:300]}")
+            responses.append(f"  [response {response.status}] {response.url} -> {body[:300]}")
 
     def on_requestfailed(req):
         if "admin-ajax.php" in req.url:
@@ -126,6 +145,82 @@ def log_ajax(page, request):
     for msg in console_msgs:
         if any(t in msg for t in ("[console:error]", "[console:warning]")):
             print(msg)
+
+
+@pytest.fixture
+def returning_client_login(page, base_url):
+    """
+    Submits the contact form once as a fresh UUID-email client, leaving the
+    browser logged in via the auto-login ?new_client=true redirect.
+    Because this fixture shares the same function-scoped `page` as the test
+    that requests it, subsequent gotos in the test run as the authenticated
+    client — no password or magic link needed.
+    Both the setup job and any test job are flagged _ot_test_post=1 for cleanup.
+
+    The PHP auto-login (wp_set_auth_cookie inside window.location.href redirect)
+    may not propagate the cookie reliably in all environments. If the auto-login
+    didn't take, the fixture falls back to the ot_test_force_login endpoint
+    (job-mgmt.php) which sets the cookie via a normal HTTP redirect.
+    """
+    import urllib.parse
+
+    fresh_email = f"testbot.client.{_uuid.uuid4().hex[:8]}@owltutors.co.uk"
+
+    page.goto(f"{base_url}/contact-us/", wait_until="domcontentloaded")
+    page.locator("select[name='acf[field_64997c72bef9f]']").select_option(
+        label="A tutor to provide tuition services"
+    )
+    # Wait for Maths specifically — the first DOM checkbox is "7 Plus" which is
+    # hidden below the fold, so waiting for the generic selector times out.
+    page.wait_for_selector(
+        "div[data-name='subject_list'] input[type='checkbox'][value='Maths']",
+        timeout=15000,
+    )
+    page.locator(
+        "div[data-name='subject_list'] input[type='checkbox'][value='Maths']"
+    ).check()
+    page.locator("div[data-name='tuition_requirements_original'] textarea").fill(
+        "Setup submission for client login test — automated"
+    )
+    page.locator("div[data-name='timing_details_-_original'] textarea").fill("Flexible")
+    page.locator("input[name='acf[field_5edf8887fb5e7]']").fill("Owl")
+    page.locator("input[name='acf[field_5edf8899fb5e8]']").fill("TestBot")
+    page.locator("input[name='acf[field_5edf889ffb5e9]']").fill(fresh_email)
+    page.locator("input[name='acf[field_5a573454bb670]']").fill("07700900000")
+    page.locator(
+        "div[data-name='i_confirm_there_are_no_health_and_safety_issues'] input[type='checkbox']"
+    ).check()
+    _key = os.environ.get("OWL_TEST_API_KEY", "")
+    page.evaluate(
+        """(k) => {
+            document.getElementById('ot_test_post').value = '1';
+            var i = document.createElement('input');
+            i.type = 'hidden'; i.name = 'ot_test_api_key'; i.value = k;
+            document.getElementById('tutor_request_form').appendChild(i);
+        }""",
+        _key,
+    )
+    page.locator("#contact_form_submit").click()
+    page.wait_for_url(re.compile(r".*/jobs/"), timeout=90000)
+    page.wait_for_load_state("domcontentloaded")
+
+    # Verify the auto-login cookie was set. If not (e.g. returning_client path,
+    # or the window.location.href Set-Cookie didn't propagate in this environment),
+    # fall back to the ot_test_force_login endpoint which sets the cookie via a
+    # normal wp_safe_redirect so the browser stores it reliably.
+    if page.locator("a[href*='logout'], a[href*='log-out']").count() == 0:
+        force_url = (
+            f"{base_url}/?ot_test_force_login=1"
+            f"&email={urllib.parse.quote(fresh_email)}"
+            f"&key={urllib.parse.quote(_key)}"
+        )
+        page.goto(force_url, wait_until="domcontentloaded")
+        page.wait_for_selector(
+            "a[href*='logout'], a[href*='log-out']",
+            timeout=10000,
+        )
+
+    yield {"email": fresh_email}
 
 
 @pytest.fixture(scope="session")

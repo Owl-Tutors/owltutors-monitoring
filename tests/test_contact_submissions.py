@@ -289,8 +289,13 @@ def test_contact_form_requested_tutors(page: Page, base_url: str, cleanup_after)
     # so the select itself — not the outer wrapper — is hidden.
     expect(page.locator("div[data-name='contact_form_type'] select")).to_be_hidden()
 
-    # Wait for subject AJAX to settle, then select one subject
-    page.wait_for_load_state("networkidle")
+    # Wait for subject checkboxes to load via AJAX before selecting one.
+    # networkidle is unreliable here — tutor profile requests keep the network
+    # busy indefinitely on local. Waiting for the checkbox is the real condition.
+    page.wait_for_selector(
+        "div[data-name='subject_list'] input[type='checkbox']",
+        timeout=15000,
+    )
     _select_first_subject(page)
 
     # The hidden field should be populated from sessionStorage (JS Cloudflare fix)
@@ -381,37 +386,33 @@ def test_new_client_banner(page: Page, base_url: str, cleanup_after):
 # Contact form — returning (logged-in) client
 # ─────────────────────────────────────────────────────────────────────────────
 
-def test_contact_form_returning_client(page: Page, base_url: str, client_credentials, cleanup_after):
+
+def test_contact_form_returning_client(
+    page: Page, base_url: str, returning_client_login, cleanup_after
+):
     """
-    A logged-in (returning) client submitting the contact form sees the
-    client info fields hidden (pre-filled from their account). The job is
-    created, linked to the existing account, and redirects to /jobs/.
+    A logged-in (returning) client submitting the contact form sees personal
+    info fields hidden (pre-filled from their account). The job is created,
+    linked to the existing account, and redirects to /jobs/.
+
+    Setup: returning_client_login submits once to create the account and
+    auto-log the client in — no static TEST_CLIENT_EMAIL/PASSWORD needed.
+    The same page instance is reused, so the second submission below runs
+    as that already-authenticated client.
+
     Covers P2: logged-in returning client submitting a job.
     """
-    # Log in as the returning test client
-    page.goto(f"{base_url}{LOGIN_URL}")
-    expect(page.locator("#ot_login")).to_be_visible()
-    page.wait_for_load_state("networkidle")
-    page.locator("#ot_login_name").fill(client_credentials["email"])
-    page.locator("#pw1").fill(client_credentials["password"])
-    page.locator("#login_submit").click()
-    page.wait_for_url(lambda url: LOGIN_URL not in url, timeout=30000)
-
-    page.goto(f"{base_url}{CONTACT_URL}")
+    page.goto(f"{base_url}{CONTACT_URL}", wait_until="domcontentloaded")
     expect(page.locator("#tutor_request_form")).to_be_visible()
     page.wait_for_load_state("networkidle")
 
-    # Client info fields are hidden for logged-in clients (contact form JS/PHP
-    # suppresses them when a session exists). Verify first name and email hidden.
+    # Personal info fields are hidden for logged-in clients — PHP/JS suppresses
+    # them when a WordPress session exists.
     expect(page.locator("input[name='acf[field_5edf8887fb5e7]']")).to_be_hidden()
     expect(page.locator("input[name='acf[field_5edf889ffb5e9]']")).to_be_hidden()
 
     page.locator("select[name='acf[field_64997c72bef9f]']").select_option(
         label="A tutor to provide tuition services"
-    )
-    page.wait_for_selector(
-        "div[data-name='subject_list'] input[type='checkbox']",
-        timeout=10000,
     )
     _select_first_subject(page)
     page.locator("div[data-name='tuition_requirements_original'] textarea").fill(
@@ -425,11 +426,116 @@ def test_contact_form_returning_client(page: Page, base_url: str, client_credent
     page.wait_for_url(re.compile(r".*/jobs/"), timeout=90000)
 
     job_id = re.search(r"/jobs/(\d+)/", page.url).group(1)
-    print(f"\n[result] returning client job_id={job_id}")
+    print(f"\n[result] returning client job_id={job_id} (email: {returning_client_login['email']})")
     os.makedirs("screenshots", exist_ok=True)
     page.screenshot(path="screenshots/job_returning_client.png")
     write_detail("test_contact_form_returning_client", {
         "message": f"Returning client job submitted and redirected to job {job_id}",
         "job_id": job_id,
         "screenshot": "screenshots/job_returning_client.png",
+    })
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Stage 1 — quality check failure
+# ─────────────────────────────────────────────────────────────────────────────
+
+def test_stage1_quality_check_fail(page: Page, base_url: str, cleanup_after):
+    """
+    Submitting a job with very short tuition requirements (< 25 chars) passes
+    ACF frontend validation (which only checks non-empty) but fails the PHP
+    quality check in ot_system_check_submitted_job_quality().  The job is
+    created at 'Stage 1 - Approved but not ready' and the job page shows the
+    warning alert: 'Your enquiry requires more information to be processed'.
+    Covers: 'Stage 1 path — quality check fails'.
+    """
+    page.goto(f"{base_url}{CONTACT_URL}")
+    expect(page.locator("#tutor_request_form")).to_be_visible()
+
+    page.locator("select[name='acf[field_64997c72bef9f]']").select_option(
+        label="A tutor to provide tuition services"
+    )
+    page.wait_for_selector(
+        "div[data-name='subject_list'] input[type='checkbox']",
+        timeout=10000,
+    )
+    _select_first_subject(page)
+
+    # Requirements deliberately short (< 25 chars) — passes ACF required, fails PHP check
+    page.locator("div[data-name='tuition_requirements_original'] textarea").fill(
+        "Too short"
+    )
+    page.locator("div[data-name='timing_details_-_original'] textarea").fill("Flexible")
+
+    _fill_client_info(page)
+    _check_hs(page)
+    _flag_test_post(page)
+
+    page.locator("#contact_form_submit").click()
+    page.wait_for_url(re.compile(r".*/jobs/"), timeout=90000)
+
+    job_id = re.search(r"/jobs/(\d+)/", page.url).group(1)
+    print(f"\n[result] stage1 job_id={job_id}")
+
+    # Stage 1 alert: warning box with the 'more information' message
+    stage1_alert = page.locator(".alert-warning")
+    expect(stage1_alert).to_be_visible(timeout=10000)
+    assert "more information" in (stage1_alert.text_content() or "").lower(), (
+        f"Expected Stage 1 warning text, got: {stage1_alert.text_content()!r}"
+    )
+
+    os.makedirs("screenshots", exist_ok=True)
+    page.screenshot(path="screenshots/job_stage1_quality_fail.png")
+    write_detail("test_stage1_quality_check_fail", {
+        "message": f"Short requirements triggered Stage 1 alert on job {job_id}",
+        "job_id": job_id,
+        "screenshot": "screenshots/job_stage1_quality_fail.png",
+    })
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Health and safety unchecked — job still creates
+# ─────────────────────────────────────────────────────────────────────────────
+
+def test_health_safety_unchecked_job_creates(page: Page, base_url: str, cleanup_after):
+    """
+    Submitting the contact form without ticking the health and safety
+    confirmation checkbox does not block job creation — the job is created
+    and the browser redirects to /jobs/.  The H&S flag appends a note to
+    notes_on_status (verified via the admin), but this smoke test just
+    confirms the submission itself succeeds.
+    Covers: 'Health and safety flag unchecked appends note to notes_on_status'.
+    """
+    page.goto(f"{base_url}{CONTACT_URL}")
+    expect(page.locator("#tutor_request_form")).to_be_visible()
+
+    page.locator("select[name='acf[field_64997c72bef9f]']").select_option(
+        label="A tutor to provide tuition services"
+    )
+    page.wait_for_selector(
+        "div[data-name='subject_list'] input[type='checkbox']",
+        timeout=10000,
+    )
+    _select_first_subject(page)
+    page.locator("div[data-name='tuition_requirements_original'] textarea").fill(
+        "Health and safety test — automated smoke test submission"
+    )
+    page.locator("div[data-name='timing_details_-_original'] textarea").fill("Flexible")
+
+    _fill_client_info(page)
+    # Deliberately do NOT call _check_hs(page) — H&S box left unticked
+    _flag_test_post(page)
+
+    page.locator("#contact_form_submit").click()
+    page.wait_for_url(re.compile(r".*/jobs/"), timeout=90000)
+
+    job_id = re.search(r"/jobs/(\d+)/", page.url).group(1)
+    print(f"\n[result] h&s unchecked job_id={job_id}")
+
+    os.makedirs("screenshots", exist_ok=True)
+    page.screenshot(path="screenshots/job_hs_unchecked.png")
+    write_detail("test_health_safety_unchecked_job_creates", {
+        "message": f"H&S unchecked: job still created at {job_id}; notes_on_status note must be verified in WP admin",
+        "job_id": job_id,
+        "screenshot": "screenshots/job_hs_unchecked.png",
     })

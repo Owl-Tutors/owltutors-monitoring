@@ -602,4 +602,104 @@ def test_tutor_full_application_flow(page: Page, base_url: str, cleanup_after):
     })
 
 
+# ─────────────────────────────────────────────────────────────────────────────
+# No-auth paths — P3/P4
+# ─────────────────────────────────────────────────────────────────────────────
+
+def test_logged_out_application_page_has_fields(page: Page, base_url: str):
+    """
+    A logged-out visitor on /tutor-section/application/ sees the registration
+    form with email and password inputs ready to fill — verifies the complete
+    form is functional, not just the wrapper element.
+    Covers P3: 'Logged-out user visiting application page sees registration form'.
+    """
+    page.goto(f"{base_url}{APPLICATION_URL}")
+    expect(page.locator("#signupform")).to_be_visible()
+    expect(page.locator("#email")).to_be_visible()
+    expect(page.locator("#pw1")).to_be_visible()
+    # Submit button — rendered as <button type="button" id="applicant_register">
+    # (JS intercepts the click to run reCAPTCHA before submitting)
+    expect(page.locator("#applicant_register")).to_be_visible()
+
+    os.makedirs("screenshots", exist_ok=True)
+    page.screenshot(path="screenshots/recruit_logged_out_form.png")
+    write_detail("test_logged_out_application_page_has_fields", {
+        "message": "Logged-out visitor sees registration form with email and password fields",
+        "screenshot": "screenshots/recruit_logged_out_form.png",
+    })
+
+
+def test_email_already_registered_error(page: Page, base_url: str, preapplicant_credentials):
+    """
+    Submitting the registration form with an email address that already exists
+    in WordPress shows the 'An account exists with this email address' error.
+    Uses the preapplicant_credentials session fixture — that email is guaranteed
+    to exist without needing a static TEST_CLIENT_EMAIL on every environment.
+    On error, Login.php redirects back to the application page with
+    ?register-errors=email_exists and renders <p class="logregpw error">.
+    Covers P4: 'Email already registered error shown on registration form'.
+    """
+    existing_email = preapplicant_credentials["email"]
+
+    page.goto(f"{base_url}{APPLICATION_URL}", wait_until="domcontentloaded")
+    expect(page.locator("#signupform")).to_be_visible()
+    page.locator("#email").fill(existing_email)
+    page.locator("#pw1").fill("AnyPassword123!")
+    page.evaluate("document.getElementById('signupform').submit()")
+
+    # Login.php appends ?register-errors=email_exists and redirects to the referer
+    # (the application page). The shortcode renders errors as <p class="logregpw error">.
+    page.wait_for_url(re.compile(r".*/tutor-section/application/"), timeout=15000)
+    page.wait_for_load_state("domcontentloaded")
+    page.wait_for_selector("p.error, p.logregpw", timeout=10000)
+    error_text = page.locator("p.error, p.logregpw").first.text_content() or ""
+    assert "account exists" in error_text.lower() or "already" in error_text.lower(), (
+        f"Expected duplicate-email error message, got: {error_text!r}"
+    )
+
+    os.makedirs("screenshots", exist_ok=True)
+    page.screenshot(path="screenshots/recruit_email_exists_error.png")
+    write_detail("test_email_already_registered_error", {
+        "message": "Duplicate email shows 'account exists' error on registration form",
+        "screenshot": "screenshots/recruit_email_exists_error.png",
+    })
+
+
+def test_client_role_on_application_page(
+    page: Page, base_url: str, returning_client_login
+):
+    """
+    A logged-in client visiting /tutor-section/application/ does NOT see the
+    tutor registration form — instead the plugin renders the role-correction
+    template (includes/recruitment/client-to-preapplicant.php) which shows
+    "Oops! … accidentally registered as a client" and a button to convert their
+    account role to pre-applicant.
+    Uses returning_client_login (conftest) — no static TEST_CLIENT_EMAIL/PASSWORD needed.
+    Covers P4: 'Client user landing on application page sees role-correction message'.
+    """
+    # returning_client_login submitted the contact form and left the page logged in.
+    # Navigate to the application page in the same authenticated browser session.
+    page.goto(f"{base_url}{APPLICATION_URL}", wait_until="domcontentloaded")
+
+    # The tutor registration form (#signupform) must NOT be visible — the plugin
+    # detects the client role and renders client-to-preapplicant.php instead.
+    expect(page.locator("#signupform")).to_be_hidden()
+
+    # The role-correction template (client-to-preapplicant.php) contains:
+    #   "accidentally registered as a client"
+    # Verify this text is in the page so we know the client-facing correction
+    # path is rendering, not the generic registration form.
+    html = page.content()
+    assert "accidentally registered as a client" in html.lower(), (
+        f"Expected client role-correction message in page HTML. "
+        f"URL: {page.url!r}. "
+        f"entry-content: {(page.locator('.entry-content, article.page, main').first.inner_text() or '')[:400]!r}"
+    )
+
+    os.makedirs("screenshots", exist_ok=True)
+    page.screenshot(path="screenshots/recruit_client_on_app_page.png")
+    write_detail("test_client_role_on_application_page", {
+        "message": "Logged-in client sees 'already signed in' on application page; registration form hidden",
+        "screenshot": "screenshots/recruit_client_on_app_page.png",
+    })
 

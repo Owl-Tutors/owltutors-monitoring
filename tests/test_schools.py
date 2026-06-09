@@ -1,3 +1,4 @@
+import json
 import os
 from playwright.sync_api import Page, expect
 from utils.details import write_detail
@@ -73,4 +74,83 @@ def test_school_profile_loads(page: Page, base_url: str):
     write_detail("test_school_profile_loads", {
         "message": "Westminster school profile loaded with overview section visible",
         "screenshot": "screenshots/school_profile.png",
+    })
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# School profile — JSON-LD
+# ─────────────────────────────────────────────────────────────────────────────
+
+def test_school_profile_json_ld_present(page: Page, base_url: str):
+    """
+    A school profile page renders at least one valid JSON-LD block with
+    schema.org context.  Checks that content-schema.php is outputting
+    structured data correctly for the 'schools' CPT.
+    Covers P3: 'JSON-LD EducationalOccupationalProgram on profile'.
+    Note: once EducationalOccupationalProgram is added to ot_build_school_schema_payload,
+    update this test to assert that @type value specifically.
+    """
+    page.goto(f"{base_url}{SCHOOL_PROFILE_URL}")
+    page.wait_for_load_state("domcontentloaded")
+
+    ld_json_blocks = page.locator("script[type='application/ld+json']")
+    assert ld_json_blocks.count() > 0, "No JSON-LD script tags found on school profile page"
+
+    # Parse each block and find at least one with schema.org @context
+    found_schema = False
+    errors = []
+    for i in range(ld_json_blocks.count()):
+        raw = ld_json_blocks.nth(i).inner_html()
+        try:
+            data = json.loads(raw)
+            ctx = data.get("@context", "")
+            if "schema.org" in ctx:
+                found_schema = True
+                break
+        except json.JSONDecodeError as e:
+            errors.append(f"Block {i}: {e}")
+
+    assert found_schema, (
+        f"No JSON-LD block with schema.org @context found on {SCHOOL_PROFILE_URL}. "
+        f"Parse errors: {errors}"
+    )
+
+    os.makedirs("screenshots", exist_ok=True)
+    page.screenshot(path="screenshots/school_json_ld.png")
+    write_detail("test_school_profile_json_ld_present", {
+        "message": "School profile has valid JSON-LD with schema.org context",
+        "screenshot": "screenshots/school_json_ld.png",
+    })
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# School profile — linked papers
+# ─────────────────────────────────────────────────────────────────────────────
+
+def test_school_profile_linked_papers(page: Page, base_url: str):
+    """
+    Westminster school profile renders an exam papers section (the
+    #entrance_papers_for_westminster section) containing at least one paper
+    card.  single-schools.php outputs this section when ot_get_school_papers()
+    returns results for the school.
+    Covers P3: 'School-linked papers rendered on profile page'.
+    """
+    page.goto(f"{base_url}{SCHOOL_PROFILE_URL}")
+    page.wait_for_load_state("networkidle", timeout=60000)
+
+    # The section ID is built from the school slug: entrance_papers_for_{slug}
+    papers_section = page.locator("section[id^='entrance_papers_for_']")
+    expect(papers_section).to_be_visible(timeout=15000)
+
+    # At least one paper card must render inside the section
+    paper_cards = papers_section.locator(".paper-card, .ot-paper-card, article")
+    assert paper_cards.count() > 0, (
+        "No paper cards found inside the school entrance papers section on Westminster profile"
+    )
+
+    os.makedirs("screenshots", exist_ok=True)
+    page.screenshot(path="screenshots/school_linked_papers.png")
+    write_detail("test_school_profile_linked_papers", {
+        "message": f"Westminster profile shows {paper_cards.count()} paper card(s) in entrance papers section",
+        "screenshot": "screenshots/school_linked_papers.png",
     })

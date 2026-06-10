@@ -534,8 +534,11 @@ def magic_link_params(base_url, api_key, meet_now_tutor_id):
 def preapplicant_credentials(browser, base_url, api_key):
     """Create a fresh pre-applicant for this test session via the registration form.
 
-    Uses a UUID-based email flagged with _ot_test_user=1 so the cleanup endpoint
-    deletes the account at the end of any run that calls cleanup_after.
+    Does NOT set _ot_test_user=1. This is a session fixture — flagging the user
+    would cause cleanup_after (used by per-test fixtures like test_tutor_registration_submits)
+    to delete the account mid-session, breaking all tests that depend on this fixture.
+    UUID-based emails accumulate on the dev site; clean up old testbot.preapp.* accounts
+    manually via WP admin when needed.
     No TEST_PREAPPLICANT_EMAIL/PASSWORD env vars required.
     """
     import uuid as _uuid
@@ -549,13 +552,6 @@ def preapplicant_credentials(browser, base_url, api_key):
     reg_page.wait_for_selector("#signupform", state="visible", timeout=10000)
     reg_page.locator("#email").fill(email)
     reg_page.locator("#pw1").fill(password)
-    reg_page.evaluate(
-        """(k) => {
-            document.getElementById('ot_test_user').value = '1';
-            document.getElementById('ot_test_api_key_reg').value = k;
-        }""",
-        api_key,
-    )
     reg_page.evaluate("document.getElementById('signupform').submit()")
     reg_page.wait_for_url(re.compile(r".*/tutor-section/application/"), timeout=30000)
     ctx.close()

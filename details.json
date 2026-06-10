@@ -28,19 +28,6 @@
     "message": "Jobs board checkbox hidden on plain /contact-us/ for logged-out visitor",
     "screenshot": "screenshots/jobs_board_hidden.png"
   },
-  "test_jobs_board_checkbox_visible_on_requested_tutors": {
-    "message": "Jobs board checkbox visible on requested_tutors contact form",
-    "screenshot": "screenshots/jobs_board_visible.png"
-  },
-  "test_requested_tutor_cart": {
-    "message": "Tutor shortlist populated with 3 tutors and submit link updated",
-    "tutor_ids": [
-      "27478",
-      "33146",
-      "34831"
-    ],
-    "screenshot": "screenshots/tutor_cart.png"
-  },
   "test_contact_form_tutor_submission": {
     "message": "Tutor enquiry submitted and redirected to job 200090",
     "job_id": "200090",
@@ -51,19 +38,14 @@
     "job_id": "200092",
     "screenshot": "screenshots/job_something_else.png"
   },
-  "test_contact_form_requested_tutors": {
-    "message": "Requested tutors flow submitted and redirected to job 200094",
-    "job_id": "200094",
-    "tutor_ids": [
-      "27478",
-      "33146",
-      "34831"
-    ],
-    "screenshot": "screenshots/job_requested_tutors.png"
-  },
   "test_new_client_banner": {
-    "message": "New client banner visible at https://otdev1602.wpengine.com/jobs/200096/?new_client=true&generate_lead=true&c=1873056261&job_status=1&job_create_type=regular",
+    "message": "New client banner visible at https://otdev1602.wpengine.com/jobs/200094/?new_client=true&generate_lead=true&c=1873056261&job_status=1&job_create_type=regular",
     "screenshot": "screenshots/new_client_banner.png"
+  },
+  "test_contact_form_returning_client": {
+    "message": "Returning client job submitted and redirected to job 200098",
+    "job_id": "200098",
+    "screenshot": "screenshots/job_returning_client.png"
   },
   "test_health_safety_unchecked_job_creates": {
     "message": "H&S unchecked: job still created at 200102; notes_on_status note must be verified in WP admin",
@@ -106,36 +88,6 @@
     "message": "Homepage loaded with hero section visible",
     "screenshot": "screenshots/homepage.png"
   },
-  "test_stage3_job_renders_applicant_cards": {
-    "message": "Stage 3 job 200104 rendered applicant cards and sort dropdown",
-    "job_id": "200104",
-    "screenshot": "screenshots/stage3_applicant_cards.png"
-  },
-  "test_connect_with_tutor_triggers_modal": {
-    "message": "ot_job_identify_modal fired for job 200104 / tutor 20049",
-    "job_id": "200104",
-    "screenshot": "screenshots/connect_tutor_modal.png"
-  },
-  "test_accept_terms_modal_renders": {
-    "message": "Stage 3 modal rendered with content for job 200104",
-    "job_id": "200104",
-    "screenshot": "screenshots/accept_terms_modal.png"
-  },
-  "test_stripe_return_auto_triggers_modal": {
-    "message": "Stripe-return params auto-opened modal on job 200104",
-    "job_id": "200104",
-    "screenshot": "screenshots/stripe_return_modal.png"
-  },
-  "test_accept_terms_advances_to_stage4": {
-    "message": "Job 200104 advanced to Stage 4 after accepting terms",
-    "job_id": "200104",
-    "screenshot": "screenshots/stage4_from_accept_terms.png"
-  },
-  "test_magic_link_auto_login": {
-    "message": "Magic link authenticated for job 200106",
-    "job_id": "200106",
-    "screenshot": "screenshots/magic_link_login.png"
-  },
   "test_meet_now_form_auto_selects_type": {
     "message": "Meet-now form state correct: type hidden, home delivery disabled, jobs board hidden",
     "screenshot": "screenshots/meet_now_form_state.png"
@@ -148,14 +100,6 @@
   "test_papers_load": {
     "message": "Exam papers catalogue loaded with paper cards visible",
     "screenshot": "screenshots/papers_load.png"
-  },
-  "test_papers_ajax_filter": {
-    "message": "Exam papers AJAX filter returned results for selected subject",
-    "screenshot": "screenshots/papers_ajax_filter.png"
-  },
-  "test_papers_load_more": {
-    "message": "Load More clicked \u2014 6 initial papers expanded to 107, scrolled to newly loaded content",
-    "screenshot": "screenshots/papers_load_more.png"
   },
   "test_tutor_registration_page_loads": {
     "message": "Tutor registration form visible at /tutor-section/application/",
@@ -177,17 +121,9 @@
     "message": "School entrance guide listing page loaded with filter form visible",
     "screenshot": "screenshots/school_listing_page.png"
   },
-  "test_school_text_search_ajax": {
-    "message": "School AJAX text search returned results for 'Westminster'",
-    "screenshot": "screenshots/school_text_search.png"
-  },
   "test_school_filter_form_returns_results": {
     "message": "School filter form returned results for 11 Plus entry point",
     "screenshot": "screenshots/school_filter_results.png"
-  },
-  "test_school_profile_loads": {
-    "message": "Westminster school profile loaded with overview section visible",
-    "screenshot": "screenshots/school_profile.png"
   },
   "test_school_profile_json_ld_present": {
     "message": "School profile has valid JSON-LD with schema.org context",
@@ -201,21 +137,9 @@
     "message": "Tutor search page loaded with form visible",
     "screenshot": "screenshots/tutor_search_page.png"
   },
-  "test_tutor_search_returns_results": {
-    "message": "Tutor search returned results via AJAX",
-    "screenshot": "screenshots/tutor_search_results.png"
-  },
-  "test_tutor_profile_loads": {
-    "message": "Tutor profile page loaded successfully",
-    "screenshot": "screenshots/tutor_profile.png"
-  },
   "test_subject_with_levels_reveals_level_dropdown": {
     "message": "Level dropdown appeared after selecting English",
     "screenshot": "screenshots/search_level_dropdown.png"
-  },
-  "test_school_entrance_subject_reveals_school_filter": {
-    "message": "School filter appeared and school selected after choosing 11 Plus",
-    "screenshot": "screenshots/search_school_filter.png"
   },
   "test_home_delivery_reveals_location_filter": {
     "message": "Location filter appeared after selecting Home delivery",
@@ -228,10 +152,6 @@
   "test_availability_grid_appears_and_accepts_input": {
     "message": "Availability grid appeared and Monday morning + Friday evening selected",
     "screenshot": "screenshots/search_availability.png"
-  },
-  "test_full_search_subject_level_home_location": {
-    "message": "Full pipeline search ran: English, Home delivery, Balham",
-    "screenshot": "screenshots/search_full_pipeline.png"
   },
   "test_tutor_dashboard_loads": {
     "message": "Tutor dashboard loaded with correct header and container",

@@ -48,7 +48,7 @@ def create_test_job(
         timeout=30,
     )
     resp.raise_for_status()
-    data = json.loads(resp.content.decode("utf-8-sig"))
+    data = json.loads(resp.content.decode("utf-8-sig").lstrip('﻿'))
     if not data.get("success"):
         raise RuntimeError(
             f"owl_create_test_job failed (stage={stage}): "

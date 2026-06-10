@@ -8,8 +8,8 @@
     "screenshot": "screenshots/client_dashboard.png"
   },
   "test_contact_form_callback_submission": {
-    "message": "Callback enquiry submitted and redirected to job 200094",
-    "job_id": "200094",
+    "message": "Callback enquiry submitted and redirected to job 200088",
+    "job_id": "200088",
     "screenshot": "screenshots/job_callback_submission.png"
   },
   "test_contact_form_renders": {
@@ -35,44 +35,39 @@
   "test_requested_tutor_cart": {
     "message": "Tutor shortlist populated with 3 tutors and submit link updated",
     "tutor_ids": [
-      "386",
-      "27584",
-      "252"
+      "27478",
+      "33146",
+      "34831"
     ],
     "screenshot": "screenshots/tutor_cart.png"
   },
   "test_contact_form_tutor_submission": {
-    "message": "Tutor enquiry submitted and redirected to job 200097",
-    "job_id": "200097",
+    "message": "Tutor enquiry submitted and redirected to job 200090",
+    "job_id": "200090",
     "screenshot": "screenshots/job_tutor_submission.png"
   },
   "test_contact_form_something_else": {
-    "message": "'Something else' enquiry submitted and redirected to job 200099",
-    "job_id": "200099",
+    "message": "'Something else' enquiry submitted and redirected to job 200092",
+    "job_id": "200092",
     "screenshot": "screenshots/job_something_else.png"
   },
   "test_contact_form_requested_tutors": {
-    "message": "Requested tutors flow submitted and redirected to job 200101",
-    "job_id": "200101",
+    "message": "Requested tutors flow submitted and redirected to job 200094",
+    "job_id": "200094",
     "tutor_ids": [
-      "386",
-      "27584",
-      "252"
+      "27478",
+      "33146",
+      "34831"
     ],
     "screenshot": "screenshots/job_requested_tutors.png"
   },
   "test_new_client_banner": {
-    "message": "New client banner visible at https://otdev1602.wpengine.com/jobs/200103/?new_client=true&generate_lead=true&c=258153440&job_status=1&job_create_type=regular",
+    "message": "New client banner visible at https://otdev1602.wpengine.com/jobs/200096/?new_client=true&generate_lead=true&c=1873056261&job_status=1&job_create_type=regular",
     "screenshot": "screenshots/new_client_banner.png"
   },
-  "test_contact_form_returning_client": {
-    "message": "Returning client job submitted and redirected to job 200107",
-    "job_id": "200107",
-    "screenshot": "screenshots/job_returning_client.png"
-  },
   "test_health_safety_unchecked_job_creates": {
-    "message": "H&S unchecked: job still created at 200111; notes_on_status note must be verified in WP admin",
-    "job_id": "200111",
+    "message": "H&S unchecked: job still created at 200102; notes_on_status note must be verified in WP admin",
+    "job_id": "200102",
     "screenshot": "screenshots/job_hs_unchecked.png"
   },
   "test_blog_listing_loads": {
@@ -112,38 +107,33 @@
     "screenshot": "screenshots/homepage.png"
   },
   "test_stage3_job_renders_applicant_cards": {
-    "message": "Stage 3 job 200113 rendered applicant cards and sort dropdown",
-    "job_id": "200113",
+    "message": "Stage 3 job 200104 rendered applicant cards and sort dropdown",
+    "job_id": "200104",
     "screenshot": "screenshots/stage3_applicant_cards.png"
   },
   "test_connect_with_tutor_triggers_modal": {
-    "message": "ot_job_identify_modal fired for job 200113 / tutor 20049",
-    "job_id": "200113",
+    "message": "ot_job_identify_modal fired for job 200104 / tutor 20049",
+    "job_id": "200104",
     "screenshot": "screenshots/connect_tutor_modal.png"
   },
   "test_accept_terms_modal_renders": {
-    "message": "Stage 3 modal rendered with content for job 200113",
-    "job_id": "200113",
+    "message": "Stage 3 modal rendered with content for job 200104",
+    "job_id": "200104",
     "screenshot": "screenshots/accept_terms_modal.png"
   },
-  "test_logged_out_stage3_sees_login_modal": {
-    "message": "Logged-out user logged in via inline form and reached Stage 3 job 200113",
-    "job_id": "200113",
-    "screenshot": "screenshots/stage3_login_modal.png"
-  },
   "test_stripe_return_auto_triggers_modal": {
-    "message": "Stripe-return params auto-opened modal on job 200113",
-    "job_id": "200113",
+    "message": "Stripe-return params auto-opened modal on job 200104",
+    "job_id": "200104",
     "screenshot": "screenshots/stripe_return_modal.png"
   },
   "test_accept_terms_advances_to_stage4": {
-    "message": "Job 200113 advanced to Stage 4 after accepting terms",
-    "job_id": "200113",
+    "message": "Job 200104 advanced to Stage 4 after accepting terms",
+    "job_id": "200104",
     "screenshot": "screenshots/stage4_from_accept_terms.png"
   },
   "test_magic_link_auto_login": {
-    "message": "Magic link authenticated for job 200115",
-    "job_id": "200115",
+    "message": "Magic link authenticated for job 200106",
+    "job_id": "200106",
     "screenshot": "screenshots/magic_link_login.png"
   },
   "test_meet_now_form_auto_selects_type": {
@@ -151,8 +141,8 @@
     "screenshot": "screenshots/meet_now_form_state.png"
   },
   "test_meet_now_submission": {
-    "message": "Meet-now form submitted, redirected to job 200117",
-    "job_id": "200117",
+    "message": "Meet-now form submitted, redirected to job 200108",
+    "job_id": "200108",
     "screenshot": "screenshots/meet_now_submission.png"
   },
   "test_papers_load": {

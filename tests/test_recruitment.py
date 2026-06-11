@@ -563,6 +563,16 @@ def test_tutor_full_application_flow(page: Page, base_url: str, cleanup_after):
     )
     _save_section(page, "interviewBooking")
 
+    # Reload fresh so PHP recalculates $overall_score and $show_form_location
+    # from stored meta — avoids stale ?updated=true params and confirms all
+    # sections scored as complete before asserting #isappreadyForm.
+    page.goto(f"{base_url}{APPLICATION_URL}", wait_until="domcontentloaded")
+    page.wait_for_load_state("networkidle")
+    show_location = page.locator("#show_form_location").get_attribute("value") or ""
+    progress      = page.locator("#progress_score").get_attribute("value") or ""
+    print(f"\n[recruit] show_form_location={show_location!r}  progress_score={progress!r}")
+    page.screenshot(path="screenshots/recruit_03b_post_all_saves.png")
+
     # Screenshot: all sections filled, submit button should now be visible
     page.screenshot(path="screenshots/recruit_03_complete.png")
 
@@ -665,6 +675,154 @@ def test_email_already_registered_error(page: Page, base_url: str, preapplicant_
     })
 
 
+# ─────────────────────────────────────────────────────────────────────────────
+# Batch B — pre-applicant form navigation + applicant profile sections (P3)
+# ─────────────────────────────────────────────────────────────────────────────
+
+def test_preapplicant_section_nav_forward_back(
+    page: Page, base_url: str, preapplicant_credentials
+):
+    """
+    The application form's 'Previous' button navigates back to the prior
+    section without losing data already entered and saved.
+    Flow: fill personalDetails → Save & continue (moves to supportingDocuments)
+    → click Previous → verify first_names field still has the saved value.
+    Uses preapplicant_credentials (session fixture, self-creating — no env vars).
+    Covers P3: 'Form section nav (forward/back) without data loss'.
+    """
+    page.goto(f"{base_url}{LOGIN_URL}")
+    expect(page.locator("#ot_login")).to_be_visible()
+    page.wait_for_load_state("networkidle")
+    page.locator("#ot_login_name").fill(preapplicant_credentials["email"])
+    page.locator("#pw1").fill(preapplicant_credentials["password"])
+    page.locator("#login_submit").click()
+    page.wait_for_url(re.compile(r".*/tutor-section/application/"), timeout=30000)
+
+    page.goto(f"{base_url}{APPLICATION_URL}")
+    _wait_for_section(page, "personalDetails")
+
+    # Fill first name with a recognisable value
+    test_name = "NavTest"
+    name_input = page.locator("form#personalDetailsForm div[data-name='first_names'] input")
+    name_input.fill(test_name)
+
+    # Save & continue — moves to supportingDocuments
+    _save_section(page, "personalDetails")
+    _wait_for_section(page, "supportingDocuments")
+
+    # Click Previous to go back
+    page.locator(
+        "div#supportingDocuments form input[name='formDirection'][value='Previous']"
+    ).click()
+    page.wait_for_load_state("networkidle", timeout=30000)
+    _wait_for_section(page, "personalDetails")
+
+    # The saved first name must still be present
+    saved_value = page.locator(
+        "form#personalDetailsForm div[data-name='first_names'] input"
+    ).input_value()
+    assert saved_value == test_name, (
+        f"Expected first_names='{test_name}' after back-navigation, got: {saved_value!r}"
+    )
+
+    os.makedirs("screenshots", exist_ok=True)
+    page.screenshot(path="screenshots/recruit_section_nav.png")
+    write_detail("test_preapplicant_section_nav_forward_back", {
+        "message": "Section nav: save → forward → back preserves personalDetails data",
+        "screenshot": "screenshots/recruit_section_nav.png",
+    })
+
+
+def test_preapplicant_profile_text_renders_and_saves(
+    page: Page, base_url: str, applicant_credentials
+):
+    """
+    The profile text section (#profile) of the applicant form at
+    /tutor-section/application/ renders form#personalDetailsForm with a
+    text area for the tutor's public profile bio. Filling and saving the
+    section redirects to the next section (or stays on profile if incomplete).
+    NOTE: this is the APPLICANT form (app-form.php #profile section), not the
+    pre-applicant form — requires TEST_APPLICANT_EMAIL/PASSWORD.
+    Covers P3: 'Profile text section renders and saves'.
+    """
+    page.goto(f"{base_url}{LOGIN_URL}")
+    expect(page.locator("#ot_login")).to_be_visible()
+    page.wait_for_load_state("networkidle")
+    page.locator("#ot_login_name").fill(applicant_credentials["email"])
+    page.locator("#pw1").fill(applicant_credentials["password"])
+    page.locator("#login_submit").click()
+    page.wait_for_url(re.compile(r".*/tutor-section/application/"), timeout=30000)
+
+    page.goto(f"{base_url}{APPLICATION_URL}")
+    page.wait_for_load_state("networkidle")
+
+    # Activate the profile section via JS (same technique as _show_section)
+    _show_section(page, "profile")
+
+    # The profile section renders form#personalDetailsForm with a bio textarea
+    expect(page.locator("div#profile form#personalDetailsForm")).to_be_visible(timeout=5000)
+
+    # Fill a short bio and save
+    bio_area = page.locator(
+        "div#profile form#personalDetailsForm div[data-name='profile_text'] textarea,"
+        "div#profile form#personalDetailsForm textarea"
+    ).first
+    expect(bio_area).to_be_visible(timeout=5000)
+    bio_area.fill("Experienced tutor. Automated test.")
+    _save_section(page, "profile")
+
+    os.makedirs("screenshots", exist_ok=True)
+    page.screenshot(path="screenshots/recruit_profile_text.png")
+    write_detail("test_preapplicant_profile_text_renders_and_saves", {
+        "message": "Applicant profile text section rendered and saved",
+        "screenshot": "screenshots/recruit_profile_text.png",
+    })
+
+
+def test_preapplicant_profile_photo_renders(
+    page: Page, base_url: str, applicant_credentials
+):
+    """
+    The profile photo section (#profile_picture) of the applicant form at
+    /tutor-section/application/ renders form#profilePicForm with a file upload
+    area for the tutor's public-facing photo.
+    NOTE: this is the APPLICANT form (app-form.php #profile_picture section),
+    not the pre-applicant form — requires TEST_APPLICANT_EMAIL/PASSWORD.
+    Covers P3: 'Profile photo section renders'.
+    """
+    page.goto(f"{base_url}{LOGIN_URL}")
+    expect(page.locator("#ot_login")).to_be_visible()
+    page.wait_for_load_state("networkidle")
+    page.locator("#ot_login_name").fill(applicant_credentials["email"])
+    page.locator("#pw1").fill(applicant_credentials["password"])
+    page.locator("#login_submit").click()
+    page.wait_for_url(re.compile(r".*/tutor-section/application/"), timeout=30000)
+
+    page.goto(f"{base_url}{APPLICATION_URL}")
+    page.wait_for_load_state("networkidle")
+
+    _show_section(page, "profile_picture")
+
+    # The profile photo section renders form#profilePicForm
+    expect(page.locator("div#profile_picture form#profilePicForm")).to_be_visible(timeout=5000)
+    # An upload area or existing photo should be present
+    upload_area = page.locator(
+        "div#profile_picture form#profilePicForm .acf-image-uploader,"
+        "div#profile_picture form#profilePicForm input[type='file'],"
+        "div#profile_picture form#profilePicForm img.acf-image-value"
+    )
+    assert upload_area.count() > 0, (
+        "No upload area or existing photo found in #profile_picture form"
+    )
+
+    os.makedirs("screenshots", exist_ok=True)
+    page.screenshot(path="screenshots/recruit_profile_photo.png")
+    write_detail("test_preapplicant_profile_photo_renders", {
+        "message": "Applicant profile photo section rendered with upload area",
+        "screenshot": "screenshots/recruit_profile_photo.png",
+    })
+
+
 def test_client_role_on_application_page(
     page: Page, base_url: str, returning_client_login
 ):
@@ -702,4 +860,159 @@ def test_client_role_on_application_page(
         "message": "Logged-in client sees 'already signed in' on application page; registration form hidden",
         "screenshot": "screenshots/recruit_client_on_app_page.png",
     })
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Batch M — Pre-applicant availability form (P2)
+# ─────────────────────────────────────────────────────────────────────────────
+
+def test_preapplicant_availability_tab_has_grid(
+    page: Page, base_url: str, preapplicant_credentials
+):
+    """
+    The availability section in the pre-applicant application form renders
+    the [tutor_availability] shortcode: #tutor_availability_holder is present
+    and #tutor-avail-grid contains slot buttons after JS initialisation.
+    Forcing capacity=1 via JS evaluate (same technique as the tutor dashboard
+    grid tests) ensures the hide_on_zero container is visible.
+    Uses preapplicant_credentials (session fixture, self-creating — no env vars).
+    Covers P2: 'Pre-applicant — availability tab has slot grid'.
+    """
+    page.goto(f"{base_url}{LOGIN_URL}")
+    expect(page.locator("#ot_login")).to_be_visible()
+    page.wait_for_load_state("networkidle")
+    page.locator("#ot_login_name").fill(preapplicant_credentials["email"])
+    page.locator("#pw1").fill(preapplicant_credentials["password"])
+    page.locator("#login_submit").click()
+    page.wait_for_url(re.compile(r".*/tutor-section/application/"), timeout=30000)
+
+    page.goto(f"{base_url}{APPLICATION_URL}")
+    page.wait_for_load_state("networkidle")
+
+    # PHP shows personalDetails for a fresh pre-applicant — force availability visible
+    _show_section(page, "availability")
+    page.wait_for_selector("#tutor_availability_holder", state="attached", timeout=10000)
+
+    # Force capacity=1 so hide_on_zero wrapper is shown (same pattern as
+    # test_tutor_availability_grid_renders in test_tutor_dashboard.py)
+    page.evaluate("""
+        () => {
+            const input = document.getElementById('tutor_extra_capacity');
+            if (!input || Number(input.value) > 0) return;
+            input.value = '1';
+            input.dispatchEvent(new Event('input', { bubbles: true }));
+            input.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+    """)
+
+    # Grid cells are built client-side by availability.vanilla.js from
+    # #tutor-avail-initial-slots JSON injected by PHP
+    page.wait_for_selector("button.tutor-avail-slot", timeout=10000)
+    expect(page.locator("button.tutor-avail-slot").first).to_be_visible(timeout=5000)
+
+    os.makedirs("screenshots", exist_ok=True)
+    page.screenshot(path="screenshots/preapp_avail_grid.png")
+    write_detail("test_preapplicant_availability_tab_has_grid", {
+        "message": "Pre-applicant availability tab rendered slot grid",
+        "screenshot": "screenshots/preapp_avail_grid.png",
+    })
+
+
+def test_preapplicant_availability_save_and_persist(
+    page: Page, base_url: str, preapplicant_credentials
+):
+    """
+    Saving a slot via the tutor_availability_save AJAX action in the
+    pre-applicant application form persists after a page reload.
+    Slot [day=0, slot=16] is saved, the page reloaded, and the cell verified
+    to have the is-on class (set by availability.vanilla.js from
+    #tutor-avail-initial-slots server-side JSON on reload).
+    Cleanup: re-saves an empty grid to restore state.
+    Uses preapplicant_credentials (session fixture, self-creating — no env vars).
+    Covers P2: 'Pre-applicant — availability save persists after reload'.
+    """
+    def _open_avail_grid():
+        page.goto(f"{base_url}{APPLICATION_URL}")
+        page.wait_for_load_state("networkidle")
+        _show_section(page, "availability")
+        page.wait_for_selector("#tutor_availability_holder", state="attached", timeout=10000)
+        page.evaluate("""
+            () => {
+                const input = document.getElementById('tutor_extra_capacity');
+                if (!input || Number(input.value) > 0) return;
+                input.value = '1';
+                input.dispatchEvent(new Event('input', { bubbles: true }));
+                input.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+        """)
+        page.wait_for_selector("button.tutor-avail-slot", timeout=10000)
+
+    page.goto(f"{base_url}{LOGIN_URL}")
+    expect(page.locator("#ot_login")).to_be_visible()
+    page.wait_for_load_state("networkidle")
+    page.locator("#ot_login_name").fill(preapplicant_credentials["email"])
+    page.locator("#pw1").fill(preapplicant_credentials["password"])
+    page.locator("#login_submit").click()
+    page.wait_for_url(re.compile(r".*/tutor-section/application/"), timeout=30000)
+
+    _open_avail_grid()
+
+    # Save slot [day=0, slot=16] via direct AJAX (same approach as full-flow test)
+    save_result = page.evaluate(
+        '() => new Promise((resolve, reject) => {'
+        '    const avail = window.TutorAvail || {};'
+        '    const fd = new FormData();'
+        "    fd.append('action', 'tutor_availability_save');"
+        "    fd.append('nonce', avail.nonce || '');"
+        "    fd.append('tutor_id', String(avail.tutorId || ''));"
+        "    fd.append('slots', JSON.stringify({'0': [16]}));"
+        "    fd.append('extra_capacity', '0');"
+        "    fd.append('timezone', avail.timezone || 'Europe/London');"
+        "    fd.append('notes', '');"
+        "    fd.append('date_free', '');"
+        '    fetch(avail.ajaxUrl || "/wp-admin/admin-ajax.php", { method: "POST", body: fd })'
+        '        .then(r => r.json())'
+        '        .then(data => data.success ? resolve(data) : reject(data))'
+        '        .catch(reject);'
+        '})'
+    )
+    print(f"\n[avail-save] {save_result}")
+
+    # Reload — PHP re-renders #tutor-avail-initial-slots with the saved slot
+    _open_avail_grid()
+
+    saved_cell = page.locator("button.tutor-avail-slot[data-d='0'][data-s='16']")
+    expect(saved_cell).to_be_attached(timeout=5000)
+    cell_class = saved_cell.get_attribute("class") or ""
+    assert "is-on" in cell_class, (
+        f"Slot [day=0, slot=16] expected is-on after save+reload, got class: {cell_class!r}"
+    )
+
+    os.makedirs("screenshots", exist_ok=True)
+    page.screenshot(path="screenshots/preapp_avail_persist.png")
+    write_detail("test_preapplicant_availability_save_and_persist", {
+        "message": "Pre-applicant slot [day=0, slot=16] persisted with is-on after reload",
+        "screenshot": "screenshots/preapp_avail_persist.png",
+    })
+
+    # Cleanup: re-save empty grid to leave the fixture account clean
+    page.evaluate(
+        '() => new Promise((resolve, reject) => {'
+        '    const avail = window.TutorAvail || {};'
+        '    const fd = new FormData();'
+        "    fd.append('action', 'tutor_availability_save');"
+        "    fd.append('nonce', avail.nonce || '');"
+        "    fd.append('tutor_id', String(avail.tutorId || ''));"
+        "    fd.append('slots', JSON.stringify({}));"
+        "    fd.append('extra_capacity', '0');"
+        "    fd.append('timezone', avail.timezone || 'Europe/London');"
+        "    fd.append('notes', '');"
+        "    fd.append('date_free', '');"
+        '    fetch(avail.ajaxUrl || "/wp-admin/admin-ajax.php", { method: "POST", body: fd })'
+        '        .then(r => r.json())'
+        '        .then(data => resolve(data))'
+        '        .catch(reject);'
+        '})'
+    )
+    page.wait_for_timeout(300)
 

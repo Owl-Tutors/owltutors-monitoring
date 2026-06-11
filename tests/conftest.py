@@ -290,6 +290,20 @@ def tutor_credentials():
 
 
 @pytest.fixture(scope="session")
+def applicant_credentials():
+    """Login credentials for a permanent applicant account on the dev site.
+    Required for applicant form section tests (profile text, profile photo).
+    Set TEST_APPLICANT_EMAIL and TEST_APPLICANT_PASSWORD in .env / GitHub Secrets."""
+    email    = os.environ.get("TEST_APPLICANT_EMAIL", "")
+    password = os.environ.get("TEST_APPLICANT_PASSWORD", "")
+    if not (email and password):
+        pytest.skip(
+            "TEST_APPLICANT_EMAIL/PASSWORD not set — skipping applicant form section tests"
+        )
+    return {"email": email, "password": password}
+
+
+@pytest.fixture(scope="session")
 def meet_now_tutor_id():
     """WP user ID of a test tutor configured for meet-now:
     auto_swap_active=true, include_tutor_in_auto_swap=true, online delivery,
@@ -554,6 +568,9 @@ def preapplicant_credentials(browser, base_url, api_key):
     reg_page.locator("#pw1").fill(password)
     reg_page.evaluate("document.getElementById('signupform').submit()")
     reg_page.wait_for_url(re.compile(r".*/tutor-section/application/"), timeout=30000)
+    assert "register-errors" not in reg_page.url, (
+        f"preapplicant_credentials: registration failed — {reg_page.url}"
+    )
     ctx.close()
 
     yield {"email": email, "password": password}

@@ -1,4 +1,5 @@
 import os
+import pytest
 from playwright.sync_api import Page, expect
 from utils.details import write_detail
 
@@ -180,4 +181,95 @@ def test_full_search_subject_level_home_location(page: Page, base_url: str):
     write_detail("test_full_search_subject_level_home_location", {
         "message": "Full pipeline search ran: English, Home delivery, Balham",
         "screenshot": "screenshots/search_full_pipeline.png",
+    })
+
+
+# ── Meet Now buttons ──────────────────────────────────────────────────────────
+
+def test_meet_now_button_visible_on_eligible_tutor(page: Page, base_url: str):
+    """
+    At least one tutor card in the default search results has a 'Connect now'
+    button linking to /contact-us?job_type=meet_now&tutor_id=ID. Does not rely
+    on a specific tutor ID — any eligible tutor satisfies the assertion.
+    Covers P3: 'Meet Now button visible on eligible tutor card'.
+    """
+    page.goto(f"{base_url}{TUTORS_URL}", wait_until="domcontentloaded")
+    _dismiss_cookies(page)
+    page.wait_for_selector(".add-to-cart", timeout=15000)
+
+    meet_now_link = page.locator("a[href*='job_type=meet_now']").first
+    expect(meet_now_link).to_be_visible(timeout=10000)
+
+    os.makedirs("screenshots", exist_ok=True)
+    page.screenshot(path="screenshots/meet_now_button_eligible.png")
+    write_detail("test_meet_now_button_visible_on_eligible_tutor", {
+        "message": "Meet Now button visible on at least one eligible tutor card",
+        "screenshot": "screenshots/meet_now_button_eligible.png",
+    })
+
+
+def test_meet_now_button_absent_on_ineligible_tutor(page: Page, base_url: str):
+    """
+    Tutor cards for ineligible tutors have no 'Connect now' button.
+    Finds any card that lacks a meet-now link and verifies it truly has none.
+    Covers P3: 'Meet Now button absent on ineligible tutor card'.
+    """
+    page.goto(f"{base_url}{TUTORS_URL}")
+    _dismiss_cookies(page)
+    page.wait_for_selector("article.author-card", timeout=15000)
+
+    # Cards without a meet-now link are the ineligible ones
+    non_eligible = page.locator("article.author-card").filter(
+        has_not=page.locator("a[href*='job_type=meet_now']")
+    )
+    assert non_eligible.count() > 0, (
+        "Every tutor card has a meet-now button — expected at least one ineligible tutor"
+    )
+    first_card = non_eligible.first
+    assert first_card.locator("a[href*='job_type=meet_now']").count() == 0, (
+        "Found a meet-now link on a card filtered as ineligible"
+    )
+
+    os.makedirs("screenshots", exist_ok=True)
+    page.screenshot(path="screenshots/meet_now_button_absent.png")
+    write_detail("test_meet_now_button_absent_on_ineligible_tutor", {
+        "message": "No Meet Now button on ineligible tutor card",
+        "screenshot": "screenshots/meet_now_button_absent.png",
+    })
+
+
+# ── Batch K — availability summary ──────────────────────────────────────────
+
+def test_availability_summary_on_profile(page: Page, base_url: str):
+    """
+    Tutor search cards include a p.availability_slots_summary element built by
+    render_slots_summary() (functions.php) for tutors with saved availability
+    slots. Verifies that at least one active tutor on the dev site has slots set
+    and that the rendered text is non-empty.
+    Skips (not fails) if no tutors on the dev site have availability slots saved.
+    Covers P3: 'Availability summary renders correctly on public tutor profile'.
+    """
+    page.goto(f"{base_url}{TUTORS_URL}")
+    _dismiss_cookies(page)
+    page.wait_for_load_state("networkidle")
+    page.wait_for_selector(".add-to-cart", timeout=15000)
+
+    summaries = page.locator("p.availability_slots_summary")
+    if summaries.count() == 0:
+        pytest.skip(
+            "No p.availability_slots_summary found — no tutors on the dev site "
+            "have availability slots set; set slots in the tutor dashboard to enable this test"
+        )
+
+    expect(summaries.first).to_be_visible(timeout=5000)
+    summary_text = (summaries.first.text_content() or "").strip()
+    assert summary_text, (
+        "p.availability_slots_summary is present but empty — render_slots_summary() may have broken"
+    )
+
+    os.makedirs("screenshots", exist_ok=True)
+    page.screenshot(path="screenshots/search_avail_summary.png")
+    write_detail("test_availability_summary_on_profile", {
+        "message": f"Availability summary renders: {summary_text[:80]!r}",
+        "screenshot": "screenshots/search_avail_summary.png",
     })

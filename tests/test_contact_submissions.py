@@ -1,6 +1,7 @@
 import os
 import re
 import uuid
+import urllib.parse
 import pytest
 from playwright.sync_api import Page, expect
 
@@ -538,4 +539,142 @@ def test_health_safety_unchecked_job_creates(page: Page, base_url: str, cleanup_
         "message": f"H&S unchecked: job still created at {job_id}; notes_on_status note must be verified in WP admin",
         "job_id": job_id,
         "screenshot": "screenshots/job_hs_unchecked.png",
+    })
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Batch L — duplicate job detection
+# ─────────────────────────────────────────────────────────────────────────────
+
+def test_duplicate_job_detection(
+    page: Page, base_url: str, returning_client_login, cleanup_after
+):
+    """
+    A logged-in client submitting a second job with the same subject as an
+    existing open job triggers ot_system_check_for_duplicate_jobs(). The new
+    job is created at Stage 1 and the job page shows the 'already have an open
+    enquiry' alert.
+    Setup: returning_client_login submits job #1 with Maths and leaves the
+    browser logged in. This test submits job #2 (also Maths). Both jobs are
+    flagged ot_test_post=1 for cleanup.
+    Covers P3: 'Duplicate job detection — existing open job triggers Stage 1 redirect'.
+    """
+    page.goto(f"{base_url}{CONTACT_URL}", wait_until="domcontentloaded")
+    expect(page.locator("#tutor_request_form")).to_be_visible()
+    page.wait_for_load_state("networkidle")
+
+    page.locator("select[name='acf[field_64997c72bef9f]']").select_option(
+        label="A tutor to provide tuition services"
+    )
+    # Same subject (Maths) as the setup job created by returning_client_login
+    page.wait_for_selector(
+        "div[data-name='subject_list'] input[type='checkbox'][value='Maths']",
+        timeout=15000,
+    )
+    page.locator(
+        "div[data-name='subject_list'] input[type='checkbox'][value='Maths']"
+    ).check()
+    page.locator("div[data-name='tuition_requirements_original'] textarea").fill(
+        "Duplicate detection test — automated smoke test submission"
+    )
+    page.locator("div[data-name='timing_details_-_original'] textarea").fill("Flexible")
+    _check_hs(page)
+    _flag_test_post(page)
+
+    page.locator("#contact_form_submit").click()
+    page.wait_for_url(re.compile(r".*/jobs/"), timeout=90000)
+
+    job_id = re.search(r"/jobs/(\d+)/", page.url).group(1)
+    print(f"\n[result] duplicate job_id={job_id} (client: {returning_client_login['email']})")
+
+    # Duplicate check keeps the job at Stage 1 with the 'already have an open enquiry' warning
+    stage1_alert = page.locator(".alert-warning")
+    expect(stage1_alert).to_be_visible(timeout=10000)
+    alert_text = (stage1_alert.text_content() or "").lower()
+    assert "already" in alert_text or "enquiry" in alert_text, (
+        f"Expected duplicate-job warning in Stage 1 alert, got: {alert_text!r}"
+    )
+
+    os.makedirs("screenshots", exist_ok=True)
+    page.screenshot(path="screenshots/job_duplicate_detected.png")
+    write_detail("test_duplicate_job_detection", {
+        "message": f"Duplicate Maths job (job {job_id}) stayed at Stage 1 with duplicate warning",
+        "job_id": job_id,
+        "screenshot": "screenshots/job_duplicate_detected.png",
+    })
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Batch L — admin-submitted job path
+# ─────────────────────────────────────────────────────────────────────────────
+
+def test_admin_job_path_redirects(page: Page, base_url: str, cleanup_after):
+    """
+    When the contact form POST includes admin_submited_job=true (added by PHP
+    in page-contactform.php when an admin views the form), job creation calls
+    wp_redirect('/wp-admin/post.php?post=ID&action=edit') instead of the
+    client-facing /jobs/ URL.
+    This test injects the field via JS to simulate an admin form submission.
+    The test browser is not an authenticated admin, so WordPress redirects to
+    the login page with redirect_to pointing at /wp-admin/ — confirming the
+    admin path was taken, not the normal client /jobs/ path.
+    Covers P4: 'Admin-submitted job path redirects to WP admin edit screen'.
+    """
+    page.goto(f"{base_url}{CONTACT_URL}")
+    expect(page.locator("#tutor_request_form")).to_be_visible()
+
+    page.locator("select[name='acf[field_64997c72bef9f]']").select_option(
+        label="A tutor to provide tuition services"
+    )
+    page.wait_for_selector(
+        "div[data-name='subject_list'] input[type='checkbox']",
+        timeout=10000,
+    )
+    _select_first_subject(page)
+    page.locator("div[data-name='tuition_requirements_original'] textarea").fill(
+        "Admin path test — automated smoke test submission"
+    )
+    page.locator("div[data-name='timing_details_-_original'] textarea").fill("Flexible")
+
+    _fill_client_info(page)
+    _check_hs(page)
+    _flag_test_post(page)
+
+    # Inject admin_submited_job=true — normally added by PHP when an admin views the form
+    page.evaluate(
+        """() => {
+            const inp = document.createElement('input');
+            inp.type  = 'hidden';
+            inp.name  = 'admin_submited_job';
+            inp.value = 'true';
+            document.getElementById('tutor_request_form').appendChild(inp);
+        }"""
+    )
+
+    page.locator("#contact_form_submit").click()
+
+    # PHP calls wp_redirect('/wp-admin/post.php?post=ID&action=edit'). Since the
+    # browser is not an authenticated admin, WP follows up with a redirect to the
+    # login page with redirect_to=/wp-admin/... — wait for either URL pattern.
+    page.wait_for_url(
+        re.compile(r".*/wp-admin/|.*/login/"),
+        timeout=90000,
+    )
+    page.wait_for_load_state("networkidle", timeout=15000)
+
+    final_url = page.url
+    decoded   = urllib.parse.unquote(final_url)
+    assert "wp-admin" in decoded, (
+        f"Expected redirect to /wp-admin/ (or login?redirect_to=wp-admin), got: {final_url!r}"
+    )
+    assert "/jobs/" not in final_url, (
+        f"admin_submited_job=true should redirect to wp-admin, not /jobs/: {final_url!r}"
+    )
+
+    print(f"\n[result] admin path confirmed, final URL: {final_url}")
+    os.makedirs("screenshots", exist_ok=True)
+    page.screenshot(path="screenshots/job_admin_redirect.png")
+    write_detail("test_admin_job_path_redirects", {
+        "message": f"Admin job path redirected to wp-admin (not /jobs/): {final_url}",
+        "screenshot": "screenshots/job_admin_redirect.png",
     })

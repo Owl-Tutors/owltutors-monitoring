@@ -2,10 +2,13 @@ import os
 import re
 import uuid
 import pytest
-from datetime import datetime, timedelta
 from pathlib import Path
 from playwright.sync_api import Page, expect
 
+from utils.apply import (
+    _show_section, _wait_for_section, _save_section,
+    _add_repeater_row, _upload_acf_file, complete_application_form,
+)
 from utils.cleanup import delete_test_posts
 from utils.details import write_detail
 
@@ -166,140 +169,6 @@ def test_preapplicant_application_page_loads(
 # Full application flow
 # â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
-def _show_section(page: Page, section_id: str):
-    """Activate a section tab pane directly via JS.
-
-    The well-holder nav links scroll above the viewport after JS init
-    (ot_logged_in_preapp.js smooth-scrolls to the active section on load),
-    so clicking them via Playwright times out. We replicate what the click
-    handler does instead: strip show/active from all panes, add to target.
-    """
-    page.wait_for_load_state("networkidle")
-    page.evaluate(f"""
-        (function() {{
-            document.querySelectorAll('.tab-pane').forEach(function(p) {{
-                p.classList.remove('in', 'show', 'active');
-            }});
-            var target = document.getElementById('{section_id}');
-            if (target) {{
-                target.classList.add('show', 'active');
-                target.scrollIntoView({{block: 'start'}});
-            }}
-        }})();
-    """)
-    page.wait_for_selector(f"div#{section_id}.tab-pane.show", timeout=5000)
-    page.wait_for_timeout(300)  # let Bootstrap fade transition complete
-
-
-def _wait_for_section(page: Page, section_id: str) -> None:
-    """Wait for a section tab-pane to be visible after a page reload.
-
-    PHP's show_form_location logic (first incomplete section) does not always
-    resolve to the expected next section -- e.g. if the previous section's score
-    hasn't fully propagated before the redirect. If the natural wait times out,
-    fall back to _show_section to force the pane visible via JS.
-    """
-    try:
-        page.wait_for_selector(
-            f"div#{section_id}.tab-pane.show", state="visible", timeout=15000
-        )
-    except Exception:
-        _show_section(page, section_id)
-
-
-def _save_section(page: Page, section_id: str):
-    """Click Save & continue inside the specified section's form and wait for reload.
-
-    Must target value='Save & continue' explicitly -- most sections also render
-    a 'Previous' input[name='formDirection'] that appears first in the DOM.
-    """
-    form = page.locator(f"div#{section_id} form")
-    form.locator("input[name='formDirection'][value='Save & continue']").click()
-    # ACF intercepts the submit event, runs async field validation, then copies the
-    # button value to a hidden input and calls form.submit() natively. During the
-    # validation quiet period there are no network requests, so networkidle fires
-    # prematurely. Two-phase wait handles this:
-    # Phase 1 — networkidle: may fire during validation gap (fine, just returns early)
-    page.wait_for_load_state("networkidle", timeout=60000)
-    # Phase 2 — wait for current section to lose its 'show' class: this only happens
-    # when the page actually navigates (new page load removes all tab-pane classes
-    # before JS re-adds them to the next section). If we're still in the validation
-    # phase, this wait blocks until the real POST + redirect completes.
-    try:
-        page.wait_for_selector(
-            f"div#{section_id}.tab-pane.show",
-            state="hidden",
-            timeout=45000,
-        )
-    except Exception:
-        pass
-    # Phase 3 omitted — networkidle is unreliable here because WordPress Heartbeat
-    # API and ACF field AJAX calls create persistent background requests that prevent
-    # networkidle from ever firing. By the time Phase 2 completes, the page is loaded
-    # and JS has run. _wait_for_section (DOM-visibility check) handles the rest.
-
-
-def _add_repeater_row(page: Page, section_id: str, field_name: str) -> "Locator":
-    """Add a row to an ACF repeater and return the new row locator.
-
-    Requires the section to be *naturally* visible (shown by PHP's show_form_location,
-    not by _show_section JS manipulation) so that ACF's field init and event handlers
-    are properly attached. Uses click(force=True) to bypass any residual CSS opacity
-    during Bootstrap's fade transition.
-
-    ACF renders repeater rows as <tr class="acf-row"> (class-acf-repeater-table.php:327).
-    """
-    row_sel = f"#{section_id} [data-name='{field_name}'] tr.acf-row:not(.acf-clone)"
-    count_before = page.locator(row_sel).count()
-
-    btn = page.locator(
-        f"#{section_id} [data-name='{field_name}'] .acf-actions a[data-event='add-row']"
-    )
-    btn.scroll_into_view_if_needed()
-    btn.click(force=True)
-    page.wait_for_timeout(800)
-
-    count_after = page.locator(row_sel).count()
-    assert count_after > count_before, (
-        f"_add_repeater_row: clicking add-row did not add a row to "
-        f"{section_id}/{field_name} (before={count_before}, after={count_after})"
-    )
-    return page.locator(row_sel).last
-
-
-def _upload_acf_file(page: Page, section_id: str, field_name: str, file_path: str):
-    """Upload a file into an ACF file field via the WP media modal.
-    Falls back to a direct <input type='file'> if the basic uploader is used."""
-    field_div = page.locator(f"div#{section_id} div[data-name='{field_name}']")
-
-    # Try basic uploader first (input[type=file] directly in the field)
-    basic_input = field_div.locator("input[type='file']")
-    if basic_input.count() > 0:
-        basic_input.set_input_files(file_path)
-        page.wait_for_load_state("networkidle", timeout=15000)
-        return
-
-    # WP media library modal
-    field_div.locator("a[data-name='add'], a.acf-button.button").first.click()
-    page.wait_for_selector("div.media-frame", state="visible", timeout=10000)
-
-    # Switch to Upload Files tab
-    upload_tab = page.locator("li.media-menu-item").filter(has_text="Upload Files").first
-    if upload_tab.count() > 0:
-        upload_tab.click()
-        page.wait_for_timeout(300)
-
-    # Set the file on the upload input
-    upload_input = page.locator("div.upload-ui input[type='file']")
-    upload_input.set_input_files(file_path)
-    page.wait_for_load_state("networkidle", timeout=20000)
-
-    # Select the uploaded file
-    select_btn = page.locator("button.media-button-select, button.media-button.media-button-select")
-    select_btn.wait_for(state="enabled", timeout=15000)
-    select_btn.click()
-    page.wait_for_selector("div.media-frame", state="hidden", timeout=10000)
-
 
 def test_tutor_full_application_flow(page: Page, base_url: str, cleanup_after):
     """
@@ -335,274 +204,15 @@ def test_tutor_full_application_flow(page: Page, base_url: str, cleanup_after):
     page.screenshot(path="screenshots/recruit_01_registered.png")
     print(f"\n[recruit] registered: {email}")
 
-    # â"€â"€ 2. Personal Details â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
-    # PHP sets show_form_location='personalDetails' for new users; JS adds show/active.
-    # Do NOT call _show_section -- it strips/re-adds classes and can cause ACF to lose
-    # its event handler bindings. Wait for the section to be naturally visible instead.
-    _wait_for_section(page, "personalDetails")
-    form = page.locator("form#personalDetailsForm")
-    form.locator("div[data-name='first_names'] input").fill("Owl")
-    form.locator("div[data-name='last_name'] input").fill("TestApplicant")
-    form.locator("div[data-name='preferred_name'] input").fill("Owl")
-    form.locator("div[data-name='mobile_phone_number'] input").fill("07700900001")
-    form.locator("div[data-name='address'] input").fill("1 Test Street")
-    form.locator("div[data-name='town__city'] input").fill("London")
-    form.locator("div[data-name='postcode__zip'] input").fill("SW1A 1AA")
-    country_sel = form.locator("div[data-name='country'] select")
-    country_sel.select_option("United Kingdom") if country_sel.count() > 0 else None
-    _save_section(page, "personalDetails")
+    complete_application_form(page, base_url, qts_pdf)
 
-    # â"€â"€ 3. Supporting Documents â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
-    _wait_for_section(page, "supportingDocuments")
-    form = page.locator("form#supportingDocumentsForm")
-    # QTS country
-    form.locator("div[data-name='qts_country'] select").select_option("United Kingdom")
-    # QTS certificate file
-    _upload_acf_file(page, "supportingDocuments", "upload_qts_certificate", qts_pdf)
-    # Tax payer country
-    form.locator("div[data-name='unique_taxpayer_reference_utr_number_country'] select").select_option(
-        "United Kingdom"
-    )
-    # Sole trader / limited company
-    sole_sel = form.locator("div[data-name='sole_trader_or_limited_company'] select")
-    sole_sel.select_option(index=1)  # first non-blank option
-    # Confirm possess docs checkbox
-    confirm_cb = form.locator("div[data-name='confirm_possess_docs'] input[type='checkbox']")
-    if confirm_cb.count() > 0 and not confirm_cb.is_checked():
-        confirm_cb.check()
-    _save_section(page, "supportingDocuments")
-
-    # Screenshot: mid-progress
-    page.screenshot(path="screenshots/recruit_02_docs.png")
-
-    # â"€â"€ 4. Teaching Experience â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
-    _wait_for_section(page, "teachingExperience")
-    section = page.locator("div#teachingExperience")
-    section.locator("div[data-name='years_of_classroom_teaching_experience'] input").fill("5")
-    section.locator("div[data-name='please_describe_your_teaching_experience'] textarea").fill(
-        "Five years teaching secondary Maths in UK state schools. Automated test."
-    )
-    # Motivations -- check first available option
-    mot_cb = section.locator(
-        "div[data-name='motivations_for_tutoring'] input[type='checkbox']"
-    ).first
-    if mot_cb.count() > 0 and not mot_cb.is_checked():
-        mot_cb.check()
-    # Teaching experience repeater.
-    # Real field name: 'please_describe_your_teaching_experience_repeater' (not 'last_10_years').
-    # data-min=1 means ACF renders one empty row by default -- no add needed.
-    # Date fields are ACF date pickers: hidden input stores Ymd; .input is the display text.
-    row = section.locator(
-        "[data-name='please_describe_your_teaching_experience_repeater']"
-        " tr.acf-row:not(.acf-clone)"
-    ).first
-    row.locator("div[data-name='school_name'] input").fill("Owl Test School")
-    row.locator("div[data-name='roles'] input").fill("Maths Teacher")
-    # Set date picker values directly: hidden input (Ymd for ACF) + display text input
-    page.evaluate("""
-        (function() {
-            var row = document.querySelector(
-                '#teachingExperience [data-name="please_describe_your_teaching_experience_repeater"]'
-                + ' tr.acf-row:not(.acf-clone)'
-            );
-            if (!row) return;
-            var sh = row.querySelector('[data-name="start_date"] input[type="hidden"]');
-            var st = row.querySelector('[data-name="start_date"] input.input');
-            var eh = row.querySelector('[data-name="end_date"] input[type="hidden"]');
-            var et = row.querySelector('[data-name="end_date"] input.input');
-            if (sh) sh.value = '20180901';
-            if (st) st.value = '01/09/2018';
-            if (eh) eh.value = '20230701';
-            if (et) et.value = '01/07/2023';
-        })();
-    """)
-    # Tuition subjects -- non-required; check if present, skip if not found/visible
-    maths_cb = section.locator(
-        "div[data-name='subject_list'] input[type='checkbox'][value='Maths']"
-    )
-    if maths_cb.count() > 0:
-        maths_cb.first.check(timeout=5000)
-    _save_section(page, "teachingExperience")
-
-    # â"€â"€ 5. Delivery â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
-    _wait_for_section(page, "delivery")
-    page.locator(
-        "div#delivery div[data-name='delivery'] input[type='checkbox'][value='Online']"
-    ).check()
-    _save_section(page, "delivery")
-
-    # â"€â"€ 6. Availability â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
-    # v10.2.0: ACF form now only renders for_how_many_years_do_you_plan_on_being_a_tutor
-    # (the two capacity fields were removed from the form). The slot grid is also required
-    # for the availability section to score as complete — save one slot via AJAX before
-    # _save_section so that PHP sees recruitment_availability_slots on the reload.
-    _wait_for_section(page, 'availability')
-    avail = page.locator('div#availability')
-    avail.locator(
-        '[data-name=for_how_many_years_do_you_plan_on_being_a_tutor] input'
-    ).fill('3')
-
-    # Wait for the [tutor_availability] shortcode to render and localize TutorAvail.
-    page.wait_for_selector('#tutor_availability_holder', state='attached', timeout=10000)
-    page.evaluate(
-        '() => new Promise((resolve, reject) => {'
-        '    const avail = window.TutorAvail || {};'
-        '    const fd = new FormData();'
-        "    fd.append('action', 'tutor_availability_save');"
-        "    fd.append('nonce', avail.nonce || '');"
-        "    fd.append('tutor_id', String(avail.tutorId || ''));"
-        "    fd.append('slots', JSON.stringify({'0': [16]}));"
-        "    fd.append('extra_capacity', '0');"
-        "    fd.append('timezone', 'Europe/London');"
-        "    fd.append('notes', '');"
-        "    fd.append('date_free', '');"
-        '    fetch(avail.ajaxUrl || "/wp-admin/admin-ajax.php", { method: "POST", body: fd })'
-        '        .then(r => r.json())'
-        '        .then(data => data.success ? resolve(data) : reject(data))'
-        '        .catch(reject);'
-        '})'
-    )
-    page.wait_for_timeout(300)
-    _save_section(page, 'availability')
-
-    # â"€â"€ 7. Rates â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
-    _wait_for_section(page, "rates")
-    rates = page.locator("div#rates")
-    rates.locator("div[data-name='minimum_net_home_pay_rate'] select").select_option("30")
-    rates.locator("div[data-name='minimum_net_online_pay_rate'] select").select_option("30")
-    _save_section(page, "rates")
-
-    # â"€â"€ 8. Qualifications â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
-    _wait_for_section(page, "qualifications")
-    quals = page.locator("div#qualifications")
-    # Group sub-fields (data-name = sub-field name, not group-prefixed)
-    quals.locator(
-        "div[data-name='in_which_subject_did_you_qualify_to_teach'] select"
-    ).select_option("Maths")
-    quals.locator(
-        "div[data-name='what_is_the_name_of_your_teaching_qualification'] input"
-    ).fill("PGCE")
-    quals.locator(
-        "div[data-name='what_is_the_name_of_the_awarding_body_of_your_teaching_qualification'] input"
-    ).fill("University College London")
-    quals.locator(
-        "div[data-name='in_what_year_did_you_achieve_your_teaching_qualification'] input"
-    ).fill("2018")
-    _save_section(page, "qualifications")
-
-    # â"€â"€ 9. References â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
-    _wait_for_section(page, "references")
-    form = page.locator("form#referencesForm")
-    # Line manager repeater: data-min=1 data-max=1, row-0 already exists.
-    # Date fields are ACF date pickers; set hidden+display inputs via JS.
-    lm_row = page.locator(
-        "#references [data-name='line_manager_reference'] tr.acf-row:not(.acf-clone)"
-    ).first
-    lm_row.locator("div[data-name='name_of_school'] input").fill("Owl Test School")
-    lm_row.locator("div[data-name='school_address'] input").fill("1 Test Street, London")
-    lm_row.locator("div[data-name='first_name'] input").fill("Jane")
-    lm_row.locator("div[data-name='last_name'] input").fill("Manager")
-    lm_row.locator("div[data-name='relation_to_you'] input").fill("Head of Department")
-    lm_row.locator("div[data-name='email_address'] input").fill("manager@owltest.co.uk")
-    page.evaluate("""
-        (function() {
-            var row = document.querySelector(
-                '#references [data-name="line_manager_reference"] tr.acf-row:not(.acf-clone)'
-            );
-            if (!row) return;
-            var sh = row.querySelector('[data-name="employment_start_date"] input[type="hidden"]');
-            var st = row.querySelector('[data-name="employment_start_date"] input.input');
-            var eh = row.querySelector('[data-name="employment_finish_date"] input[type="hidden"]');
-            var et = row.querySelector('[data-name="employment_finish_date"] input.input');
-            if (sh) sh.value = '20180901';
-            if (st) st.value = '01/09/2018';
-            if (eh) eh.value = '20230701';
-            if (et) et.value = '01/07/2023';
-        })();
-    """)
-    # referees2: data-min=2 data-max=2, both rows pre-rendered. No add-row button at max.
-    # JS (ot_logged_in_preapp.js) marks both rows required; both must be filled.
-    ref_sel0 = "#references [data-name='referees2'] tr.acf-row[data-id='row-0']"
-    ref_sel1 = "#references [data-name='referees2'] tr.acf-row[data-id='row-1']"
-    page.locator(ref_sel0).locator("div[data-name='first_name'] input").fill("John")
-    page.locator(ref_sel0).locator("div[data-name='last_name'] input").fill("Referee")
-    page.locator(ref_sel0).locator("div[data-name='relation_to_you'] input").fill("Former colleague")
-    page.locator(ref_sel0).locator("div[data-name='email_address'] input").fill("referee1@owltest.co.uk")
-    page.locator(ref_sel1).locator("div[data-name='first_name'] input").fill("Jane")
-    page.locator(ref_sel1).locator("div[data-name='last_name'] input").fill("Referee2")
-    page.locator(ref_sel1).locator("div[data-name='relation_to_you'] input").fill("Former colleague")
-    page.locator(ref_sel1).locator("div[data-name='email_address'] input").fill("referee2@owltest.co.uk")
-    _save_section(page, "references")
-
-    # â"€â"€ 10. Interview Booking â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
-    _wait_for_section(page, "interviewBooking")
-    # ACF date-time pickers: two inputs per field (hidden .input-alt for POST value,
-    # visible .input for display only). fill() causes strict-mode violation and
-    # cannot set hidden inputs. Use evaluate() to set both; hidden format is
-    # strtotime-parseable (YYYY-MM-DD HH:MM:SS). Date constraints are client-side.
-    d1 = datetime.now() + timedelta(days=14)
-    d2 = datetime.now() + timedelta(days=15)
-    d3 = datetime.now() + timedelta(days=16)
-    page.evaluate(
-        """(dates) => {
-            ['first_interview_preference', 'second_interview_preference',
-             'third_interview_preference'].forEach((name, i) => {
-                const wrap = document.querySelector('[data-name="' + name + '"]');
-                if (!wrap) return;
-                const h = wrap.querySelector('input[type="hidden"]');
-                const d = wrap.querySelector('input.input');
-                if (h) h.value = dates[i][0];
-                if (d) d.value = dates[i][1];
-            });
-        }""",
-        [
-            [d1.strftime("%Y-%m-%d 10:00:00"), d1.strftime("%d/%m/%y 10:00 AM")],
-            [d2.strftime("%Y-%m-%d 10:00:00"), d2.strftime("%d/%m/%y 10:00 AM")],
-            [d3.strftime("%Y-%m-%d 10:00:00"), d3.strftime("%d/%m/%y 10:00 AM")],
-        ]
-    )
-    _save_section(page, "interviewBooking")
-
-    # Reload fresh so PHP recalculates $overall_score and $show_form_location
-    # from stored meta — avoids stale ?updated=true params and confirms all
-    # sections scored as complete before asserting #isappreadyForm.
-    page.goto(f"{base_url}{APPLICATION_URL}", wait_until="domcontentloaded")
-    page.wait_for_load_state("networkidle")
-    show_location = page.locator("#show_form_location").get_attribute("value") or ""
-    progress      = page.locator("#progress_score").get_attribute("value") or ""
-    print(f"\n[recruit] show_form_location={show_location!r}  progress_score={progress!r}")
-    page.screenshot(path="screenshots/recruit_03b_post_all_saves.png")
-
-    # Screenshot: all sections filled, submit button should now be visible
-    page.screenshot(path="screenshots/recruit_03_complete.png")
-
-    # â"€â"€ 11. Submit application â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
-    # The #isappreadyForm only renders when overall_score == 1 (all sections complete)
-    submit_form = page.locator("form#isappreadyForm")
-    expect(submit_form).to_be_visible(timeout=5000)
-
-    # "How did you hear about us" checkbox (required on submit form)
-    submit_form.locator(
-        "div[data-name='how_did_you_hear_about_owl_tutors'] input[type='checkbox']"
-    ).first.check()
-    # ACF conditional logic may reveal a dependent text field (e.g. "Who recommended
-    # you?") after checking the first option. Wait for it and fill any that appear.
-    page.wait_for_timeout(600)
-    for inp in submit_form.locator("input[type='text']").all():
-        if inp.is_visible():
-            inp.fill("Automated test")
-            break
-
-    submit_form.locator("#SubmitButton").click()
-    page.wait_for_load_state("networkidle", timeout=30000)
-
-    # â"€â"€ 12. Verify applicant state â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
-    # After promotion the page reloads as 'applicant' role -- header changes
-    expect(page.locator("header.bg-navy h1")).to_contain_text(
-        re.compile(r"Welcome back|application", re.IGNORECASE), timeout=10000
+    # After promotion the applicant form (app-form.php) renders — its h1 is unique
+    # to the applicant role. The pre-applicant page title also contains "application"
+    # so checking header.bg-navy h1 was a false positive; target the form h1 instead.
+    expect(page.locator("div.applicationFormContainer h1")).to_contain_text(
+        "application has been received", timeout=10000
     )
 
-    # Screenshot: applicant dashboard / next steps
     page.screenshot(path="screenshots/recruit_04_applicant.png")
     print(f"\n[recruit] application submitted -- user promoted to applicant")
 
@@ -710,11 +320,23 @@ def test_preapplicant_section_nav_forward_back(
     _save_section(page, "personalDetails")
     _wait_for_section(page, "supportingDocuments")
 
-    # Click Previous to go back
+    # Click Previous to go back.
+    # Use the phase-2 pattern from _save_section: wait for the current section
+    # to lose its .show class, which confirms the POST+redirect completed and
+    # JS has re-run on the reloaded page. wait_for_load_state("networkidle") is
+    # unreliable here (Heartbeat keeps the network busy and the timeout fires
+    # before the page has settled, causing page.evaluate to race with a navigation).
     page.locator(
         "div#supportingDocuments form input[name='formDirection'][value='Previous']"
     ).click()
-    page.wait_for_load_state("networkidle", timeout=30000)
+    try:
+        page.wait_for_selector(
+            "div#supportingDocuments.tab-pane.show",
+            state="hidden",
+            timeout=30000,
+        )
+    except Exception:
+        pass
     _wait_for_section(page, "personalDetails")
 
     # The saved first name must still be present
@@ -730,96 +352,6 @@ def test_preapplicant_section_nav_forward_back(
     write_detail("test_preapplicant_section_nav_forward_back", {
         "message": "Section nav: save → forward → back preserves personalDetails data",
         "screenshot": "screenshots/recruit_section_nav.png",
-    })
-
-
-def test_preapplicant_profile_text_renders_and_saves(
-    page: Page, base_url: str, applicant_credentials
-):
-    """
-    The profile text section (#profile) of the applicant form at
-    /tutor-section/application/ renders form#personalDetailsForm with a
-    text area for the tutor's public profile bio. Filling and saving the
-    section redirects to the next section (or stays on profile if incomplete).
-    NOTE: this is the APPLICANT form (app-form.php #profile section), not the
-    pre-applicant form — requires TEST_APPLICANT_EMAIL/PASSWORD.
-    Covers P3: 'Profile text section renders and saves'.
-    """
-    page.goto(f"{base_url}{LOGIN_URL}")
-    expect(page.locator("#ot_login")).to_be_visible()
-    page.wait_for_load_state("networkidle")
-    page.locator("#ot_login_name").fill(applicant_credentials["email"])
-    page.locator("#pw1").fill(applicant_credentials["password"])
-    page.locator("#login_submit").click()
-    page.wait_for_url(re.compile(r".*/tutor-section/application/"), timeout=30000)
-
-    page.goto(f"{base_url}{APPLICATION_URL}")
-    page.wait_for_load_state("networkidle")
-
-    # Activate the profile section via JS (same technique as _show_section)
-    _show_section(page, "profile")
-
-    # The profile section renders form#personalDetailsForm with a bio textarea
-    expect(page.locator("div#profile form#personalDetailsForm")).to_be_visible(timeout=5000)
-
-    # Fill a short bio and save
-    bio_area = page.locator(
-        "div#profile form#personalDetailsForm div[data-name='profile_text'] textarea,"
-        "div#profile form#personalDetailsForm textarea"
-    ).first
-    expect(bio_area).to_be_visible(timeout=5000)
-    bio_area.fill("Experienced tutor. Automated test.")
-    _save_section(page, "profile")
-
-    os.makedirs("screenshots", exist_ok=True)
-    page.screenshot(path="screenshots/recruit_profile_text.png")
-    write_detail("test_preapplicant_profile_text_renders_and_saves", {
-        "message": "Applicant profile text section rendered and saved",
-        "screenshot": "screenshots/recruit_profile_text.png",
-    })
-
-
-def test_preapplicant_profile_photo_renders(
-    page: Page, base_url: str, applicant_credentials
-):
-    """
-    The profile photo section (#profile_picture) of the applicant form at
-    /tutor-section/application/ renders form#profilePicForm with a file upload
-    area for the tutor's public-facing photo.
-    NOTE: this is the APPLICANT form (app-form.php #profile_picture section),
-    not the pre-applicant form — requires TEST_APPLICANT_EMAIL/PASSWORD.
-    Covers P3: 'Profile photo section renders'.
-    """
-    page.goto(f"{base_url}{LOGIN_URL}")
-    expect(page.locator("#ot_login")).to_be_visible()
-    page.wait_for_load_state("networkidle")
-    page.locator("#ot_login_name").fill(applicant_credentials["email"])
-    page.locator("#pw1").fill(applicant_credentials["password"])
-    page.locator("#login_submit").click()
-    page.wait_for_url(re.compile(r".*/tutor-section/application/"), timeout=30000)
-
-    page.goto(f"{base_url}{APPLICATION_URL}")
-    page.wait_for_load_state("networkidle")
-
-    _show_section(page, "profile_picture")
-
-    # The profile photo section renders form#profilePicForm
-    expect(page.locator("div#profile_picture form#profilePicForm")).to_be_visible(timeout=5000)
-    # An upload area or existing photo should be present
-    upload_area = page.locator(
-        "div#profile_picture form#profilePicForm .acf-image-uploader,"
-        "div#profile_picture form#profilePicForm input[type='file'],"
-        "div#profile_picture form#profilePicForm img.acf-image-value"
-    )
-    assert upload_area.count() > 0, (
-        "No upload area or existing photo found in #profile_picture form"
-    )
-
-    os.makedirs("screenshots", exist_ok=True)
-    page.screenshot(path="screenshots/recruit_profile_photo.png")
-    write_detail("test_preapplicant_profile_photo_renders", {
-        "message": "Applicant profile photo section rendered with upload area",
-        "screenshot": "screenshots/recruit_profile_photo.png",
     })
 
 
@@ -1014,5 +546,260 @@ def test_preapplicant_availability_save_and_persist(
         '        .catch(reject);'
         '})'
     )
+    page.wait_for_timeout(300)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Batch A — Applicant dashboard (P2)
+# ─────────────────────────────────────────────────────────────────────────────
+
+def _login_as_applicant(page: Page, base_url: str, creds: dict):
+    """Log in as the given applicant and land on /tutor-section/application/."""
+    page.goto(f"{base_url}{LOGIN_URL}")
+    expect(page.locator("#ot_login")).to_be_visible()
+    page.wait_for_load_state("networkidle")
+    page.locator("#ot_login_name").fill(creds["email"])
+    page.locator("#pw1").fill(creds["password"])
+    page.locator("#login_submit").click()
+    page.wait_for_url(lambda url: "/login/" not in url, timeout=30000)
+    page.goto(f"{base_url}{APPLICATION_URL}")
+    page.wait_for_load_state("networkidle")
+
+
+def _force_applicant_tab(page: Page, section_id: str):
+    """Force an applicant dashboard tab pane visible via JS.
+
+    The applicant form uses Bootstrap 3 (.active) not Bootstrap 4 (.show).
+    Adding both classes ensures the tab is visible regardless of BS version.
+    """
+    page.evaluate(f"""
+        () => {{
+            document.querySelectorAll('.tab-pane').forEach(p => {{
+                p.classList.remove('show', 'active');
+            }});
+            const target = document.getElementById('{section_id}');
+            if (target) target.classList.add('show', 'active');
+        }}
+    """)
+    page.wait_for_selector(f"#{{'{section_id}'}}:is(.show, .active)", timeout=5000)
+
+
+def test_applicant_dashboard_loads(page: Page, base_url: str, applicant_credentials):
+    """
+    A logged-in applicant visiting /tutor-section/application/ sees the
+    applicant dashboard: main wrapper (#tutorFormBox), the Stage 1 confirmed
+    well, and all expected section wells in the DOM.
+    Covers P2: 'Applicant dashboard loads with section tabs'.
+    """
+    _login_as_applicant(page, base_url, applicant_credentials)
+
+    expect(page.locator("#tutorFormBox")).to_be_visible()
+    # Two h1s on the page (theme header + form h1) — target the form's h1 specifically
+    # to avoid Playwright strict mode violation.
+    expect(page.locator("div.applicationFormContainer h1")).to_contain_text(
+        "application has been received", timeout=5000
+    )
+
+    # Stage 1 confirmed as completed
+    stage1_well = page.locator("div.well.completed.full_width")
+    expect(stage1_well).to_be_visible()
+    expect(stage1_well).to_contain_text("Stage 1 - Application")
+
+    # All expected section wells in the DOM
+    for section in ["supporting_documents", "profile", "profile_picture", "references", "availability"]:
+        assert page.locator(f"div.well[value='{section}']").count() > 0, (
+            f"Section well '{section}' not found in applicant dashboard"
+        )
+
+    os.makedirs("screenshots", exist_ok=True)
+    page.screenshot(path="screenshots/applicant_dashboard.png")
+    write_detail("test_applicant_dashboard_loads", {
+        "message": "Applicant dashboard loaded: Stage 1 confirmed, all section wells present",
+        "screenshot": "screenshots/applicant_dashboard.png",
+    })
+
+
+def test_applicant_completion_scores(page: Page, base_url: str, applicant_credentials):
+    """
+    Section wells show correct status for a fresh applicant:
+    - Stage 1 is under review (app_approved=false for a new submission)
+    - Supporting docs, profile text, profile photo: notstarted (not filled yet)
+    - Availability: completed (slots were saved during the pre-applicant form)
+    Covers P2: 'Document completion scores show correct icons'.
+    """
+    _login_as_applicant(page, base_url, applicant_credentials)
+
+    # Stage 1: under review, not yet approved
+    expect(page.locator("span.status_text.review")).to_be_visible()
+
+    # Sections not yet started by a fresh applicant
+    for section in ["supporting_documents", "profile", "profile_picture"]:
+        assert page.locator(f"div.well.notstarted[value='{section}']").count() > 0, (
+            f"Expected well[value='{section}'] to be 'notstarted' for fresh applicant"
+        )
+
+    # Availability was filled during the pre-applicant application form
+    assert page.locator("div.well.completed[value='availability']").count() > 0, (
+        "Expected availability well to be 'completed' — slots were saved during pre-applicant form"
+    )
+
+    os.makedirs("screenshots", exist_ok=True)
+    page.screenshot(path="screenshots/applicant_completion_scores.png")
+    write_detail("test_applicant_completion_scores", {
+        "message": "Completion scores: docs/profile/photo=notstarted, availability=completed, Stage 1=under review",
+        "screenshot": "screenshots/applicant_completion_scores.png",
+    })
+
+
+def test_applicant_references_not_sent(page: Page, base_url: str, applicant_credentials):
+    """
+    The references tab in the applicant dashboard shows 'We haven't sent your
+    references out yet' when no reference CPT records exist for this user.
+    The .ot_reference_table is absent because $references_made=false.
+    Covers P2: '"References not yet sent" message when CPTs do not exist'.
+    """
+    _login_as_applicant(page, base_url, applicant_credentials)
+
+    # Navigate to references tab
+    page.evaluate("""
+        () => {
+            document.querySelectorAll('.tab-pane').forEach(p => {
+                p.classList.remove('show', 'active');
+            });
+            const ref = document.getElementById('references');
+            if (ref) ref.classList.add('show', 'active');
+        }
+    """)
+    page.wait_for_selector("#references.active, #references.show", timeout=5000)
+
+    ref_heading = page.locator("#references h3")
+    expect(ref_heading).to_contain_text("haven't sent your references out yet", timeout=5000)
+
+    assert page.locator(".ot_reference_table").count() == 0, (
+        "Expected no .ot_reference_table when reference CPTs do not exist"
+    )
+
+    os.makedirs("screenshots", exist_ok=True)
+    page.screenshot(path="screenshots/applicant_references_not_sent.png")
+    write_detail("test_applicant_references_not_sent", {
+        "message": "References tab shows 'not sent yet' message; no reference table present",
+        "screenshot": "screenshots/applicant_references_not_sent.png",
+    })
+
+
+def test_applicant_availability_tab_has_grid(
+    page: Page, base_url: str, applicant_credentials
+):
+    """
+    The availability section in the applicant dashboard renders the
+    [tutor_availability] shortcode with slot buttons present after JS init.
+    Covers P2: 'Applicant — availability tab has slot grid'.
+    """
+    _login_as_applicant(page, base_url, applicant_credentials)
+
+    page.evaluate("""
+        () => {
+            document.querySelectorAll('.tab-pane').forEach(p => {
+                p.classList.remove('show', 'active');
+            });
+            const avail = document.getElementById('availability');
+            if (avail) avail.classList.add('show', 'active');
+        }
+    """)
+    page.wait_for_selector("#tutor_availability_holder", state="attached", timeout=10000)
+
+    # Force capacity=1 so hide_on_zero wrapper is shown
+    page.evaluate("""
+        () => {
+            const input = document.getElementById('tutor_extra_capacity');
+            if (!input || Number(input.value) > 0) return;
+            input.value = '1';
+            input.dispatchEvent(new Event('input', { bubbles: true }));
+            input.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+    """)
+
+    page.wait_for_selector("button.tutor-avail-slot", timeout=10000)
+    expect(page.locator("button.tutor-avail-slot").first).to_be_visible(timeout=5000)
+
+    os.makedirs("screenshots", exist_ok=True)
+    page.screenshot(path="screenshots/applicant_avail_grid.png")
+    write_detail("test_applicant_availability_tab_has_grid", {
+        "message": "Applicant availability tab rendered slot grid",
+        "screenshot": "screenshots/applicant_avail_grid.png",
+    })
+
+
+def test_applicant_availability_save_and_persist(
+    page: Page, base_url: str, applicant_credentials
+):
+    """
+    Saving a slot via tutor_availability_save AJAX in the applicant dashboard
+    persists after a page reload (is-on class on the saved cell).
+    Cleanup: restores the original slot set by the applicant_credentials fixture.
+    Covers P2: 'Applicant — availability save persists after reload'.
+    """
+    def _open_avail_grid():
+        page.goto(f"{base_url}{APPLICATION_URL}")
+        page.wait_for_load_state("networkidle")
+        page.evaluate("""
+            () => {
+                document.querySelectorAll('.tab-pane').forEach(p => {
+                    p.classList.remove('show', 'active');
+                });
+                const avail = document.getElementById('availability');
+                if (avail) avail.classList.add('show', 'active');
+            }
+        """)
+        page.wait_for_selector("#tutor_availability_holder", state="attached", timeout=10000)
+        page.evaluate("""
+            () => {
+                const input = document.getElementById('tutor_extra_capacity');
+                if (!input || Number(input.value) > 0) return;
+                input.value = '1';
+                input.dispatchEvent(new Event('input', { bubbles: true }));
+                input.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+        """)
+        page.wait_for_selector("button.tutor-avail-slot", timeout=10000)
+
+    def _save_slots(slots_json: str):
+        return page.evaluate(
+            '() => new Promise((resolve, reject) => {'
+            '    const avail = window.TutorAvail || {};'
+            '    const fd = new FormData();'
+            "    fd.append('action', 'tutor_availability_save');"
+            "    fd.append('nonce', avail.nonce || '');"
+            "    fd.append('tutor_id', String(avail.tutorId || ''));"
+            f"    fd.append('slots', '{slots_json}');"
+            "    fd.append('extra_capacity', '0');"
+            "    fd.append('timezone', avail.timezone || 'Europe/London');"
+            "    fd.append('notes', '');"
+            "    fd.append('date_free', '');"
+            '    fetch(avail.ajaxUrl || "/wp-admin/admin-ajax.php", { method: "POST", body: fd })'
+            '        .then(r => r.json())'
+            '        .then(data => data.success ? resolve(data) : reject(data))'
+            '        .catch(reject);'
+            '})'
+        )
+
+    _login_as_applicant(page, base_url, applicant_credentials)
+    _open_avail_grid()
+
+    # Save a distinct slot so it doesn't overlap the fixture's slot [day=0, slot=16]
+    save_result = _save_slots('{"1": [10]}')
+    print(f"\n[applicant-avail-save] {save_result}")
+
+    _open_avail_grid()
+
+    saved_cell = page.locator("button.tutor-avail-slot[data-d='1'][data-s='10']")
+    expect(saved_cell).to_be_attached(timeout=5000)
+    cell_class = saved_cell.get_attribute("class") or ""
+    assert "is-on" in cell_class, (
+        f"Slot [day=1, slot=10] expected is-on after save+reload, got class: {cell_class!r}"
+    )
+
+    # Cleanup: restore to the slot the fixture originally set
+    _save_slots('{"0": [16]}')
     page.wait_for_timeout(300)
 

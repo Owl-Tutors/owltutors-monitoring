@@ -290,20 +290,6 @@ def tutor_credentials():
 
 
 @pytest.fixture(scope="session")
-def applicant_credentials():
-    """Login credentials for a permanent applicant account on the dev site.
-    Required for applicant form section tests (profile text, profile photo).
-    Set TEST_APPLICANT_EMAIL and TEST_APPLICANT_PASSWORD in .env / GitHub Secrets."""
-    email    = os.environ.get("TEST_APPLICANT_EMAIL", "")
-    password = os.environ.get("TEST_APPLICANT_PASSWORD", "")
-    if not (email and password):
-        pytest.skip(
-            "TEST_APPLICANT_EMAIL/PASSWORD not set — skipping applicant form section tests"
-        )
-    return {"email": email, "password": password}
-
-
-@pytest.fixture(scope="session")
 def meet_now_tutor_id():
     """WP user ID of a test tutor configured for meet-now:
     auto_swap_active=true, include_tutor_in_auto_swap=true, online delivery,
@@ -465,7 +451,10 @@ def stage3_job(
     magic_link_url = f"{base_url}/jobs/{job_id}/?job={crc32_val}&email={client_email}"
 
     setup_ctx, setup_page = _new_authed_page(browser)
-    setup_page.goto(magic_link_url)
+    # domcontentloaded: the job page fires heavy AJAX on load; waiting for the
+    # full load event times out on a cold local server. The connect button is
+    # rendered server-side so it's present immediately after HTML parse.
+    setup_page.goto(magic_link_url, wait_until="domcontentloaded")
     setup_page.wait_for_selector("button.connect_with_tutor", timeout=15000)
     setup_page.locator("button.connect_with_tutor").first.click()
     setup_page.wait_for_selector("#passwordModal.show, .dash_modal.show", timeout=15000)
@@ -499,22 +488,6 @@ def stage3_job(
 
     yield {"job_id": job_id, "client_email": client_email, "client_password": CLIENT_PASSWORD, "tutor_id": meet_now_tutor_id}
 
-
-@pytest.fixture(scope="session")
-def stage4_job_id(base_url, api_key, meet_now_tutor_id, client_credentials):
-    """Dynamically creates a Stage 4 test job via the owl_create_test_job endpoint.
-
-    Same tutor and client as stage3_job_id.  Creates an independent job so
-    Stage 3 and Stage 4 tests can run in parallel without interference."""
-    from utils.create_test_job import create_test_job
-    result = create_test_job(
-        base_url=base_url,
-        api_key=api_key,
-        stage=4,
-        tutor_id=meet_now_tutor_id,
-        client_email=client_credentials["email"],
-    )
-    return result["job_id"]
 
 
 @pytest.fixture(scope="session")
@@ -573,4 +546,52 @@ def preapplicant_credentials(browser, base_url, api_key):
     )
     ctx.close()
 
+    yield {"email": email, "password": password}
+
+
+@pytest.fixture(scope="session")
+def applicant_credentials(browser, base_url, api_key):
+    """Create a fresh applicant for this test session by running the full application flow.
+
+    Registers a new pre-applicant (no _ot_test_user=1 flag — flagging would cause
+    cleanup_after to delete the account mid-session), fills all 9 form sections via
+    complete_application_form(), and submits. The system promotes the pre-applicant
+    to 'applicant' role on successful submission.
+
+    UUID-based emails accumulate on the dev site; clean up old testbot.applicant.*
+    accounts manually via WP admin when needed.
+    No TEST_APPLICANT_EMAIL/PASSWORD env vars required — fully self-creating.
+    """
+    from pathlib import Path as _Path
+    from utils.apply import complete_application_form as _complete_form
+
+    APPLICATION_URL = "/tutor-section/application/"
+    qts_pdf = str(_Path(__file__).parent / "fixtures" / "test_qts.pdf")
+    import uuid as _uuid
+    email    = f"testbot.applicant.{_uuid.uuid4().hex[:8]}@owltutors.co.uk"
+    password = "Owl1Tutor!Test2026"
+
+    ctx, page = _new_authed_page(browser)
+    page.goto(f"{base_url}{APPLICATION_URL}")
+    page.wait_for_selector("#signupform", state="visible", timeout=10000)
+    page.locator("#email").fill(email)
+    page.locator("#pw1").fill(password)
+    page.evaluate("document.getElementById('signupform').submit()")
+    page.wait_for_url(re.compile(r".*/tutor-section/application/"), timeout=30000)
+    assert "register-errors" not in page.url, (
+        f"applicant_credentials: registration failed — {page.url}"
+    )
+
+    _complete_form(page, base_url, qts_pdf)
+
+    # Verify promotion actually happened. The applicant form has
+    # div.applicationFormContainer; the pre-applicant form does not.
+    page.goto(f"{base_url}{APPLICATION_URL}")
+    page.wait_for_load_state("networkidle")
+    assert page.locator("div.applicationFormContainer").count() > 0, (
+        "applicant_credentials: form submit did not promote user to 'applicant'. "
+        "Run with --headed to debug. Check the submit step in apply.py."
+    )
+
+    ctx.close()
     yield {"email": email, "password": password}

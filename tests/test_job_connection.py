@@ -159,10 +159,13 @@ def test_logged_out_stage3_sees_login_modal(
     page.locator("#pw1").fill(stage3_job["client_password"])
     page.locator("#login_submit").click()
     page.wait_for_url(lambda url: LOGIN_URL not in url, timeout=90000)
-    page.wait_for_load_state("networkidle", timeout=30000)
 
-    # Post-login redirect may go to the dashboard — navigate explicitly to the job
-    page.goto(f"{base_url}{JOB_URL}{stage3_job['job_id']}/")
+    # Login on the job page redirects back to the same job URL, so we may already
+    # be there. Only navigate explicitly if we landed somewhere else (e.g. dashboard).
+    # Calling page.goto() when already on the target URL causes ERR_ABORTED because
+    # WP JS fires a same-page redirect at the same moment Playwright starts a new one.
+    if f"{JOB_URL}{stage3_job['job_id']}/" not in page.url:
+        page.goto(f"{base_url}{JOB_URL}{stage3_job['job_id']}/", wait_until="domcontentloaded")
 
     # Now logged in, the job page should render with applicant cards
     expect(page.locator(".applicants")).to_be_visible()
@@ -308,15 +311,20 @@ def test_magic_link_auto_login(page: Page, base_url: str, magic_link_params):
 # ─────────────────────────────────────────────────────────────────────────────
 
 def test_client_stage4_job_shows_connected_tutor(
-    page: Page, base_url: str, stage4_job_id, client_credentials
+    page: Page, base_url: str, stage3_job
 ):
     """
     Logged-in client on a Stage 4 job sees the 'Your chosen tutor' section with
     connected tutor details.
+
+    Uses the same dynamically created job/client as the Stage 3 tests. By the
+    time this test runs, test_accept_terms_advances_to_stage4 has already
+    advanced that job to Stage 4, so no permanent client account is needed.
+
     Covers P1: 'Logged-in client on Stage 4 job sees tutor selected dashboard state'.
     """
-    _login(page, base_url, client_credentials["email"], client_credentials["password"])
-    page.goto(f"{base_url}{JOB_URL}{stage4_job_id}/")
+    _login(page, base_url, stage3_job["client_email"], stage3_job["client_password"])
+    page.goto(f"{base_url}{JOB_URL}{stage3_job['job_id']}/", wait_until="domcontentloaded")
 
     connected_section = page.locator(
         "section[aria-label='Connected tutor information']"
@@ -328,8 +336,8 @@ def test_client_stage4_job_shows_connected_tutor(
     page.screenshot(path="screenshots/stage4_connected_tutor.png")
     write_detail("test_client_stage4_job_shows_connected_tutor", {
         "message": (
-            f"Stage 4 job {stage4_job_id} shows 'Your chosen tutor' section"
+            f"Stage 4 job {stage3_job['job_id']} shows 'Your chosen tutor' section"
         ),
-        "job_id": stage4_job_id,
+        "job_id": stage3_job["job_id"],
         "screenshot": "screenshots/stage4_connected_tutor.png",
     })

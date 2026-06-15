@@ -1,145 +1,145 @@
 {
-  "last_run": "2026-06-15T11:59:04Z",
+  "last_run": "2026-06-15T13:30:08Z",
   "results": {
     "test_client_login": {
       "status": "pass",
       "message": "OK",
-      "duration_ms": 6080
+      "duration_ms": 16483
     },
     "test_client_dashboard": {
       "status": "pass",
       "message": "OK",
-      "duration_ms": 6509
+      "duration_ms": 5629
     },
     "test_contact_form_callback_submission": {
       "status": "pass",
       "message": "OK",
-      "duration_ms": 10996
+      "duration_ms": 24456
     },
     "test_contact_form_renders": {
       "status": "pass",
       "message": "OK",
-      "duration_ms": 2273
+      "duration_ms": 1946
     },
     "test_contact_form_has_submit": {
       "status": "pass",
       "message": "OK",
-      "duration_ms": 2315
+      "duration_ms": 1862
     },
     "test_contact_form_validation": {
       "status": "pass",
       "message": "OK",
-      "duration_ms": 4258
+      "duration_ms": 3835
     },
     "test_jobs_board_checkbox_hidden_on_plain_form": {
       "status": "pass",
       "message": "OK",
-      "duration_ms": 2286
+      "duration_ms": 1854
     },
     "test_jobs_board_checkbox_visible_on_requested_tutors": {
       "status": "pass",
       "message": "OK",
-      "duration_ms": 6131
+      "duration_ms": 5378
     },
     "test_requested_tutor_cart": {
       "status": "pass",
       "message": "OK",
-      "duration_ms": 4220
+      "duration_ms": 4137
     },
     "test_contact_form_tutor_submission": {
       "status": "pass",
       "message": "OK",
-      "duration_ms": 16135
+      "duration_ms": 15244
     },
     "test_contact_form_something_else": {
       "status": "pass",
       "message": "OK",
-      "duration_ms": 10640
+      "duration_ms": 9396
     },
     "test_contact_form_requested_tutors": {
       "status": "pass",
       "message": "OK",
-      "duration_ms": 15967
+      "duration_ms": 14956
     },
     "test_new_client_banner": {
       "status": "pass",
       "message": "OK",
-      "duration_ms": 13612
+      "duration_ms": 13380
     },
     "test_contact_form_returning_client": {
       "status": "pass",
       "message": "OK",
-      "duration_ms": 14620
+      "duration_ms": 13507
     },
     "test_stage1_quality_check_fail": {
       "status": "fail",
-      "message": "page = <Page url='https://otdev1602.wpengine.com/jobs/200258/?returning_client=true&generate_lead&job_status=1'>\nbase_url = 'https://otdev1602.wpengine.com', cleanup_after = None\n\n    def test_stage1_quality_check_fail(page: Page, base_url: str, cleanup_after):\n        \"\"\"\n        Submitting a job w",
-      "duration_ms": 23031
+      "message": "page = <Page url='https://otdev1602.wpengine.com/jobs/200289/?returning_client=true&generate_lead&job_status=1'>\nbase_url = 'https://otdev1602.wpengine.com', cleanup_after = None\n\n    def test_stage1_quality_check_fail(page: Page, base_url: str, cleanup_after):\n        \"\"\"\n        Submitting a job w",
+      "duration_ms": 22157
     },
     "test_health_safety_unchecked_job_creates": {
       "status": "pass",
       "message": "OK",
-      "duration_ms": 11183
+      "duration_ms": 14036
     },
     "test_duplicate_job_detection": {
       "status": "fail",
-      "message": "page = <Page url='https://otdev1602.wpengine.com/jobs/200264/?returning_client=true&generate_lead&job_status=1'>\nbase_url = 'https://otdev1602.wpengine.com'\nreturning_client_login = {'email': 'testbot.client.12f36c17@owltutors.co.uk'}\ncleanup_after = None\n\n    def test_duplicate_job_detection(\n     ",
-      "duration_ms": 23828
+      "message": "page = <Page url='https://otdev1602.wpengine.com/jobs/200295/?returning_client=true&generate_lead&job_status=1'>\nbase_url = 'https://otdev1602.wpengine.com'\nreturning_client_login = {'email': 'testbot.client.13d757e3@owltutors.co.uk'}\ncleanup_after = None\n\n    def test_duplicate_job_detection(\n     ",
+      "duration_ms": 23445
     },
     "test_admin_job_path_redirects": {
       "status": "pass",
       "message": "OK",
-      "duration_ms": 12555
+      "duration_ms": 12512
     },
     "test_blog_listing_loads": {
       "status": "pass",
       "message": "OK",
-      "duration_ms": 1997
+      "duration_ms": 2887
     },
     "test_blog_article_loads": {
       "status": "pass",
       "message": "OK",
-      "duration_ms": 2877
+      "duration_ms": 2282
     },
     "test_testimonials_page_loads": {
       "status": "pass",
       "message": "OK",
-      "duration_ms": 1523
+      "duration_ms": 1159
     },
     "test_shop_loads": {
       "status": "pass",
       "message": "OK",
-      "duration_ms": 2315
+      "duration_ms": 1917
     },
     "test_group_course_listing": {
       "status": "pass",
       "message": "OK",
-      "duration_ms": 1733
+      "duration_ms": 1159
     },
     "test_group_course_detail": {
       "status": "pass",
       "message": "OK",
-      "duration_ms": 3535
+      "duration_ms": 2919
     },
     "test_blog_pagination": {
       "status": "pass",
       "message": "OK",
-      "duration_ms": 3207
+      "duration_ms": 2565
     },
     "test_blog_reading_time": {
       "status": "pass",
       "message": "OK",
-      "duration_ms": 3075
+      "duration_ms": 2211
     },
     "test_video_object_json_ld": {
       "status": "skip",
       "message": "('/home/runner/work/owltutors-monitoring/owltutors-monitoring/tests/test_content.py', 212, 'Skipped: None of the first 5 blog articles has VideoObject JSON-LD \u2014 set a specific URL in this test once a post with video_id is identified on the dev site')",
-      "duration_ms": 6485
+      "duration_ms": 5020
     },
     "test_testimonial_scores_shortcode": {
       "status": "skip",
       "message": "('/home/runner/work/owltutors-monitoring/owltutors-monitoring/tests/test_content.py', 249, \"Skipped: #testimonial_scores not found at /about-us/testimonials/ \u2014 the [ot_show_testimonial_scores] shortcode may not be embedded in this environment's CMS page. Update TESTIMONIALS_URL to the correct page U",
-      "duration_ms": 1452
+      "duration_ms": 1104
     },
     "test_ga4_session_storage_set_on_load": {
       "status": "skip",
@@ -154,122 +154,122 @@
     "test_homepage_loads": {
       "status": "pass",
       "message": "OK",
-      "duration_ms": 2062
+      "duration_ms": 1637
     },
     "test_stage3_job_renders_applicant_cards": {
       "status": "pass",
       "message": "OK",
-      "duration_ms": 7054
+      "duration_ms": 6569
     },
     "test_connect_with_tutor_triggers_modal": {
-      "status": "pass",
-      "message": "OK",
-      "duration_ms": 8017
+      "status": "fail",
+      "message": "page = <Page url='https://otdev1602.wpengine.com/jobs/200299/'>\nbase_url = 'https://otdev1602.wpengine.com'\nstage3_job = {'client_email': 'testbot.stage3.b59c8293@owltutors.co.uk', 'client_password': 'Owl1Tutor!Test2026', 'job_id': '200299', 'tutor_id': '20049'}\n\n    def test_connect_with_tutor_trig",
+      "duration_ms": 8983
     },
     "test_accept_terms_modal_renders": {
-      "status": "pass",
-      "message": "OK",
-      "duration_ms": 8169
+      "status": "fail",
+      "message": "page = <Page url='https://otdev1602.wpengine.com/jobs/200299/'>\nbase_url = 'https://otdev1602.wpengine.com'\nstage3_job = {'client_email': 'testbot.stage3.b59c8293@owltutors.co.uk', 'client_password': 'Owl1Tutor!Test2026', 'job_id': '200299', 'tutor_id': '20049'}\n\n    def test_accept_terms_modal_rend",
+      "duration_ms": 33651
     },
     "test_logged_out_stage3_sees_login_modal": {
-      "status": "pass",
-      "message": "OK",
-      "duration_ms": 5573
+      "status": "fail",
+      "message": "page = <Page url='https://otdev1602.wpengine.com/jobs/200299/'>\nbase_url = 'https://otdev1602.wpengine.com'\nstage3_job = {'client_email': 'testbot.stage3.b59c8293@owltutors.co.uk', 'client_password': 'Owl1Tutor!Test2026', 'job_id': '200299', 'tutor_id': '20049'}\n\n    def test_logged_out_stage3_sees_",
+      "duration_ms": 11293
     },
     "test_stripe_return_auto_triggers_modal": {
-      "status": "pass",
-      "message": "OK",
-      "duration_ms": 8381
+      "status": "fail",
+      "message": "page = <Page url='https://otdev1602.wpengine.com/jobs/200299/?payment_method_added=true&from_stripe=true&tutor_id=20049'>\nbase_url = 'https://otdev1602.wpengine.com'\nstage3_job = {'client_email': 'testbot.stage3.b59c8293@owltutors.co.uk', 'client_password': 'Owl1Tutor!Test2026', 'job_id': '200299', ",
+      "duration_ms": 18575
     },
     "test_accept_terms_advances_to_stage4": {
-      "status": "pass",
-      "message": "OK",
-      "duration_ms": 11933
+      "status": "fail",
+      "message": "page = <Page url='https://otdev1602.wpengine.com/jobs/200299/'>\nbase_url = 'https://otdev1602.wpengine.com'\nstage3_job = {'client_email': 'testbot.stage3.b59c8293@owltutors.co.uk', 'client_password': 'Owl1Tutor!Test2026', 'job_id': '200299', 'tutor_id': '20049'}\n\n    def test_accept_terms_advances_t",
+      "duration_ms": 8803
     },
     "test_magic_link_auto_login": {
       "status": "pass",
       "message": "OK",
-      "duration_ms": 3074
+      "duration_ms": 2782
     },
     "test_client_stage4_job_shows_connected_tutor": {
-      "status": "pass",
-      "message": "OK",
-      "duration_ms": 6846
+      "status": "fail",
+      "message": "page = <Page url='https://otdev1602.wpengine.com/jobs/200299/'>\nbase_url = 'https://otdev1602.wpengine.com'\nstage3_job = {'client_email': 'testbot.stage3.b59c8293@owltutors.co.uk', 'client_password': 'Owl1Tutor!Test2026', 'job_id': '200299', 'tutor_id': '20049'}\n\n    def test_client_stage4_job_shows",
+      "duration_ms": 8427
     },
     "test_meet_now_form_auto_selects_type": {
       "status": "pass",
       "message": "OK",
-      "duration_ms": 3564
+      "duration_ms": 3150
     },
     "test_meet_now_submission": {
       "status": "pass",
       "message": "OK",
-      "duration_ms": 13029
+      "duration_ms": 13855
     },
     "test_papers_load": {
       "status": "pass",
       "message": "OK",
-      "duration_ms": 1969
+      "duration_ms": 1556
     },
     "test_papers_ajax_filter": {
       "status": "pass",
       "message": "OK",
-      "duration_ms": 2965
+      "duration_ms": 2431
     },
     "test_papers_load_more": {
       "status": "pass",
       "message": "OK",
-      "duration_ms": 2822
+      "duration_ms": 2445
     },
     "test_tutor_registration_page_loads": {
       "status": "pass",
       "message": "OK",
-      "duration_ms": 2326
+      "duration_ms": 1849
     },
     "test_tutor_registration_submits": {
       "status": "pass",
       "message": "OK",
-      "duration_ms": 3752
+      "duration_ms": 3070
     },
     "test_preapplicant_application_page_loads": {
       "status": "fail",
-      "message": "page = <Page url='https://otdev1602.wpengine.com/login/?login=incorrect_password'>\nbase_url = 'https://otdev1602.wpengine.com'\npreapplicant_credentials = {'email': 'testbot.preapp.ad211a85@owltutors.co.uk', 'password': 'Owl1Tutor!Test2026'}\n\n    def test_preapplicant_application_page_loads(\n        ",
-      "duration_ms": 33149
+      "message": "page = <Page url='https://otdev1602.wpengine.com/login/?login=incorrect_password'>\nbase_url = 'https://otdev1602.wpengine.com'\npreapplicant_credentials = {'email': 'testbot.preapp.51d9fd8f@owltutors.co.uk', 'password': 'Owl1Tutor!Test2026'}\n\n    def test_preapplicant_application_page_loads(\n        ",
+      "duration_ms": 32748
     },
     "test_tutor_full_application_flow": {
       "status": "fail",
       "message": "page = <Page url='https://otdev1602.wpengine.com/tutor-section/application/'>\nbase_url = 'https://otdev1602.wpengine.com', cleanup_after = None\n\n    def test_tutor_full_application_flow(page: Page, base_url: str, cleanup_after):\n        \"\"\"\n        End-to-end tutor application flow:\n          1. Reg",
-      "duration_ms": 112591
+      "duration_ms": 152056
     },
     "test_logged_out_application_page_has_fields": {
       "status": "pass",
       "message": "OK",
-      "duration_ms": 2297
+      "duration_ms": 1874
     },
     "test_email_already_registered_error": {
       "status": "fail",
-      "message": "page = <Page url='https://otdev1602.wpengine.com/tutor-section/application/?newpreapp=true'>\nbase_url = 'https://otdev1602.wpengine.com'\npreapplicant_credentials = {'email': 'testbot.preapp.ad211a85@owltutors.co.uk', 'password': 'Owl1Tutor!Test2026'}\n\n    def test_email_already_registered_error(page",
-      "duration_ms": 13906
+      "message": "page = <Page url='https://otdev1602.wpengine.com/tutor-section/application/?newpreapp=true'>\nbase_url = 'https://otdev1602.wpengine.com'\npreapplicant_credentials = {'email': 'testbot.preapp.51d9fd8f@owltutors.co.uk', 'password': 'Owl1Tutor!Test2026'}\n\n    def test_email_already_registered_error(page",
+      "duration_ms": 13513
     },
     "test_preapplicant_section_nav_forward_back": {
       "status": "fail",
-      "message": "page = <Page url='https://otdev1602.wpengine.com/login/?login=incorrect_password'>\nbase_url = 'https://otdev1602.wpengine.com'\npreapplicant_credentials = {'email': 'testbot.preapp.ad211a85@owltutors.co.uk', 'password': 'Owl1Tutor!Test2026'}\n\n    def test_preapplicant_section_nav_forward_back(\n      ",
-      "duration_ms": 33142
+      "message": "page = <Page url='https://otdev1602.wpengine.com/login/?login=incorrect_password'>\nbase_url = 'https://otdev1602.wpengine.com'\npreapplicant_credentials = {'email': 'testbot.preapp.51d9fd8f@owltutors.co.uk', 'password': 'Owl1Tutor!Test2026'}\n\n    def test_preapplicant_section_nav_forward_back(\n      ",
+      "duration_ms": 32781
     },
     "test_client_role_on_application_page": {
       "status": "pass",
       "message": "OK",
-      "duration_ms": 1521
+      "duration_ms": 1182
     },
     "test_preapplicant_availability_tab_has_grid": {
       "status": "fail",
-      "message": "page = <Page url='https://otdev1602.wpengine.com/login/?login=incorrect_password'>\nbase_url = 'https://otdev1602.wpengine.com'\npreapplicant_credentials = {'email': 'testbot.preapp.ad211a85@owltutors.co.uk', 'password': 'Owl1Tutor!Test2026'}\n\n    def test_preapplicant_availability_tab_has_grid(\n     ",
-      "duration_ms": 33212
+      "message": "page = <Page url='https://otdev1602.wpengine.com/login/?login=incorrect_password'>\nbase_url = 'https://otdev1602.wpengine.com'\npreapplicant_credentials = {'email': 'testbot.preapp.51d9fd8f@owltutors.co.uk', 'password': 'Owl1Tutor!Test2026'}\n\n    def test_preapplicant_availability_tab_has_grid(\n     ",
+      "duration_ms": 32832
     },
     "test_preapplicant_availability_save_and_persist": {
       "status": "fail",
-      "message": "page = <Page url='https://otdev1602.wpengine.com/login/?login=incorrect_password'>\nbase_url = 'https://otdev1602.wpengine.com'\npreapplicant_credentials = {'email': 'testbot.preapp.ad211a85@owltutors.co.uk', 'password': 'Owl1Tutor!Test2026'}\n\n    def test_preapplicant_availability_save_and_persist(\n ",
-      "duration_ms": 33121
+      "message": "page = <Page url='https://otdev1602.wpengine.com/login/?login=incorrect_password'>\nbase_url = 'https://otdev1602.wpengine.com'\npreapplicant_credentials = {'email': 'testbot.preapp.51d9fd8f@owltutors.co.uk', 'password': 'Owl1Tutor!Test2026'}\n\n    def test_preapplicant_availability_save_and_persist(\n ",
+      "duration_ms": 32956
     },
     "test_applicant_dashboard_loads": {
       "status": "fail",
@@ -299,147 +299,147 @@
     "test_add_to_cart_updates_session_storage": {
       "status": "pass",
       "message": "OK",
-      "duration_ms": 4006
+      "duration_ms": 2608
     },
     "test_request_count_badge_increments": {
       "status": "pass",
       "message": "OK",
-      "duration_ms": 4117
+      "duration_ms": 3439
     },
     "test_remove_tutor_updates_url": {
       "status": "pass",
       "message": "OK",
-      "duration_ms": 10153
+      "duration_ms": 8403
     },
     "test_school_listing_page_loads": {
       "status": "pass",
       "message": "OK",
-      "duration_ms": 1857
+      "duration_ms": 1349
     },
     "test_school_text_search_ajax": {
       "status": "pass",
       "message": "OK",
-      "duration_ms": 2716
+      "duration_ms": 2203
     },
     "test_school_filter_form_returns_results": {
       "status": "pass",
       "message": "OK",
-      "duration_ms": 5116
+      "duration_ms": 4173
     },
     "test_school_profile_loads": {
       "status": "pass",
       "message": "OK",
-      "duration_ms": 5249
+      "duration_ms": 4422
     },
     "test_school_profile_json_ld_present": {
       "status": "pass",
       "message": "OK",
-      "duration_ms": 2545
+      "duration_ms": 5751
     },
     "test_school_profile_linked_papers": {
       "status": "pass",
       "message": "OK",
-      "duration_ms": 2619
+      "duration_ms": 1860
     },
     "test_tutor_search_page_loads": {
       "status": "pass",
       "message": "OK",
-      "duration_ms": 1858
+      "duration_ms": 1413
     },
     "test_tutor_search_returns_results": {
       "status": "pass",
       "message": "OK",
-      "duration_ms": 3146
+      "duration_ms": 2456
     },
     "test_tutor_profile_loads": {
       "status": "pass",
       "message": "OK",
-      "duration_ms": 3952
+      "duration_ms": 3402
     },
     "test_subject_with_levels_reveals_level_dropdown": {
       "status": "pass",
       "message": "OK",
-      "duration_ms": 1927
+      "duration_ms": 1458
     },
     "test_school_entrance_subject_reveals_school_filter": {
       "status": "pass",
       "message": "OK",
-      "duration_ms": 3173
+      "duration_ms": 2350
     },
     "test_home_delivery_reveals_location_filter": {
       "status": "pass",
       "message": "OK",
-      "duration_ms": 1856
+      "duration_ms": 1567
     },
     "test_detailed_filters_reveal_sen_and_badges": {
       "status": "pass",
       "message": "OK",
-      "duration_ms": 1914
+      "duration_ms": 1504
     },
     "test_availability_grid_appears_and_accepts_input": {
       "status": "pass",
       "message": "OK",
-      "duration_ms": 2940
+      "duration_ms": 2397
     },
     "test_full_search_subject_level_home_location": {
       "status": "pass",
       "message": "OK",
-      "duration_ms": 3424
+      "duration_ms": 2971
     },
     "test_meet_now_button_visible_on_eligible_tutor": {
-      "status": "fail",
-      "message": "page = <Page url='https://otdev1602.wpengine.com/tutors/'>\nbase_url = 'https://otdev1602.wpengine.com'\n\n    def test_meet_now_button_visible_on_eligible_tutor(page: Page, base_url: str):\n        \"\"\"\n        At least one tutor card in the default search results has a 'Connect now'\n        button link",
-      "duration_ms": 12352
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 2134
     },
     "test_meet_now_button_absent_on_ineligible_tutor": {
       "status": "pass",
       "message": "OK",
-      "duration_ms": 2574
+      "duration_ms": 1768
     },
     "test_availability_summary_on_profile": {
       "status": "skip",
       "message": "('/home/runner/work/owltutors-monitoring/owltutors-monitoring/tests/test_search.py', 259, 'Skipped: No p.availability_slots_summary found \u2014 no tutors on the dev site have availability slots set; set slots in the tutor dashboard to enable this test')",
-      "duration_ms": 2885
+      "duration_ms": 2394
     },
     "test_tutor_dashboard_loads": {
       "status": "pass",
       "message": "OK",
-      "duration_ms": 6943
+      "duration_ms": 5927
     },
     "test_tutor_dashboard_jobs_board": {
       "status": "pass",
       "message": "OK",
-      "duration_ms": 6700
+      "duration_ms": 6041
     },
     "test_tutor_dashboard_timesheet_entry": {
       "status": "pass",
       "message": "OK",
-      "duration_ms": 6746
+      "duration_ms": 5931
     },
     "test_tutor_jobs_board_filter_returns_results": {
       "status": "pass",
       "message": "OK",
-      "duration_ms": 14443
+      "duration_ms": 14723
     },
     "test_tutor_stripe_connect_section_renders": {
-      "status": "pass",
-      "message": "OK",
-      "duration_ms": 8108
+      "status": "fail",
+      "message": "page = <Page url='https://otdev1602.wpengine.com/login/'>\nbase_url = 'https://otdev1602.wpengine.com'\ntutor_credentials = {'email': 'recruitment@owltutors.co.uk', 'password': 'cr8rXNQmWHa7ZmrC8zk9BdKxCdSw2eyu'}\n\n    def test_tutor_stripe_connect_section_renders(page: Page, base_url: str, tutor_crede",
+      "duration_ms": 32650
     },
     "test_tutor_availability_grid_renders": {
       "status": "pass",
       "message": "OK",
-      "duration_ms": 8283
+      "duration_ms": 7422
     },
     "test_tutor_availability_grid_saves": {
       "status": "pass",
       "message": "OK",
-      "duration_ms": 8429
+      "duration_ms": 7787
     },
     "test_tutor_dashboard_invoices_renders": {
       "status": "pass",
       "message": "OK",
-      "duration_ms": 6749
+      "duration_ms": 5764
     }
   }
 }

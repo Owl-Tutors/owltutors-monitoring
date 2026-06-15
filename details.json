@@ -8,8 +8,8 @@
     "screenshot": "screenshots/client_dashboard.png"
   },
   "test_contact_form_callback_submission": {
-    "message": "Callback enquiry submitted and redirected to job 200244",
-    "job_id": "200244",
+    "message": "Callback enquiry submitted and redirected to job 200275",
+    "job_id": "200275",
     "screenshot": "screenshots/job_callback_submission.png"
   },
   "test_contact_form_renders": {
@@ -42,18 +42,18 @@
     "screenshot": "screenshots/tutor_cart.png"
   },
   "test_contact_form_tutor_submission": {
-    "message": "Tutor enquiry submitted and redirected to job 200246",
-    "job_id": "200246",
+    "message": "Tutor enquiry submitted and redirected to job 200277",
+    "job_id": "200277",
     "screenshot": "screenshots/job_tutor_submission.png"
   },
   "test_contact_form_something_else": {
-    "message": "'Something else' enquiry submitted and redirected to job 200248",
-    "job_id": "200248",
+    "message": "'Something else' enquiry submitted and redirected to job 200279",
+    "job_id": "200279",
     "screenshot": "screenshots/job_something_else.png"
   },
   "test_contact_form_requested_tutors": {
-    "message": "Requested tutors flow submitted and redirected to job 200250",
-    "job_id": "200250",
+    "message": "Requested tutors flow submitted and redirected to job 200281",
+    "job_id": "200281",
     "tutor_ids": [
       "26283",
       "14497",
@@ -62,21 +62,21 @@
     "screenshot": "screenshots/job_requested_tutors.png"
   },
   "test_new_client_banner": {
-    "message": "New client banner visible at https://otdev1602.wpengine.com/jobs/200252/?new_client=true&generate_lead=true&c=1496956006&job_status=1&job_create_type=",
+    "message": "New client banner visible at https://otdev1602.wpengine.com/jobs/200283/?new_client=true&generate_lead=true&c=925220273&job_status=1&job_create_type=",
     "screenshot": "screenshots/new_client_banner.png"
   },
   "test_contact_form_returning_client": {
-    "message": "Returning client job submitted and redirected to job 200256",
-    "job_id": "200256",
+    "message": "Returning client job submitted and redirected to job 200287",
+    "job_id": "200287",
     "screenshot": "screenshots/job_returning_client.png"
   },
   "test_health_safety_unchecked_job_creates": {
-    "message": "H&S unchecked: job still created at 200260; notes_on_status note must be verified in WP admin",
-    "job_id": "200260",
+    "message": "H&S unchecked: job still created at 200291; notes_on_status note must be verified in WP admin",
+    "job_id": "200291",
     "screenshot": "screenshots/job_hs_unchecked.png"
   },
   "test_admin_job_path_redirects": {
-    "message": "Admin job path redirected to wp-admin (not /jobs/): https://otdev1602.wpengine.com/wp-admin/post.php?post=200266&action=edit",
+    "message": "Admin job path redirected to wp-admin (not /jobs/): https://otdev1602.wpengine.com/wp-admin/post.php?post=200297&action=edit",
     "screenshot": "screenshots/job_admin_redirect.png"
   },
   "test_blog_listing_loads": {
@@ -116,52 +116,22 @@
     "screenshot": "screenshots/homepage.png"
   },
   "test_stage3_job_renders_applicant_cards": {
-    "message": "Stage 3 job 200268 rendered applicant cards and sort dropdown",
-    "job_id": "200268",
+    "message": "Stage 3 job 200299 rendered applicant cards and sort dropdown",
+    "job_id": "200299",
     "screenshot": "screenshots/stage3_applicant_cards.png"
   },
-  "test_connect_with_tutor_triggers_modal": {
-    "message": "ot_job_identify_modal fired for job 200268 / tutor 20049",
-    "job_id": "200268",
-    "screenshot": "screenshots/connect_tutor_modal.png"
-  },
-  "test_accept_terms_modal_renders": {
-    "message": "Stage 3 modal rendered with content for job 200268",
-    "job_id": "200268",
-    "screenshot": "screenshots/accept_terms_modal.png"
-  },
-  "test_logged_out_stage3_sees_login_modal": {
-    "message": "Logged-out user logged in via inline form and reached Stage 3 job 200268",
-    "job_id": "200268",
-    "screenshot": "screenshots/stage3_login_modal.png"
-  },
-  "test_stripe_return_auto_triggers_modal": {
-    "message": "Stripe-return params auto-opened modal on job 200268",
-    "job_id": "200268",
-    "screenshot": "screenshots/stripe_return_modal.png"
-  },
-  "test_accept_terms_advances_to_stage4": {
-    "message": "Job 200268 advanced to Stage 4 after accepting terms",
-    "job_id": "200268",
-    "screenshot": "screenshots/stage4_from_accept_terms.png"
-  },
   "test_magic_link_auto_login": {
-    "message": "Magic link authenticated for job 200270",
-    "job_id": "200270",
+    "message": "Magic link authenticated for job 200229",
+    "job_id": "200229",
     "screenshot": "screenshots/magic_link_login.png"
-  },
-  "test_client_stage4_job_shows_connected_tutor": {
-    "message": "Stage 4 job 200268 shows 'Your chosen tutor' section",
-    "job_id": "200268",
-    "screenshot": "screenshots/stage4_connected_tutor.png"
   },
   "test_meet_now_form_auto_selects_type": {
     "message": "Meet-now form state correct: type hidden, home delivery disabled, jobs board hidden",
     "screenshot": "screenshots/meet_now_form_state.png"
   },
   "test_meet_now_submission": {
-    "message": "Meet-now form submitted, redirected to job 200271",
-    "job_id": "200271",
+    "message": "Meet-now form submitted, redirected to job 200230",
+    "job_id": "200230",
     "screenshot": "screenshots/meet_now_submission.png"
   },
   "test_papers_load": {
@@ -193,9 +163,9 @@
     "screenshot": "screenshots/recruit_client_on_app_page.png"
   },
   "test_add_to_cart_updates_session_storage": {
-    "message": "Add-to-cart wrote tutor ID 26283 to sessionStorage and showed shortlist panel",
+    "message": "Add-to-cart wrote tutor ID 37464 to sessionStorage and showed shortlist panel",
     "tutor_ids": [
-      "26283"
+      "37464"
     ],
     "screenshot": "screenshots/rb_add_to_cart.png"
   },
@@ -267,6 +237,10 @@
     "message": "Full pipeline search ran: English, Home delivery, Balham",
     "screenshot": "screenshots/search_full_pipeline.png"
   },
+  "test_meet_now_button_visible_on_eligible_tutor": {
+    "message": "Meet Now button visible on at least one eligible tutor card",
+    "screenshot": "screenshots/meet_now_button_eligible.png"
+  },
   "test_meet_now_button_absent_on_ineligible_tutor": {
     "message": "No Meet Now button on ineligible tutor card",
     "screenshot": "screenshots/meet_now_button_absent.png"
@@ -286,10 +260,6 @@
   "test_tutor_jobs_board_filter_returns_results": {
     "message": "Jobs board filter (Maths, Online) submitted; results rendered",
     "screenshot": "screenshots/tutor_jobs_board_filter.png"
-  },
-  "test_tutor_stripe_connect_section_renders": {
-    "message": "Stripe Connect section rendered content after AJAX load",
-    "screenshot": "screenshots/tutor_stripe_connect.png"
   },
   "test_tutor_availability_grid_renders": {
     "message": "Availability slot grid rendered at /dashboard/profile/#my_availability",

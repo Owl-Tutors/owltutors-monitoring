@@ -369,3 +369,8 @@ def complete_application_form(page: Page, base_url: str, qts_pdf_path: str):
     with page.expect_navigation(timeout=15000):
         page.evaluate("document.getElementById('isappreadyForm').submit()")
     page.wait_for_load_state("networkidle", timeout=30000)
+
+    # ACF redirects to 'return' => 'thanks', landing on /tutor-section/application/thanks/.
+    # Navigate back to the application page so callers can assert the post-promotion state.
+    page.goto(f"{base_url}{APPLICATION_URL}", wait_until="domcontentloaded")
+    page.wait_for_load_state("networkidle", timeout=30000)

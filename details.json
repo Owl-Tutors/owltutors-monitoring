@@ -35,9 +35,9 @@
   "test_requested_tutor_cart": {
     "message": "Tutor shortlist populated with 3 tutors and submit link updated",
     "tutor_ids": [
-      "38919",
-      "20589",
-      "14497"
+      "26283",
+      "14497",
+      "38848"
     ],
     "screenshot": "screenshots/tutor_cart.png"
   },
@@ -55,14 +55,14 @@
     "message": "Requested tutors flow submitted and redirected to job 200219",
     "job_id": "200219",
     "tutor_ids": [
-      "38919",
-      "20589",
-      "14497"
+      "26283",
+      "14497",
+      "38848"
     ],
     "screenshot": "screenshots/job_requested_tutors.png"
   },
   "test_new_client_banner": {
-    "message": "New client banner visible at https://otdev1602.wpengine.com/jobs/200221/?new_client=true&generate_lead=true&c=3854972461&job_status=1&job_create_type=regular",
+    "message": "New client banner visible at https://otdev1602.wpengine.com/jobs/200221/?new_client=true&generate_lead=true&c=551879874&job_status=1&job_create_type=",
     "screenshot": "screenshots/new_client_banner.png"
   },
   "test_contact_form_returning_client": {
@@ -193,9 +193,9 @@
     "screenshot": "screenshots/recruit_client_on_app_page.png"
   },
   "test_add_to_cart_updates_session_storage": {
-    "message": "Add-to-cart wrote tutor ID 38919 to sessionStorage and showed shortlist panel",
+    "message": "Add-to-cart wrote tutor ID 26283 to sessionStorage and showed shortlist panel",
     "tutor_ids": [
-      "38919"
+      "26283"
     ],
     "screenshot": "screenshots/rb_add_to_cart.png"
   },

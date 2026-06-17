@@ -8,8 +8,8 @@
     "screenshot": "screenshots/client_dashboard.png"
   },
   "test_contact_form_callback_submission": {
-    "message": "Callback enquiry submitted and redirected to job 200260",
-    "job_id": "200260",
+    "message": "Callback enquiry submitted and redirected to job 200291",
+    "job_id": "200291",
     "screenshot": "screenshots/job_callback_submission.png"
   },
   "test_contact_form_renders": {
@@ -42,18 +42,18 @@
     "screenshot": "screenshots/tutor_cart.png"
   },
   "test_contact_form_tutor_submission": {
-    "message": "Tutor enquiry submitted and redirected to job 200262",
-    "job_id": "200262",
+    "message": "Tutor enquiry submitted and redirected to job 200293",
+    "job_id": "200293",
     "screenshot": "screenshots/job_tutor_submission.png"
   },
   "test_contact_form_something_else": {
-    "message": "'Something else' enquiry submitted and redirected to job 200264",
-    "job_id": "200264",
+    "message": "'Something else' enquiry submitted and redirected to job 200295",
+    "job_id": "200295",
     "screenshot": "screenshots/job_something_else.png"
   },
   "test_contact_form_requested_tutors": {
-    "message": "Requested tutors flow submitted and redirected to job 200266",
-    "job_id": "200266",
+    "message": "Requested tutors flow submitted and redirected to job 200297",
+    "job_id": "200297",
     "tutor_ids": [
       "37464",
       "22999",
@@ -62,21 +62,21 @@
     "screenshot": "screenshots/job_requested_tutors.png"
   },
   "test_new_client_banner": {
-    "message": "New client banner visible at https://otdev1602.wpengine.com/jobs/200268/?new_client=true&generate_lead=true&c=1049883034&job_status=1&job_create_type=",
+    "message": "New client banner visible at https://otdev1602.wpengine.com/jobs/200299/?new_client=true&generate_lead=true&c=661616886&job_status=1&job_create_type=",
     "screenshot": "screenshots/new_client_banner.png"
   },
   "test_contact_form_returning_client": {
-    "message": "Returning client job submitted and redirected to job 200272",
-    "job_id": "200272",
+    "message": "Returning client job submitted and redirected to job 200303",
+    "job_id": "200303",
     "screenshot": "screenshots/job_returning_client.png"
   },
   "test_health_safety_unchecked_job_creates": {
-    "message": "H&S unchecked: job still created at 200276; notes_on_status note must be verified in WP admin",
-    "job_id": "200276",
+    "message": "H&S unchecked: job still created at 200307; notes_on_status note must be verified in WP admin",
+    "job_id": "200307",
     "screenshot": "screenshots/job_hs_unchecked.png"
   },
   "test_admin_job_path_redirects": {
-    "message": "Admin job path redirected to wp-admin (not /jobs/): https://otdev1602.wpengine.com/wp-admin/post.php?post=200282&action=edit",
+    "message": "Admin job path redirected to wp-admin (not /jobs/): https://otdev1602.wpengine.com/wp-admin/post.php?post=200313&action=edit",
     "screenshot": "screenshots/job_admin_redirect.png"
   },
   "test_blog_listing_loads": {
@@ -116,43 +116,43 @@
     "screenshot": "screenshots/homepage.png"
   },
   "test_stage3_job_renders_applicant_cards": {
-    "message": "Stage 3 job 200284 rendered applicant cards and sort dropdown",
-    "job_id": "200284",
+    "message": "Stage 3 job 200315 rendered applicant cards and sort dropdown",
+    "job_id": "200315",
     "screenshot": "screenshots/stage3_applicant_cards.png"
   },
   "test_connect_with_tutor_triggers_modal": {
-    "message": "ot_job_identify_modal fired for job 200284 / tutor 20049",
-    "job_id": "200284",
+    "message": "ot_job_identify_modal fired for job 200315 / tutor 20049",
+    "job_id": "200315",
     "screenshot": "screenshots/connect_tutor_modal.png"
   },
   "test_accept_terms_modal_renders": {
-    "message": "Stage 3 modal rendered with content for job 200284",
-    "job_id": "200284",
+    "message": "Stage 3 modal rendered with content for job 200315",
+    "job_id": "200315",
     "screenshot": "screenshots/accept_terms_modal.png"
   },
   "test_logged_out_stage3_sees_login_modal": {
-    "message": "Logged-out user logged in via inline form and reached Stage 3 job 200284",
-    "job_id": "200284",
+    "message": "Logged-out user logged in via inline form and reached Stage 3 job 200315",
+    "job_id": "200315",
     "screenshot": "screenshots/stage3_login_modal.png"
   },
   "test_stripe_return_auto_triggers_modal": {
-    "message": "Stripe-return params auto-opened modal on job 200284",
-    "job_id": "200284",
+    "message": "Stripe-return params auto-opened modal on job 200315",
+    "job_id": "200315",
     "screenshot": "screenshots/stripe_return_modal.png"
   },
   "test_accept_terms_advances_to_stage4": {
-    "message": "Job 200284 advanced to Stage 4 after accepting terms",
-    "job_id": "200284",
+    "message": "Job 200315 advanced to Stage 4 after accepting terms",
+    "job_id": "200315",
     "screenshot": "screenshots/stage4_from_accept_terms.png"
   },
   "test_magic_link_auto_login": {
-    "message": "Magic link authenticated for job 200286",
-    "job_id": "200286",
+    "message": "Magic link authenticated for job 200317",
+    "job_id": "200317",
     "screenshot": "screenshots/magic_link_login.png"
   },
   "test_client_stage4_job_shows_connected_tutor": {
-    "message": "Stage 4 job 200284 shows 'Your chosen tutor' section",
-    "job_id": "200284",
+    "message": "Stage 4 job 200315 shows 'Your chosen tutor' section",
+    "job_id": "200315",
     "screenshot": "screenshots/stage4_connected_tutor.png"
   },
   "test_meet_now_form_auto_selects_type": {
@@ -160,8 +160,8 @@
     "screenshot": "screenshots/meet_now_form_state.png"
   },
   "test_meet_now_submission": {
-    "message": "Meet-now form submitted, redirected to job 200287",
-    "job_id": "200287",
+    "message": "Meet-now form submitted, redirected to job 200318",
+    "job_id": "200318",
     "screenshot": "screenshots/meet_now_submission.png"
   },
   "test_papers_load": {

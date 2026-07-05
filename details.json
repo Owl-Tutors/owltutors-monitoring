@@ -3,13 +3,9 @@
     "message": "Login form with credentials filled",
     "screenshot": "screenshots/client_login_form.png"
   },
-  "test_client_dashboard": {
-    "message": "Clients can log in and see the dashboard",
-    "screenshot": "screenshots/client_dashboard.png"
-  },
   "test_contact_form_callback_submission": {
-    "message": "Callback enquiry submitted and redirected to job 200816",
-    "job_id": "200816",
+    "message": "Callback enquiry submitted and redirected to job 200847",
+    "job_id": "200847",
     "screenshot": "screenshots/job_callback_submission.png"
   },
   "test_contact_form_renders": {
@@ -42,18 +38,18 @@
     "screenshot": "screenshots/tutor_cart.png"
   },
   "test_contact_form_tutor_submission": {
-    "message": "Tutor enquiry submitted and redirected to job 200818",
-    "job_id": "200818",
+    "message": "Tutor enquiry submitted and redirected to job 200849",
+    "job_id": "200849",
     "screenshot": "screenshots/job_tutor_submission.png"
   },
   "test_contact_form_something_else": {
-    "message": "'Something else' enquiry submitted and redirected to job 200820",
-    "job_id": "200820",
+    "message": "'Something else' enquiry submitted and redirected to job 200851",
+    "job_id": "200851",
     "screenshot": "screenshots/job_something_else.png"
   },
   "test_contact_form_requested_tutors": {
-    "message": "Requested tutors flow submitted and redirected to job 200822",
-    "job_id": "200822",
+    "message": "Requested tutors flow submitted and redirected to job 200853",
+    "job_id": "200853",
     "tutor_ids": [
       "37464",
       "22999",
@@ -62,21 +58,21 @@
     "screenshot": "screenshots/job_requested_tutors.png"
   },
   "test_new_client_banner": {
-    "message": "New client banner visible at https://otdev1602.wpengine.com/jobs/200824/?new_client=true&generate_lead=true&c=3077931484&job_status=1&job_create_type=",
+    "message": "New client banner visible at https://otdev1602.wpengine.com/jobs/200855/?new_client=true&generate_lead=true&c=1631405729&job_status=1&job_create_type=",
     "screenshot": "screenshots/new_client_banner.png"
   },
   "test_contact_form_returning_client": {
-    "message": "Returning client job submitted and redirected to job 200828",
-    "job_id": "200828",
+    "message": "Returning client job submitted and redirected to job 200859",
+    "job_id": "200859",
     "screenshot": "screenshots/job_returning_client.png"
   },
   "test_health_safety_unchecked_job_creates": {
-    "message": "H&S unchecked: job still created at 200832; notes_on_status note must be verified in WP admin",
-    "job_id": "200832",
+    "message": "H&S unchecked: job still created at 200863; notes_on_status note must be verified in WP admin",
+    "job_id": "200863",
     "screenshot": "screenshots/job_hs_unchecked.png"
   },
   "test_admin_job_path_redirects": {
-    "message": "Admin job path redirected to wp-admin (not /jobs/): https://otdev1602.wpengine.com/wp-admin/post.php?post=200838&action=edit",
+    "message": "Admin job path redirected to wp-admin (not /jobs/): https://otdev1602.wpengine.com/wp-admin/post.php?post=200869&action=edit",
     "screenshot": "screenshots/job_admin_redirect.png"
   },
   "test_blog_listing_loads": {
@@ -116,47 +112,47 @@
     "screenshot": "screenshots/homepage.png"
   },
   "test_stage3_job_renders_applicant_cards": {
-    "message": "Stage 3 job 200840 rendered applicant cards and sort dropdown",
-    "job_id": "200840",
+    "message": "Stage 3 job 200871 rendered applicant cards and sort dropdown",
+    "job_id": "200871",
     "screenshot": "screenshots/stage3_applicant_cards.png"
   },
   "test_connect_with_tutor_triggers_modal": {
-    "message": "ot_job_identify_modal fired for job 200840 / tutor 20049",
-    "job_id": "200840",
+    "message": "ot_job_identify_modal fired for job 200871 / tutor 20049",
+    "job_id": "200871",
     "screenshot": "screenshots/connect_tutor_modal.png"
   },
   "test_accept_terms_modal_renders": {
-    "message": "Stage 3 modal rendered with content for job 200840",
-    "job_id": "200840",
+    "message": "Stage 3 modal rendered with content for job 200871",
+    "job_id": "200871",
     "screenshot": "screenshots/accept_terms_modal.png"
   },
   "test_logged_out_stage3_sees_login_modal": {
-    "message": "Logged-out user logged in via inline form and reached Stage 3 job 200840",
-    "job_id": "200840",
+    "message": "Logged-out user logged in via inline form and reached Stage 3 job 200871",
+    "job_id": "200871",
     "screenshot": "screenshots/stage3_login_modal.png"
   },
-  "test_stripe_return_auto_triggers_modal": {
-    "message": "Stripe-return params auto-opened modal on job 200840",
-    "job_id": "200840",
-    "screenshot": "screenshots/stripe_return_modal.png"
-  },
   "test_accept_terms_advances_to_stage4": {
-    "message": "Job 200840 advanced to Stage 4 after accepting terms",
-    "job_id": "200840",
+    "message": "Job 200871 advanced to Stage 4 after accepting terms",
+    "job_id": "200871",
     "screenshot": "screenshots/stage4_from_accept_terms.png"
   },
   "test_magic_link_auto_login": {
-    "message": "Magic link authenticated for job 200842",
-    "job_id": "200842",
+    "message": "Magic link authenticated for job 200873",
+    "job_id": "200873",
     "screenshot": "screenshots/magic_link_login.png"
+  },
+  "test_client_stage4_job_shows_connected_tutor": {
+    "message": "Stage 4 job 200871 shows 'Your chosen tutor' section",
+    "job_id": "200871",
+    "screenshot": "screenshots/stage4_connected_tutor.png"
   },
   "test_meet_now_form_auto_selects_type": {
     "message": "Meet-now form state correct: type hidden, home delivery disabled, jobs board hidden",
     "screenshot": "screenshots/meet_now_form_state.png"
   },
   "test_meet_now_submission": {
-    "message": "Meet-now form submitted, redirected to job 200843",
-    "job_id": "200843",
+    "message": "Meet-now form submitted, redirected to job 200874",
+    "job_id": "200874",
     "screenshot": "screenshots/meet_now_submission.png"
   },
   "test_papers_load": {
@@ -262,17 +258,9 @@
     "message": "Full pipeline search ran: English, Home delivery, Balham",
     "screenshot": "screenshots/search_full_pipeline.png"
   },
-  "test_meet_now_button_visible_on_eligible_tutor": {
-    "message": "Meet Now button visible on at least one eligible tutor card",
-    "screenshot": "screenshots/meet_now_button_eligible.png"
-  },
   "test_meet_now_button_absent_on_ineligible_tutor": {
     "message": "No Meet Now button on ineligible tutor card",
     "screenshot": "screenshots/meet_now_button_absent.png"
-  },
-  "test_tutor_dashboard_loads": {
-    "message": "Tutor dashboard loaded with correct header and container",
-    "screenshot": "screenshots/tutor_dashboard.png"
   },
   "test_tutor_dashboard_jobs_board": {
     "message": "Tutor jobs board tab pane visible and active",
@@ -281,6 +269,10 @@
   "test_tutor_dashboard_timesheet_entry": {
     "message": "Tutor timesheet entry pane present in DOM",
     "screenshot": "screenshots/tutor_timesheet_entry.png"
+  },
+  "test_tutor_jobs_board_filter_returns_results": {
+    "message": "Jobs board filter (Maths, Online) submitted; results rendered",
+    "screenshot": "screenshots/tutor_jobs_board_filter.png"
   },
   "test_tutor_stripe_connect_section_renders": {
     "message": "Stripe Connect section rendered content after AJAX load",
@@ -293,5 +285,9 @@
   "test_tutor_availability_grid_saves": {
     "message": "Availability slot [day=0, slot=0] toggled and state persisted after reload",
     "screenshot": "screenshots/tutor_availability_saved.png"
+  },
+  "test_tutor_dashboard_invoices_renders": {
+    "message": "Invoices section rendered at /dashboard/tutoring-section/#invoices",
+    "screenshot": "screenshots/tutor_invoices.png"
   }
 }

@@ -1,15 +1,7 @@
 {
-  "test_client_login": {
-    "message": "Login form with credentials filled",
-    "screenshot": "screenshots/client_login_form.png"
-  },
-  "test_client_dashboard": {
-    "message": "Clients can log in and see the dashboard",
-    "screenshot": "screenshots/client_dashboard.png"
-  },
   "test_contact_form_callback_submission": {
-    "message": "Callback enquiry submitted and redirected to job 201126",
-    "job_id": "201126",
+    "message": "Callback enquiry submitted and redirected to job 201157",
+    "job_id": "201157",
     "screenshot": "screenshots/job_callback_submission.png"
   },
   "test_contact_form_renders": {
@@ -42,18 +34,18 @@
     "screenshot": "screenshots/tutor_cart.png"
   },
   "test_contact_form_tutor_submission": {
-    "message": "Tutor enquiry submitted and redirected to job 201128",
-    "job_id": "201128",
+    "message": "Tutor enquiry submitted and redirected to job 201159",
+    "job_id": "201159",
     "screenshot": "screenshots/job_tutor_submission.png"
   },
   "test_contact_form_something_else": {
-    "message": "'Something else' enquiry submitted and redirected to job 201130",
-    "job_id": "201130",
+    "message": "'Something else' enquiry submitted and redirected to job 201161",
+    "job_id": "201161",
     "screenshot": "screenshots/job_something_else.png"
   },
   "test_contact_form_requested_tutors": {
-    "message": "Requested tutors flow submitted and redirected to job 201132",
-    "job_id": "201132",
+    "message": "Requested tutors flow submitted and redirected to job 201163",
+    "job_id": "201163",
     "tutor_ids": [
       "37464",
       "22999",
@@ -62,21 +54,21 @@
     "screenshot": "screenshots/job_requested_tutors.png"
   },
   "test_new_client_banner": {
-    "message": "New client banner visible at https://otdev1602.wpengine.com/jobs/201134/?new_client=true&generate_lead=true&c=2771580832&job_status=1&job_create_type=",
+    "message": "New client banner visible at https://otdev1602.wpengine.com/jobs/201165/?new_client=true&generate_lead=true&c=622892891&job_status=1&job_create_type=",
     "screenshot": "screenshots/new_client_banner.png"
   },
   "test_contact_form_returning_client": {
-    "message": "Returning client job submitted and redirected to job 201138",
-    "job_id": "201138",
+    "message": "Returning client job submitted and redirected to job 201169",
+    "job_id": "201169",
     "screenshot": "screenshots/job_returning_client.png"
   },
   "test_health_safety_unchecked_job_creates": {
-    "message": "H&S unchecked: job still created at 201142; notes_on_status note must be verified in WP admin",
-    "job_id": "201142",
+    "message": "H&S unchecked: job still created at 201173; notes_on_status note must be verified in WP admin",
+    "job_id": "201173",
     "screenshot": "screenshots/job_hs_unchecked.png"
   },
   "test_admin_job_path_redirects": {
-    "message": "Admin job path redirected to wp-admin (not /jobs/): https://otdev1602.wpengine.com/wp-admin/post.php?post=201148&action=edit",
+    "message": "Admin job path redirected to wp-admin (not /jobs/): https://otdev1602.wpengine.com/wp-admin/post.php?post=201179&action=edit",
     "screenshot": "screenshots/job_admin_redirect.png"
   },
   "test_blog_listing_loads": {
@@ -115,19 +107,9 @@
     "message": "Homepage loaded with hero section visible",
     "screenshot": "screenshots/homepage.png"
   },
-  "test_stage3_job_renders_applicant_cards": {
-    "message": "Stage 3 job 201150 rendered applicant cards and sort dropdown",
-    "job_id": "201150",
-    "screenshot": "screenshots/stage3_applicant_cards.png"
-  },
-  "test_logged_out_stage3_sees_login_modal": {
-    "message": "Logged-out user logged in via inline form and reached Stage 3 job 201150",
-    "job_id": "201150",
-    "screenshot": "screenshots/stage3_login_modal.png"
-  },
   "test_magic_link_auto_login": {
-    "message": "Magic link authenticated for job 201152",
-    "job_id": "201152",
+    "message": "Magic link authenticated for job 201183",
+    "job_id": "201183",
     "screenshot": "screenshots/magic_link_login.png"
   },
   "test_meet_now_form_auto_selects_type": {
@@ -135,8 +117,8 @@
     "screenshot": "screenshots/meet_now_form_state.png"
   },
   "test_meet_now_submission": {
-    "message": "Meet-now form submitted, redirected to job 201153",
-    "job_id": "201153",
+    "message": "Meet-now form submitted, redirected to job 201184",
+    "job_id": "201184",
     "screenshot": "screenshots/meet_now_submission.png"
   },
   "test_papers_load": {
@@ -245,25 +227,5 @@
   "test_meet_now_button_absent_on_ineligible_tutor": {
     "message": "No Meet Now button on ineligible tutor card",
     "screenshot": "screenshots/meet_now_button_absent.png"
-  },
-  "test_tutor_dashboard_loads": {
-    "message": "Tutor dashboard loaded with correct header and container",
-    "screenshot": "screenshots/tutor_dashboard.png"
-  },
-  "test_tutor_dashboard_jobs_board": {
-    "message": "Tutor jobs board tab pane visible and active",
-    "screenshot": "screenshots/tutor_jobs_board.png"
-  },
-  "test_tutor_dashboard_timesheet_entry": {
-    "message": "Tutor timesheet entry pane present in DOM",
-    "screenshot": "screenshots/tutor_timesheet_entry.png"
-  },
-  "test_tutor_stripe_connect_section_renders": {
-    "message": "Stripe Connect section rendered content after AJAX load",
-    "screenshot": "screenshots/tutor_stripe_connect.png"
-  },
-  "test_tutor_availability_grid_saves": {
-    "message": "Availability slot [day=0, slot=0] toggled and state persisted after reload",
-    "screenshot": "screenshots/tutor_availability_saved.png"
   }
 }

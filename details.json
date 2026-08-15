@@ -1,7 +1,7 @@
 {
   "test_contact_form_callback_submission": {
-    "message": "Callback enquiry submitted and redirected to job 202087",
-    "job_id": "202087",
+    "message": "Callback enquiry submitted and redirected to job 202118",
+    "job_id": "202118",
     "screenshot": "screenshots/job_callback_submission.png"
   },
   "test_contact_form_renders": {
@@ -34,18 +34,18 @@
     "screenshot": "screenshots/tutor_cart.png"
   },
   "test_contact_form_tutor_submission": {
-    "message": "Tutor enquiry submitted and redirected to job 202089",
-    "job_id": "202089",
+    "message": "Tutor enquiry submitted and redirected to job 202120",
+    "job_id": "202120",
     "screenshot": "screenshots/job_tutor_submission.png"
   },
   "test_contact_form_something_else": {
-    "message": "'Something else' enquiry submitted and redirected to job 202091",
-    "job_id": "202091",
+    "message": "'Something else' enquiry submitted and redirected to job 202122",
+    "job_id": "202122",
     "screenshot": "screenshots/job_something_else.png"
   },
   "test_contact_form_requested_tutors": {
-    "message": "Requested tutors flow submitted and redirected to job 202093",
-    "job_id": "202093",
+    "message": "Requested tutors flow submitted and redirected to job 202124",
+    "job_id": "202124",
     "tutor_ids": [
       "37464",
       "22999",
@@ -54,21 +54,21 @@
     "screenshot": "screenshots/job_requested_tutors.png"
   },
   "test_new_client_banner": {
-    "message": "New client banner visible at https://otdev1602.wpengine.com/jobs/202095/?new_client=true&generate_lead=true&c=3119733787&job_status=1&job_create_type=",
+    "message": "New client banner visible at https://otdev1602.wpengine.com/jobs/202126/?new_client=true&generate_lead=true&c=1049426169&job_status=1&job_create_type=",
     "screenshot": "screenshots/new_client_banner.png"
   },
   "test_contact_form_returning_client": {
-    "message": "Returning client job submitted and redirected to job 202099",
-    "job_id": "202099",
+    "message": "Returning client job submitted and redirected to job 202130",
+    "job_id": "202130",
     "screenshot": "screenshots/job_returning_client.png"
   },
   "test_health_safety_unchecked_job_creates": {
-    "message": "H&S unchecked: job still created at 202103; notes_on_status note must be verified in WP admin",
-    "job_id": "202103",
+    "message": "H&S unchecked: job still created at 202134; notes_on_status note must be verified in WP admin",
+    "job_id": "202134",
     "screenshot": "screenshots/job_hs_unchecked.png"
   },
   "test_admin_job_path_redirects": {
-    "message": "Admin job path redirected to wp-admin (not /jobs/): https://otdev1602.wpengine.com/wp-admin/post.php?post=202109&action=edit",
+    "message": "Admin job path redirected to wp-admin (not /jobs/): https://otdev1602.wpengine.com/wp-admin/post.php?post=202140&action=edit",
     "screenshot": "screenshots/job_admin_redirect.png"
   },
   "test_blog_listing_loads": {
@@ -108,8 +108,8 @@
     "screenshot": "screenshots/homepage.png"
   },
   "test_magic_link_auto_login": {
-    "message": "Magic link authenticated for job 202113",
-    "job_id": "202113",
+    "message": "Magic link authenticated for job 202144",
+    "job_id": "202144",
     "screenshot": "screenshots/magic_link_login.png"
   },
   "test_meet_now_form_auto_selects_type": {
@@ -117,8 +117,8 @@
     "screenshot": "screenshots/meet_now_form_state.png"
   },
   "test_meet_now_submission": {
-    "message": "Meet-now form submitted, redirected to job 202114",
-    "job_id": "202114",
+    "message": "Meet-now form submitted, redirected to job 202145",
+    "job_id": "202145",
     "screenshot": "screenshots/meet_now_submission.png"
   },
   "test_papers_load": {

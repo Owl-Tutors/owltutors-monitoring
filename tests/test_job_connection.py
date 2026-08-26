@@ -148,17 +148,32 @@ def test_logged_out_stage3_sees_login_modal(
     page.locator("#ot_login_name").fill(stage3_job["client_email"])
     page.locator("#pw1").fill(stage3_job["client_password"])
     page.locator("#login_submit").click()
-    page.wait_for_url(lambda url: LOGIN_URL not in url, timeout=90000)
 
-    # Login on the job page redirects back to the same job URL, so we may already
-    # be there. Only navigate explicitly if we landed somewhere else (e.g. dashboard).
-    # Calling page.goto() when already on the target URL causes ERR_ABORTED because
-    # WP JS fires a same-page redirect at the same moment Playwright starts a new one.
-    if f"{JOB_URL}{stage3_job['job_id']}/" not in page.url:
-        page.goto(f"{base_url}{JOB_URL}{stage3_job['job_id']}/", wait_until="domcontentloaded")
+    # The inline #ot_login form does a real full-page POST to wp-login.php
+    # (recaptcha_verify.js calls the form's own .submit()), which then
+    # redirects back here via the redirect_to hidden field -- a two-hop
+    # navigation, not an AJAX call. Waiting for "URL no longer contains
+    # /login/" (the pattern _login() uses elsewhere in this file) doesn't
+    # work here: this test never visits /login/ at all -- neither this job
+    # page's URL nor wp-login.php's contains that substring -- so that check
+    # was already satisfied before the click even happened, and the
+    # assertion below used to run before the redirect had actually
+    # completed. Wait for the known final destination instead.
+    page.wait_for_url(f"**{JOB_URL}{stage3_job['job_id']}/**", timeout=90000)
+
+    # This login path is genuinely slower than a normal page load: it goes
+    # through reCAPTCHA v3 twice (client-side grecaptcha.execute() calling
+    # Google, then server-side verify_recaptcha() in ot_redirect_authenticate()
+    # calling Google again) before wp-login.php's redirect even fires -- see
+    # docs/client-tutor-connection.md's Login.php handling section. Confirmed
+    # by direct reproduction: settling can take up to ~20s locally, well past
+    # expect()'s 5s default. Applicant cards themselves are rendered
+    # server-side synchronously (no AJAX, same doc) -- once this settles,
+    # they're just there, not something to keep polling for separately.
+    page.wait_for_load_state("networkidle")
 
     # Now logged in, the job page should render with applicant cards
-    expect(page.locator(".applicants")).to_be_visible()
+    expect(page.locator(".applicants")).to_be_visible(timeout=30000)
     expect(page.locator("button.connect_with_tutor").first).to_be_visible()
 
     write_detail("test_logged_out_stage3_sees_login_modal", {

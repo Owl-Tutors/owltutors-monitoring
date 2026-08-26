@@ -4,4 +4,7 @@ __pycache__/
 details.json
 deploy_info.json
 screenshots/
+test-results/
+previous_results.json
+results.json
 .env

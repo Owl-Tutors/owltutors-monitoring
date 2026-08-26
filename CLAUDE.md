@@ -39,6 +39,8 @@ All Stage 3, Stage 4, and magic-link test jobs are created on demand by session 
 | `utils/reporter.py` | Converts pytest JSON report to `results.json` for the dashboard widget |
 | `utils/prune_videos.py` | CI-only: deletes videos for tests that aren't critical or failing (Day 8) |
 | `utils/check_critical_regressions.py` | CI-only: diffs critical-test status vs. the last run, emails on new failures (Day 8) |
+| `utils/get_test_manifest.py` | Calls `owl_get_test_manifest` to read the dashboard widget's manifest (Days 11-12) |
+| `tests/test_manifest_drift.py` | Asserts the manifest and the actual pytest test functions match 1:1 (Days 11-12) |
 | `.github/workflows/smoke-tests.yml` | Scheduled daily at 7am UTC; manual trigger available. `--video=on` + prune, then a critical-regression check, then the results-branch push, then a video artifact upload (14-day retention) |
 
 ---
@@ -58,7 +60,7 @@ Both are required. `http_credentials` alone does not cover XHR/fetch requests th
 
 ## Adding a New Test
 
-1. Add the test function to the relevant `tests/test_<area>.py`
-2. Add the function name to the `$manifest` array in `owl_system/includes/dashboard/dashboard-main.php`
+1. Add the test function to the relevant `tests/test_<area>.py`. Mark it `@pytest.mark.critical` if a failure has a real consequence (money not taken, a parent not contacted, staff blocked) — see the Day 7 note in `owl_system/docs/TESTING_SYSTEM.md`
+2. Add the function name to `ot_get_test_manifest()` in `owl_system/includes/dashboard/dashboard-main.php`, with a `label`, `critical` flag, and the right area group. **Not optional** — `tests/test_manifest_drift.py` fails the suite if a test function and a manifest entry don't both exist (docs/TESTING_REBUILD_SPEC.md Days 11-12)
 3. If the test creates data, use the `cleanup_after` fixture and ensure records are flagged with `_ot_test_post = 1`
 4. Update the Current Tests table in `owl_system/docs/TESTING_SYSTEM.md`

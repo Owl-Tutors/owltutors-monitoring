@@ -1,4 +1,3 @@
-import os
 import pytest
 from playwright.sync_api import Page, expect
 from utils.details import write_detail
@@ -21,11 +20,8 @@ def test_tutor_search_page_loads(page: Page, base_url: str):
     """Search page loads and the search form is visible."""
     page.goto(f"{base_url}{TUTORS_URL}")
     expect(page.locator("#tutorSearchForm")).to_be_visible()
-    os.makedirs("screenshots", exist_ok=True)
-    page.screenshot(path="screenshots/tutor_search_page.png")
     write_detail("test_tutor_search_page_loads", {
         "message": "Tutor search page loaded with form visible",
-        "screenshot": "screenshots/tutor_search_page.png",
     })
 
 
@@ -38,11 +34,8 @@ def test_tutor_search_returns_results(page: Page, base_url: str):
     page.wait_for_selector(".add-to-cart", timeout=15000)
     expect(page.locator(".add-to-cart").first).to_be_visible()
     page.locator("#tutor_results").scroll_into_view_if_needed()
-    os.makedirs("screenshots", exist_ok=True)
-    page.screenshot(path="screenshots/tutor_search_results.png")
     write_detail("test_tutor_search_returns_results", {
         "message": "Tutor search returned results via AJAX",
-        "screenshot": "screenshots/tutor_search_results.png",
     })
 
 
@@ -54,11 +47,8 @@ def test_tutor_profile_loads(page: Page, base_url: str):
     page.wait_for_selector("article.author-card", timeout=15000)
     page.locator("article.author-card a[href*='/tutor/']").first.click()
     expect(page.locator(".tutor-hero--profile")).to_be_visible(timeout=10000)
-    os.makedirs("screenshots", exist_ok=True)
-    page.screenshot(path="screenshots/tutor_profile.png")
     write_detail("test_tutor_profile_loads", {
         "message": "Tutor profile page loaded successfully",
-        "screenshot": "screenshots/tutor_profile.png",
     })
 
 
@@ -71,11 +61,8 @@ def test_subject_with_levels_reveals_level_dropdown(page: Page, base_url: str):
     _dismiss_cookies(page)
     page.select_option("#hero_subject", label="English")
     expect(page.locator("#hero_level_col")).to_be_visible()
-    os.makedirs("screenshots", exist_ok=True)
-    page.screenshot(path="screenshots/search_level_dropdown.png")
     write_detail("test_subject_with_levels_reveals_level_dropdown", {
         "message": "Level dropdown appeared after selecting English",
-        "screenshot": "screenshots/search_level_dropdown.png",
     })
 
 
@@ -90,11 +77,8 @@ def test_school_entrance_subject_reveals_school_filter(page: Page, base_url: str
     page.locator("#filter_school").fill("Westminster")
     page.wait_for_selector("#school_list a.dropdown-item", timeout=10000)
     page.locator("#school_list a.dropdown-item").first.click()
-    os.makedirs("screenshots", exist_ok=True)
-    page.screenshot(path="screenshots/search_school_filter.png")
     write_detail("test_school_entrance_subject_reveals_school_filter", {
         "message": "School filter appeared and school selected after choosing 11 Plus",
-        "screenshot": "screenshots/search_school_filter.png",
     })
 
 
@@ -106,11 +90,8 @@ def test_home_delivery_reveals_location_filter(page: Page, base_url: str):
     page.select_option("#hero_subject", label="English")
     page.locator("button.js-mode[data-value='Home']").click()
     expect(page.locator("#hero_location_col")).to_be_visible()
-    os.makedirs("screenshots", exist_ok=True)
-    page.screenshot(path="screenshots/search_location_filter.png")
     write_detail("test_home_delivery_reveals_location_filter", {
         "message": "Location filter appeared after selecting Home delivery",
-        "screenshot": "screenshots/search_location_filter.png",
     })
 
 
@@ -124,11 +105,8 @@ def test_detailed_filters_reveal_sen_and_badges(page: Page, base_url: str):
     expect(page.locator("#filter_item_badges")).to_be_visible()
     page.select_option("#filter_sen", index=1)
     page.select_option("#filter_badge", index=1)
-    os.makedirs("screenshots", exist_ok=True)
-    page.screenshot(path="screenshots/search_detailed_filters.png")
     write_detail("test_detailed_filters_reveal_sen_and_badges", {
         "message": "SEN and badges filters visible and filled via detailed panel",
-        "screenshot": "screenshots/search_detailed_filters.png",
     })
 
 
@@ -144,11 +122,8 @@ def test_availability_grid_appears_and_accepts_input(page: Page, base_url: str):
     page.wait_for_selector("#collapseOne.show", timeout=5000)
     page.locator("div.cell:has(.avail-cell[data-row='Morning'][data-col='0'])").click()
     page.locator("div.cell:has(.avail-cell[data-row='Evening'][data-col='4'])").click()
-    os.makedirs("screenshots", exist_ok=True)
-    page.screenshot(path="screenshots/search_availability.png")
     write_detail("test_availability_grid_appears_and_accepts_input", {
         "message": "Availability grid appeared and Monday morning + Friday evening selected",
-        "screenshot": "screenshots/search_availability.png",
     })
 
 
@@ -186,11 +161,8 @@ def test_full_search_subject_level_home_location(page: Page, base_url: str):
     )
 
     page.locator("#tutor_results").scroll_into_view_if_needed()
-    os.makedirs("screenshots", exist_ok=True)
-    page.screenshot(path="screenshots/search_full_pipeline.png")
     write_detail("test_full_search_subject_level_home_location", {
         "message": "Full pipeline search ran: English, Home delivery, Balham",
-        "screenshot": "screenshots/search_full_pipeline.png",
     })
 
 
@@ -211,11 +183,8 @@ def test_meet_now_button_visible_on_eligible_tutor(page: Page, base_url: str):
     meet_now_link = page.locator("a[href*='job_type=meet_now']").first
     expect(meet_now_link).to_be_visible(timeout=10000)
 
-    os.makedirs("screenshots", exist_ok=True)
-    page.screenshot(path="screenshots/meet_now_button_eligible.png")
     write_detail("test_meet_now_button_visible_on_eligible_tutor", {
         "message": "Meet Now button visible on at least one eligible tutor card",
-        "screenshot": "screenshots/meet_now_button_eligible.png",
     })
 
 
@@ -242,11 +211,8 @@ def test_meet_now_button_absent_on_ineligible_tutor(page: Page, base_url: str):
         "Found a meet-now link on a card filtered as ineligible"
     )
 
-    os.makedirs("screenshots", exist_ok=True)
-    page.screenshot(path="screenshots/meet_now_button_absent.png")
     write_detail("test_meet_now_button_absent_on_ineligible_tutor", {
         "message": "No Meet Now button on ineligible tutor card",
-        "screenshot": "screenshots/meet_now_button_absent.png",
     })
 
 
@@ -280,9 +246,6 @@ def test_availability_summary_on_profile(page: Page, base_url: str):
         "p.availability_slots_summary is present but empty — render_slots_summary() may have broken"
     )
 
-    os.makedirs("screenshots", exist_ok=True)
-    page.screenshot(path="screenshots/search_avail_summary.png")
     write_detail("test_availability_summary_on_profile", {
         "message": f"Availability summary renders: {summary_text[:80]!r}",
-        "screenshot": "screenshots/search_avail_summary.png",
     })

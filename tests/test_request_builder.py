@@ -1,4 +1,3 @@
-import os
 import re
 from playwright.sync_api import Page, expect
 
@@ -39,12 +38,9 @@ def test_add_to_cart_updates_session_storage(page: Page, base_url: str):
     expect(page.locator("#requested_tutor_output")).to_be_visible()
     assert len(ids) == 1, f"Expected 1 ID in sessionStorage, got: {ids}"
 
-    os.makedirs("screenshots", exist_ok=True)
-    page.screenshot(path="screenshots/rb_add_to_cart.png")
     write_detail("test_add_to_cart_updates_session_storage", {
         "message": f"Add-to-cart wrote tutor ID {ids[0]} to sessionStorage and showed shortlist panel",
         "tutor_ids": ids,
-        "screenshot": "screenshots/rb_add_to_cart.png",
     })
 
 
@@ -68,11 +64,8 @@ def test_request_count_badge_increments(page: Page, base_url: str):
         page.wait_for_load_state("networkidle")
         expect(page.locator("#rb-count")).to_have_text(str(expected_count), timeout=5000)
 
-    os.makedirs("screenshots", exist_ok=True)
-    page.screenshot(path="screenshots/rb_badge_increment.png")
     write_detail("test_request_count_badge_increments", {
         "message": "Request count badge incremented correctly from 1 to 3",
-        "screenshot": "screenshots/rb_badge_increment.png",
     })
 
 
@@ -140,9 +133,6 @@ def test_remove_tutor_updates_url(page: Page, base_url: str):
         f"requested_tutors still in URL after removing all: {page.url}"
     )
 
-    os.makedirs("screenshots", exist_ok=True)
-    page.screenshot(path="screenshots/rb_remove_tutor.png")
     write_detail("test_remove_tutor_updates_url", {
         "message": "Remove tutor updated URL correctly; removing last tutor returned to plain /contact-us/",
-        "screenshot": "screenshots/rb_remove_tutor.png",
     })

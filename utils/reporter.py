@@ -42,6 +42,20 @@ def write_results(report_path: str):
         "results":  results,
     }
 
+    # Stamp with the deployed version/commit SHA, if pytest_sessionstart managed
+    # to fetch one (docs/TESTING_REBUILD_SPEC.md Days 4-6). reporter.py runs as a
+    # separate process after the pytest session finishes, so this crosses that
+    # boundary via a file rather than in-memory state.
+    if os.path.exists("deploy_info.json"):
+        try:
+            with open("deploy_info.json") as f:
+                deploy_info = json.load(f)
+            output["plugin_version"] = deploy_info.get("plugin_version")
+            output["theme_version"]  = deploy_info.get("theme_version")
+            output["commit_sha"]     = deploy_info.get("commit_sha")
+        except (json.JSONDecodeError, OSError) as e:
+            print(f"Could not read deploy_info.json: {e}")
+
     with open("results.json", "w") as f:
         json.dump(output, f, indent=2)
 

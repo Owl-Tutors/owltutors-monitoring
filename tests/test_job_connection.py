@@ -1,4 +1,3 @@
-import os
 import re
 import pytest
 from playwright.sync_api import Page, expect
@@ -45,12 +44,9 @@ def test_stage3_job_renders_applicant_cards(
     expect(page.locator("#ot_change_tutor_order")).to_be_visible()
     expect(page.locator("button.connect_with_tutor").first).to_be_visible()
 
-    os.makedirs("screenshots", exist_ok=True)
-    page.screenshot(path="screenshots/stage3_applicant_cards.png")
     write_detail("test_stage3_job_renders_applicant_cards", {
         "message": f"Stage 3 job {stage3_job['job_id']} rendered applicant cards and sort dropdown",
         "job_id": stage3_job["job_id"],
-        "screenshot": "screenshots/stage3_applicant_cards.png",
     })
 
 
@@ -83,17 +79,11 @@ def test_connect_with_tutor_triggers_modal(
     # Any modal is acceptable — accept-terms, payment, or login
     page.wait_for_selector(".modal.show, .dash_modal.show", timeout=15000)
 
-    os.makedirs("screenshots", exist_ok=True)
-    try:
-        page.screenshot(path="screenshots/connect_tutor_modal.png")
-    except Exception:
-        pass
     write_detail("test_connect_with_tutor_triggers_modal", {
         "message": (
             f"ot_job_identify_modal fired for job {job_id_attr} / tutor {tutor_id_attr}"
         ),
         "job_id": stage3_job["job_id"],
-        "screenshot": "screenshots/connect_tutor_modal.png",
     })
 
 
@@ -129,15 +119,9 @@ def test_accept_terms_modal_renders(
         f"Modal appears empty — inner text: {modal_text[:200]}"
     )
 
-    os.makedirs("screenshots", exist_ok=True)
-    try:
-        page.screenshot(path="screenshots/accept_terms_modal.png")
-    except Exception:
-        pass
     write_detail("test_accept_terms_modal_renders", {
         "message": f"Stage 3 modal rendered with content for job {stage3_job['job_id']}",
         "job_id": stage3_job["job_id"],
-        "screenshot": "screenshots/accept_terms_modal.png",
     })
 
 
@@ -177,15 +161,9 @@ def test_logged_out_stage3_sees_login_modal(
     expect(page.locator(".applicants")).to_be_visible()
     expect(page.locator("button.connect_with_tutor").first).to_be_visible()
 
-    os.makedirs("screenshots", exist_ok=True)
-    try:
-        page.screenshot(path="screenshots/stage3_login_modal.png")
-    except Exception:
-        pass
     write_detail("test_logged_out_stage3_sees_login_modal", {
         "message": f"Logged-out user logged in via inline form and reached Stage 3 job {stage3_job['job_id']}",
         "job_id": stage3_job["job_id"],
-        "screenshot": "screenshots/stage3_login_modal.png",
     })
 
 
@@ -212,14 +190,11 @@ def test_stripe_return_auto_triggers_modal(
     # Modal should open automatically — no button click required
     page.wait_for_selector(".modal.show, .dash_modal.show", timeout=15000)
 
-    os.makedirs("screenshots", exist_ok=True)
-    page.screenshot(path="screenshots/stripe_return_modal.png")
     write_detail("test_stripe_return_auto_triggers_modal", {
         "message": (
             f"Stripe-return params auto-opened modal on job {stage3_job['job_id']}"
         ),
         "job_id": stage3_job["job_id"],
-        "screenshot": "screenshots/stripe_return_modal.png",
     })
 
 
@@ -271,16 +246,12 @@ def test_accept_terms_advances_to_stage4(
     expect(connected_section).to_be_visible()
     expect(connected_section.locator("h2")).to_contain_text("Your chosen tutor")
 
-    # Wait for any modal overlay to clear, then scroll to the tutor section
-    # so the screenshot shows the Stage 4 chosen-tutor details cleanly.
+    # Wait for any modal overlay to clear before checking the tutor section.
     page.wait_for_selector(".modal.show", state="hidden", timeout=5000)
     connected_section.scroll_into_view_if_needed()
-    os.makedirs("screenshots", exist_ok=True)
-    page.screenshot(path="screenshots/stage4_from_accept_terms.png")
     write_detail("test_accept_terms_advances_to_stage4", {
         "message": f"Job {stage3_job['job_id']} advanced to Stage 4 after accepting terms",
         "job_id": stage3_job["job_id"],
-        "screenshot": "screenshots/stage4_from_accept_terms.png",
     })
 
 
@@ -309,12 +280,9 @@ def test_magic_link_auto_login(page: Page, base_url: str, magic_link_params):
         f"Magic link did not authenticate — still on login: {page.url}"
     )
 
-    os.makedirs("screenshots", exist_ok=True)
-    page.screenshot(path="screenshots/magic_link_login.png")
     write_detail("test_magic_link_auto_login", {
         "message": f"Magic link authenticated for job {job_id}",
         "job_id": job_id,
-        "screenshot": "screenshots/magic_link_login.png",
     })
 
 
@@ -345,12 +313,9 @@ def test_client_stage4_job_shows_connected_tutor(
     expect(connected_section).to_be_visible()
     expect(connected_section.locator("h2")).to_contain_text("Your chosen tutor")
 
-    os.makedirs("screenshots", exist_ok=True)
-    page.screenshot(path="screenshots/stage4_connected_tutor.png")
     write_detail("test_client_stage4_job_shows_connected_tutor", {
         "message": (
             f"Stage 4 job {stage3_job['job_id']} shows 'Your chosen tutor' section"
         ),
         "job_id": stage3_job["job_id"],
-        "screenshot": "screenshots/stage4_connected_tutor.png",
     })

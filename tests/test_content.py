@@ -1,5 +1,4 @@
 import json
-import os
 from playwright.sync_api import Page, expect
 from utils.details import write_detail
 import pytest
@@ -17,11 +16,8 @@ def test_blog_listing_loads(page: Page, base_url: str):
     # Regular blog cards use a.text-decoration-none.d-block.h-100 (featured article omits h-100)
     page.wait_for_selector("a.text-decoration-none.d-block.h-100", timeout=10000)
     expect(page.locator("a.text-decoration-none.d-block.h-100").first).to_be_visible()
-    os.makedirs("screenshots", exist_ok=True)
-    page.screenshot(path="screenshots/blog_listing.png")
     write_detail("test_blog_listing_loads", {
         "message": "Blog listing page loaded with article cards visible",
-        "screenshot": "screenshots/blog_listing.png",
     })
 
 
@@ -33,11 +29,8 @@ def test_blog_article_loads(page: Page, base_url: str):
     page.locator("a.text-decoration-none.d-block.h-100").first.click()
     page.wait_for_load_state("domcontentloaded")
     expect(page.locator("article.mb-4")).to_be_visible(timeout=10000)
-    os.makedirs("screenshots", exist_ok=True)
-    page.screenshot(path="screenshots/blog_article.png")
     write_detail("test_blog_article_loads", {
         "message": "Blog article page loaded with article body visible",
-        "screenshot": "screenshots/blog_article.png",
     })
 
 
@@ -46,11 +39,8 @@ def test_testimonials_page_loads(page: Page, base_url: str):
     """Testimonials page loads with the hero header visible."""
     page.goto(f"{base_url}{TESTIMONIALS_URL}")
     expect(page.locator("header.bg-navy.text-white")).to_be_visible()
-    os.makedirs("screenshots", exist_ok=True)
-    page.screenshot(path="screenshots/testimonials.png")
     write_detail("test_testimonials_page_loads", {
         "message": "Testimonials page loaded with hero header visible",
-        "screenshot": "screenshots/testimonials.png",
     })
 
 
@@ -60,11 +50,8 @@ def test_shop_loads(page: Page, base_url: str):
     page.goto(f"{base_url}{SHOP_URL}")
     page.wait_for_selector(".paper-card", timeout=10000)
     expect(page.locator(".paper-card").first).to_be_visible()
-    os.makedirs("screenshots", exist_ok=True)
-    page.screenshot(path="screenshots/shop.png")
     write_detail("test_shop_loads", {
         "message": "Premium paper shop loaded with product cards visible",
-        "screenshot": "screenshots/shop.png",
     })
 
 
@@ -74,11 +61,8 @@ def test_group_course_listing(page: Page, base_url: str):
     page.goto(f"{base_url}{COURSES_URL}")
     page.wait_for_selector("#course-grid article.course-card", timeout=10000)
     expect(page.locator("#course-grid article.course-card").first).to_be_visible()
-    os.makedirs("screenshots", exist_ok=True)
-    page.screenshot(path="screenshots/course_listing.png")
     write_detail("test_group_course_listing", {
         "message": "Group course listing loaded with course cards visible",
-        "screenshot": "screenshots/course_listing.png",
     })
 
 
@@ -91,11 +75,8 @@ def test_group_course_detail(page: Page, base_url: str):
     page.locator("#course-grid article.course-card a.stretched-link").first.click()
     page.wait_for_load_state("domcontentloaded")
     expect(page.locator("header.bg-navy.text-white")).to_be_visible(timeout=10000)
-    os.makedirs("screenshots", exist_ok=True)
-    page.screenshot(path="screenshots/course_detail.png")
     write_detail("test_group_course_detail", {
         "message": "Group course detail page loaded with course header visible",
-        "screenshot": "screenshots/course_detail.png",
     })
 
 
@@ -135,11 +116,8 @@ def test_blog_pagination(page: Page, base_url: str):
         f"on page 1. Pagination may not be working, or every post is sticky/featured."
     )
 
-    os.makedirs("screenshots", exist_ok=True)
-    page.screenshot(path="screenshots/blog_page2.png")
     write_detail("test_blog_pagination", {
         "message": f"Blog page 2 shows {len(page2_hrefs)} unique article(s) not on page 1",
-        "screenshot": "screenshots/blog_page2.png",
     })
 
 
@@ -166,11 +144,8 @@ def test_blog_reading_time(page: Page, base_url: str):
     reading_time_el = page.locator("p.meta.small").filter(has_text="min read")
     expect(reading_time_el.first).to_be_visible(timeout=5000)
 
-    os.makedirs("screenshots", exist_ok=True)
-    page.screenshot(path="screenshots/blog_reading_time.png")
     write_detail("test_blog_reading_time", {
         "message": "Blog article shows reading time ('min read') in article meta",
-        "screenshot": "screenshots/blog_reading_time.png",
     })
 
 
@@ -224,11 +199,8 @@ def test_video_object_json_ld(page: Page, base_url: str):
             "set a specific URL in this test once a post with video_id is identified on the dev site"
         )
 
-    os.makedirs("screenshots", exist_ok=True)
-    page.screenshot(path="screenshots/blog_video_object.png")
     write_detail("test_video_object_json_ld", {
         "message": f"VideoObject found in JSON-LD on {checked_url}",
-        "screenshot": "screenshots/blog_video_object.png",
     })
 
 
@@ -268,9 +240,6 @@ def test_testimonial_scores_shortcode(page: Page, base_url: str):
         f"Expected 'X / 5 based on N reviews' text inside #testimonial_scores, got: {text!r}"
     )
 
-    os.makedirs("screenshots", exist_ok=True)
-    page.screenshot(path="screenshots/testimonial_scores.png")
     write_detail("test_testimonial_scores_shortcode", {
         "message": f"Testimonial scores shortcode rendered: {text.strip()[:80]}",
-        "screenshot": "screenshots/testimonial_scores.png",
     })

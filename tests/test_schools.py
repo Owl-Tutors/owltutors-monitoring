@@ -1,5 +1,4 @@
 import json
-import os
 from playwright.sync_api import Page, expect
 from utils.details import write_detail
 import pytest
@@ -21,11 +20,8 @@ def test_school_listing_page_loads(page: Page, base_url: str):
     """School entrance guide listing page loads and the filter form is visible."""
     page.goto(f"{base_url}{SCHOOLS_URL}")
     expect(page.locator("#school_entry_points")).to_be_visible()
-    os.makedirs("screenshots", exist_ok=True)
-    page.screenshot(path="screenshots/school_listing_page.png")
     write_detail("test_school_listing_page_loads", {
         "message": "School entrance guide listing page loaded with filter form visible",
-        "screenshot": "screenshots/school_listing_page.png",
     })
 
 
@@ -37,11 +33,8 @@ def test_school_text_search_ajax(page: Page, base_url: str):
     page.locator("#school-search-form input[name='school_name']").fill("Westminster")
     page.wait_for_selector("#school_search_results a.list-group-item", timeout=10000)
     expect(page.locator("#school_search_results a.list-group-item").first).to_be_visible()
-    os.makedirs("screenshots", exist_ok=True)
-    page.screenshot(path="screenshots/school_text_search.png")
     write_detail("test_school_text_search_ajax", {
         "message": "School AJAX text search returned results for 'Westminster'",
-        "screenshot": "screenshots/school_text_search.png",
     })
 
 
@@ -56,11 +49,8 @@ def test_school_filter_form_returns_results(page: Page, base_url: str):
     page.wait_for_selector("article.school_result_box", timeout=15000)
     expect(page.locator("article.school_result_box").first).to_be_visible()
     page.locator("article.school_result_box").first.scroll_into_view_if_needed()
-    os.makedirs("screenshots", exist_ok=True)
-    page.screenshot(path="screenshots/school_filter_results.png")
     write_detail("test_school_filter_form_returns_results", {
         "message": "School filter form returned results for 11 Plus entry point",
-        "screenshot": "screenshots/school_filter_results.png",
     })
 
 
@@ -74,11 +64,8 @@ def test_school_profile_loads(page: Page, base_url: str):
     page.locator("#school_search_results a.list-group-item").first.click()
     page.wait_for_load_state("networkidle", timeout=60000)
     expect(page.locator("section#overview")).to_be_visible(timeout=15000)
-    os.makedirs("screenshots", exist_ok=True)
-    page.screenshot(path="screenshots/school_profile.png")
     write_detail("test_school_profile_loads", {
         "message": "Westminster school profile loaded with overview section visible",
-        "screenshot": "screenshots/school_profile.png",
     })
 
 
@@ -121,11 +108,8 @@ def test_school_profile_json_ld_present(page: Page, base_url: str):
         f"Parse errors: {errors}"
     )
 
-    os.makedirs("screenshots", exist_ok=True)
-    page.screenshot(path="screenshots/school_json_ld.png")
     write_detail("test_school_profile_json_ld_present", {
         "message": "School profile has valid JSON-LD with schema.org context",
-        "screenshot": "screenshots/school_json_ld.png",
     })
 
 
@@ -155,9 +139,6 @@ def test_school_profile_linked_papers(page: Page, base_url: str):
         "No paper cards found inside the school entrance papers section on Westminster profile"
     )
 
-    os.makedirs("screenshots", exist_ok=True)
-    page.screenshot(path="screenshots/school_linked_papers.png")
     write_detail("test_school_profile_linked_papers", {
         "message": f"Westminster profile shows {paper_cards.count()} paper card(s) in entrance papers section",
-        "screenshot": "screenshots/school_linked_papers.png",
     })

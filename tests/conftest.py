@@ -1,4 +1,5 @@
 import base64
+import json
 import os
 import re
 import uuid as _uuid
@@ -53,6 +54,28 @@ def pytest_sessionstart(session):
 
     if not data.get("success"):
         raise RuntimeError(f"pytest_sessionstart: owl_set_test_mode failed: {data}")
+
+    # Stamp this run with the deployed version/commit SHA (Days 4-6). Written to
+    # a file rather than kept in memory: reporter.py runs as a separate process
+    # after the whole pytest session finishes (see .github/workflows/smoke-tests.yml).
+    # Best-effort only -- a run should not fail just because this lookup failed.
+    try:
+        from utils.get_deploy_info import get_deploy_info
+        deploy_info = get_deploy_info(clean_url, api_key)
+        with open("deploy_info.json", "w") as f:
+            json.dump(deploy_info, f, indent=2)
+    except Exception as e:
+        print(f"[pytest_sessionstart] could not fetch deploy info: {e}")
+
+
+@pytest.hookimpl(tryfirst=True, hookwrapper=True)
+def pytest_runtest_makereport(item, call):
+    """Stash each phase's TestReport on the item (as rep_setup/rep_call/rep_teardown)
+    so the _diagnostics fixture below can check the outcome after the test body
+    has run — a fixture's own yield has no direct access to the test's result."""
+    outcome = yield
+    rep = outcome.get_result()
+    setattr(item, "rep_" + rep.when, rep)
 
 
 @pytest.fixture(scope="session")
@@ -129,21 +152,59 @@ def inject_basic_auth(page):
             ),
         )
 
-@pytest.fixture(autouse=True)
-def log_ajax(page, request):
-    """Comprehensive network + JS diagnostics for every test.
+class _Step:
+    """Named-step context manager -- see the `step` fixture below."""
+    def __init__(self, request, name):
+        self.request = request
+        self.name = name
 
-    Captures:
-    - admin-ajax.php responses (status + body)
-    - admin-ajax.php requests that fail/abort before getting a response
-    - all browser console messages (all levels)
-    - unhandled JS page errors
-    - a DOM snapshot after the test (ajaxurl value + key element presence)
+    def __enter__(self):
+        self.request.node.current_step = self.name
+        return self
+
+    def __exit__(self, exc_type, exc, tb):
+        return False  # never suppress -- let the failure propagate normally
+
+
+@pytest.fixture
+def step(request):
+    """Named-step context manager for failure diagnostics (docs/TESTING_REBUILD_SPEC.md
+    Days 4-6): `with step("filling contact form"): ...`.
+
+    On failure, the last-entered step name is attached to the plain-English
+    summary and the details.json entry, so a failure says *where* it happened
+    without anyone reading the full traceback. Adoption is incremental --
+    tests that don't use it simply have no step name in their failure summary.
     """
-    responses = []
-    failed_requests = []
+    def _make(name):
+        return _Step(request, name)
+    return _make
+
+
+@pytest.fixture(autouse=True)
+def _diagnostics(page, request):
+    """Comprehensive network + JS diagnostics for every test, plus failure-only
+    screenshot and plain-English summary (docs/TESTING_REBUILD_SPEC.md Days 4-6).
+
+    Always (live -s output, unchanged from the log_ajax fixture this replaces):
+    - prints admin-ajax.php responses/failures, console errors/warnings,
+      unhandled JS page errors, and a DOM snapshot
+
+    On failure only:
+    - takes a screenshot (screenshots/{test_name}.png) -- previously screenshots
+      were only ever taken on the success path, so a currently-failing test's
+      screenshot (if the dashboard showed one at all) was stale from the last
+      time it passed and showed nothing about the actual failure
+    - writes a details.json entry (message, screenshot, step, and capped
+      console/page/network error lists) that overwrites any stale pass-time
+      entry, so the dashboard widget reflects the current failure
+    """
+    ajax_responses = []
+    ajax_failed = []
     console_msgs = []
+    console_errors = []
     page_errors = []
+    failed_requests = []
 
     def on_response(response):
         if "admin-ajax.php" in response.url:
@@ -151,20 +212,30 @@ def log_ajax(page, request):
                 body = response.text()
             except Exception:
                 body = "<unreadable>"
-            responses.append(f"  [response {response.status}] {response.url} -> {body[:300]}")
+            ajax_responses.append(f"  [response {response.status}] {response.url} -> {body[:300]}")
+
+    def on_console(msg):
+        line = f"[console:{msg.type}] {msg.text}"
+        console_msgs.append(f"  {line}")
+        if msg.type in ("error", "warning"):
+            console_errors.append(line)
+
+    def on_pageerror(err):
+        page_errors.append(str(err))
 
     def on_requestfailed(req):
+        failed_requests.append(f"{req.method} {req.url} — {req.failure}")
         if "admin-ajax.php" in req.url:
-            failed_requests.append(f"  [FAILED] {req.url} — {req.failure}")
+            ajax_failed.append(f"  [FAILED] {req.url} — {req.failure}")
 
     page.on("response", on_response)
     page.on("requestfailed", on_requestfailed)
-    page.on("console", lambda msg: console_msgs.append(f"  [console:{msg.type}] {msg.text}"))
-    page.on("pageerror", lambda err: page_errors.append(f"  [pageerror] {err}"))
+    page.on("console", on_console)
+    page.on("pageerror", on_pageerror)
 
     yield
 
-    # DOM snapshot — only meaningful if page navigated somewhere
+    # ---- live diagnostics printout (unchanged behaviour) ----
     dom = {}
     try:
         dom = page.evaluate("""() => ({
@@ -177,19 +248,58 @@ def log_ajax(page, request):
     except Exception:
         pass
 
-    lines = responses + failed_requests
+    lines = ajax_responses + ajax_failed
     if lines or page_errors or dom:
         print(f"\n[diag: {request.node.name}]")
         for line in lines:
             print(line)
         for line in page_errors:
-            print(line)
+            print(f"  [pageerror] {line}")
         if dom:
             print(f"  [dom] {dom}")
-    # Always print console — filter to errors/warnings to keep output manageable
     for msg in console_msgs:
-        if any(t in msg for t in ("[console:error]", "[console:warning]")):
+        if "[console:error]" in msg or "[console:warning]" in msg:
             print(msg)
+
+    # ---- failure-only screenshot + details.json entry ----
+    report = getattr(request.node, "rep_call", None) or getattr(request.node, "rep_setup", None)
+    if report is None or report.passed or report.skipped:
+        return
+
+    test_name = request.node.name.split("[")[0]
+
+    screenshot_path = None
+    try:
+        os.makedirs("screenshots", exist_ok=True)
+        candidate = f"screenshots/{test_name}.png"
+        page.screenshot(path=candidate, timeout=10000)
+        screenshot_path = candidate
+    except Exception as e:
+        print(f"[diagnostics] could not capture failure screenshot for {test_name}: {e}")
+
+    step_name = getattr(request.node, "current_step", None)
+    exception_text = str(report.longrepr) if report.longrepr else "Unknown failure"
+
+    from utils.summarize import summarize_failure
+    from utils.details import write_detail
+
+    summary = summarize_failure(
+        test_name=test_name,
+        step=step_name,
+        exception_text=exception_text,
+        console_errors=console_errors,
+        page_errors=page_errors,
+        failed_requests=failed_requests,
+    )
+
+    write_detail(test_name, {
+        "message":         summary,
+        "screenshot":      screenshot_path,
+        "step":            step_name,
+        "console_errors":  console_errors[-10:],
+        "page_errors":     page_errors[-10:],
+        "failed_requests": failed_requests[-10:],
+    })
 
 
 @pytest.fixture

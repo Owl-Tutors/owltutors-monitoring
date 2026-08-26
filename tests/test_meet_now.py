@@ -99,14 +99,11 @@ def test_meet_now_form_auto_selects_type(
     )
     expect(home_cb).to_be_disabled(timeout=10000)
 
-    os.makedirs("screenshots", exist_ok=True)
-    page.screenshot(path="screenshots/meet_now_form_state.png")
     write_detail("test_meet_now_form_auto_selects_type", {
         "message": (
             f"Meet-now form state correct: type hidden, "
             f"home delivery disabled, jobs board hidden"
         ),
-        "screenshot": "screenshots/meet_now_form_state.png",
     })
 
 
@@ -178,11 +175,8 @@ def test_meet_now_submission(
         f"expected [{meet_now_tutor_id}]"
     )
 
-    os.makedirs("screenshots", exist_ok=True)
-    page.screenshot(path="screenshots/meet_now_submission.png")
     write_detail("test_meet_now_submission", {
         "message": f"Meet-now form submitted, redirected to job {job_id}; requested_job_members verified against DB",
         "job_id": job_id,
         "job_create_type": fields["job_create_type"],
-        "screenshot": "screenshots/meet_now_submission.png",
     })

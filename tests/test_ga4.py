@@ -8,7 +8,6 @@ these tests are skipped automatically when running against the dev site.
 They will run on the production site or any environment whose WordPress
 site URL contains 'owltutors.co.uk'.
 """
-import os
 import pytest
 from playwright.sync_api import Page, expect
 from utils.details import write_detail
@@ -55,11 +54,8 @@ def test_ga4_session_storage_set_on_load(page: Page, base_url: str):
         f"initial_url should be an owltutors URL, got: {initial_url!r}"
     )
 
-    os.makedirs("screenshots", exist_ok=True)
-    page.screenshot(path="screenshots/ga4_session_storage.png")
     write_detail("test_ga4_session_storage_set_on_load", {
         "message": f"initial_url={initial_url!r}  traffic_source_r={traffic_source!r}",
-        "screenshot": "screenshots/ga4_session_storage.png",
     })
 
 
@@ -102,9 +98,6 @@ def test_ga4_client_id_in_contact_form(page: Page, base_url: str):
         input_value = ga_input.first.get_attribute("value") or ""
         assert input_value, "ga_client_id hidden input exists but has empty value"
 
-    os.makedirs("screenshots", exist_ok=True)
-    page.screenshot(path="screenshots/ga4_contact_form_client_id.png")
     write_detail("test_ga4_client_id_in_contact_form", {
         "message": f"ga_client_id={ga_client_id!r} set in sessionStorage from _ga cookie",
-        "screenshot": "screenshots/ga4_contact_form_client_id.png",
     })

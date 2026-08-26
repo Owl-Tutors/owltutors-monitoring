@@ -48,11 +48,8 @@ def test_tutor_dashboard_loads(page: Page, base_url: str, tutor_credentials):
     page.goto(f"{base_url}{DASHBOARD_URL}", wait_until="domcontentloaded", timeout=90000)
     expect(page.locator("header#tutor-listings-page")).to_be_visible()
     expect(page.locator("div#tutor_dashboard")).to_be_visible()
-    os.makedirs("screenshots", exist_ok=True)
-    page.screenshot(path="screenshots/tutor_dashboard.png")
     write_detail("test_tutor_dashboard_loads", {
         "message": "Tutor dashboard loaded with correct header and container",
-        "screenshot": "screenshots/tutor_dashboard.png",
     })
 
 
@@ -68,11 +65,8 @@ def test_tutor_dashboard_jobs_board(page: Page, base_url: str, tutor_credentials
     page.goto(f"{base_url}{TUTORING_URL}", wait_until="domcontentloaded", timeout=90000)
     expect(page.locator("div#tutor_dash_tabs")).to_be_visible()
     expect(page.locator("div#jobs_board")).to_be_visible()
-    os.makedirs("screenshots", exist_ok=True)
-    page.screenshot(path="screenshots/tutor_jobs_board.png")
     write_detail("test_tutor_dashboard_jobs_board", {
         "message": "Tutor jobs board tab pane visible and active",
-        "screenshot": "screenshots/tutor_jobs_board.png",
     })
 
 
@@ -89,11 +83,8 @@ def test_tutor_dashboard_timesheet_entry(page: Page, base_url: str, tutor_creden
     assert page.locator("div#submit_a_timesheet").count() > 0, (
         "#submit_a_timesheet pane not found in DOM at /dashboard/tutoring-section/"
     )
-    os.makedirs("screenshots", exist_ok=True)
-    page.screenshot(path="screenshots/tutor_timesheet_entry.png")
     write_detail("test_tutor_dashboard_timesheet_entry", {
         "message": "Tutor timesheet entry pane present in DOM",
-        "screenshot": "screenshots/tutor_timesheet_entry.png",
     })
 
 
@@ -129,11 +120,8 @@ def test_tutor_jobs_board_filter_returns_results(page: Page, base_url: str, tuto
         "#tutor_job_output is empty after filter — AJAX may not have completed"
     )
 
-    os.makedirs("screenshots", exist_ok=True)
-    page.screenshot(path="screenshots/tutor_jobs_board_filter.png")
     write_detail("test_tutor_jobs_board_filter_returns_results", {
         "message": "Jobs board filter (Maths, Online) submitted; results rendered",
-        "screenshot": "screenshots/tutor_jobs_board_filter.png",
     })
 
 
@@ -163,11 +151,8 @@ def test_tutor_stripe_connect_section_renders(page: Page, base_url: str, tutor_c
         "#stripe_connect section is empty — expected server-rendered Stripe Connect UI"
     )
 
-    os.makedirs("screenshots", exist_ok=True)
-    page.screenshot(path="screenshots/tutor_stripe_connect.png")
     write_detail("test_tutor_stripe_connect_section_renders", {
         "message": "Stripe Connect section rendered content after AJAX load",
-        "screenshot": "screenshots/tutor_stripe_connect.png",
     })
 
 
@@ -203,11 +188,8 @@ def test_tutor_availability_grid_renders(page: Page, base_url: str, tutor_creden
     # Dashboard grid cells are button.tutor-avail-slot[data-d][data-s] (not .avail-cell)
     expect(page.locator("button.tutor-avail-slot").first).to_be_visible(timeout=10000)
 
-    os.makedirs("screenshots", exist_ok=True)
-    page.screenshot(path="screenshots/tutor_availability_grid.png")
     write_detail("test_tutor_availability_grid_renders", {
         "message": "Availability slot grid rendered at /dashboard/profile/#my_availability",
-        "screenshot": "screenshots/tutor_availability_grid.png",
     })
 
 
@@ -280,11 +262,8 @@ def test_tutor_availability_grid_saves(page: Page, base_url: str, tutor_credenti
             f"Slot [day={d}, slot={s}] should be ON after toggle but lacks is-on"
         )
 
-    os.makedirs("screenshots", exist_ok=True)
-    page.screenshot(path="screenshots/tutor_availability_saved.png")
     write_detail("test_tutor_availability_grid_saves", {
         "message": f"Availability slot [day={d}, slot={s}] toggled and state persisted after reload",
-        "screenshot": "screenshots/tutor_availability_saved.png",
     })
 
 
@@ -310,9 +289,6 @@ def test_tutor_dashboard_invoices_renders(page: Page, base_url: str, tutor_crede
         "#invoices section rendered empty — expected at least a title"
     )
 
-    os.makedirs("screenshots", exist_ok=True)
-    page.screenshot(path="screenshots/tutor_invoices.png")
     write_detail("test_tutor_dashboard_invoices_renders", {
         "message": "Invoices section rendered at /dashboard/tutoring-section/#invoices",
-        "screenshot": "screenshots/tutor_invoices.png",
     })

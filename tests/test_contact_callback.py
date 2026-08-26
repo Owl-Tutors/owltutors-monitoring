@@ -93,11 +93,8 @@ def test_contact_form_callback_submission(page: Page, base_url: str, api_key: st
         f"job {job_id}: requested_job_members={fields['requested_job_members']!r}, expected empty"
     )
 
-    os.makedirs("screenshots", exist_ok=True)
-    page.screenshot(path="screenshots/job_callback_submission.png")
     write_detail("test_contact_form_callback_submission", {
         "message": f"Callback enquiry submitted and redirected to job {job_id}; job_create_type verified against DB",
         "job_id": job_id,
         "job_create_type": fields["job_create_type"],
-        "screenshot": "screenshots/job_callback_submission.png",
     })

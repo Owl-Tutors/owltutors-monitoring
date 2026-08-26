@@ -148,10 +148,6 @@ def test_requested_tutor_cart(page: Page, base_url: str):
         timeout=10000,
     )
 
-    # Capture evidence screenshot of the populated cart
-    os.makedirs("screenshots", exist_ok=True)
-    page.locator("#requested_tutor_output").screenshot(path="screenshots/tutor_cart.png")
-
     href = submit_link.get_attribute("href")
     assert "requested_tutors" in href, (
         f"Submit link href missing 'requested_tutors': {href}"
@@ -162,7 +158,6 @@ def test_requested_tutor_cart(page: Page, base_url: str):
     write_detail("test_requested_tutor_cart", {
         "message": "Tutor shortlist populated with 3 tutors and submit link updated",
         "tutor_ids": ids,
-        "screenshot": "screenshots/tutor_cart.png",
     })
 
 
@@ -221,15 +216,10 @@ def test_contact_form_tutor_submission(page: Page, base_url: str, api_key: str, 
         f"job {job_id}: requested_job_members={fields['requested_job_members']!r}, expected empty"
     )
 
-    os.makedirs("screenshots", exist_ok=True)
-    page.screenshot(
-        path="screenshots/job_tutor_submission.png"
-    )
     write_detail("test_contact_form_tutor_submission", {
         "message": f"Tutor enquiry submitted and redirected to job {job_id}; job_create_type verified against DB",
         "job_id": job_id,
         "job_create_type": fields["job_create_type"],
-        "screenshot": "screenshots/job_tutor_submission.png",
     })
 
 
@@ -278,15 +268,10 @@ def test_contact_form_something_else(page: Page, base_url: str, api_key: str, cl
         f"job {job_id}: requested_job_members={fields['requested_job_members']!r}, expected empty"
     )
 
-    os.makedirs("screenshots", exist_ok=True)
-    page.screenshot(
-        path="screenshots/job_something_else.png"
-    )
     write_detail("test_contact_form_something_else", {
         "message": f"'Something else' enquiry submitted and redirected to job {job_id}; job_create_type verified against DB",
         "job_id": job_id,
         "job_create_type": fields["job_create_type"],
-        "screenshot": "screenshots/job_something_else.png",
     })
 
 
@@ -370,15 +355,10 @@ def test_contact_form_requested_tutors(page: Page, base_url: str, api_key: str, 
         f"(shortlisted in the browser)"
     )
 
-    os.makedirs("screenshots", exist_ok=True)
-    page.screenshot(
-        path="screenshots/job_requested_tutors.png"
-    )
     write_detail("test_contact_form_requested_tutors", {
         "message": f"Requested tutors flow submitted and redirected to job {job_id}; requested_job_members verified against DB",
         "job_id": job_id,
         "tutor_ids": ids,
-        "screenshot": "screenshots/job_requested_tutors.png",
     })
 
 
@@ -429,11 +409,8 @@ def test_new_client_banner(page: Page, base_url: str, cleanup_after):
     # and that the logged-in job view rendered (nav contains Dashboard link).
     expect(page.locator("a.utility-bar__login[href='/dashboard/']")).to_be_visible(timeout=5000)
 
-    os.makedirs("screenshots", exist_ok=True)
-    page.screenshot(path="screenshots/new_client_banner.png")
     write_detail("test_new_client_banner", {
         "message": f"New client banner visible at {page.url}",
-        "screenshot": "screenshots/new_client_banner.png",
     })
 
 
@@ -502,13 +479,10 @@ def test_contact_form_returning_client(
         f"expected the returning client {expected_email!r}"
     )
 
-    os.makedirs("screenshots", exist_ok=True)
-    page.screenshot(path="screenshots/job_returning_client.png")
     write_detail("test_contact_form_returning_client", {
         "message": f"Returning client job submitted and redirected to job {job_id}; client_id verified against DB",
         "job_id": job_id,
         "client_id": fields["client_id"],
-        "screenshot": "screenshots/job_returning_client.png",
     })
 
 
@@ -561,12 +535,9 @@ def test_stage1_quality_check_fail(page: Page, base_url: str, cleanup_after):
         f"Expected Stage 1 warning text, got: {stage1_alert.text_content()!r}"
     )
 
-    os.makedirs("screenshots", exist_ok=True)
-    page.screenshot(path="screenshots/job_stage1_quality_fail.png")
     write_detail("test_stage1_quality_check_fail", {
         "message": f"Short requirements triggered Stage 1 alert on job {job_id}",
         "job_id": job_id,
-        "screenshot": "screenshots/job_stage1_quality_fail.png",
     })
 
 
@@ -610,12 +581,9 @@ def test_health_safety_unchecked_job_creates(page: Page, base_url: str, cleanup_
     job_id = re.search(r"/jobs/(\d+)/", page.url).group(1)
     print(f"\n[result] h&s unchecked job_id={job_id}")
 
-    os.makedirs("screenshots", exist_ok=True)
-    page.screenshot(path="screenshots/job_hs_unchecked.png")
     write_detail("test_health_safety_unchecked_job_creates", {
         "message": f"H&S unchecked: job still created at {job_id}; notes_on_status note must be verified in WP admin",
         "job_id": job_id,
-        "screenshot": "screenshots/job_hs_unchecked.png",
     })
 
 
@@ -673,12 +641,9 @@ def test_duplicate_job_detection(
         f"Expected duplicate-job warning in Stage 1 alert, got: {alert_text!r}"
     )
 
-    os.makedirs("screenshots", exist_ok=True)
-    page.screenshot(path="screenshots/job_duplicate_detected.png")
     write_detail("test_duplicate_job_detection", {
         "message": f"Duplicate Maths job (job {job_id}) stayed at Stage 1 with duplicate warning",
         "job_id": job_id,
-        "screenshot": "screenshots/job_duplicate_detected.png",
     })
 
 
@@ -751,9 +716,6 @@ def test_admin_job_path_redirects(page: Page, base_url: str, cleanup_after):
     )
 
     print(f"\n[result] admin path confirmed, final URL: {final_url}")
-    os.makedirs("screenshots", exist_ok=True)
-    page.screenshot(path="screenshots/job_admin_redirect.png")
     write_detail("test_admin_job_path_redirects", {
         "message": f"Admin job path redirected to wp-admin (not /jobs/): {final_url}",
-        "screenshot": "screenshots/job_admin_redirect.png",
     })

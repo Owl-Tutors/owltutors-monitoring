@@ -2,5 +2,6 @@ pytest-report.json
 __pycache__/
 .pytest_cache/
 details.json
+deploy_info.json
 screenshots/
 .env

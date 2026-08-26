@@ -67,11 +67,8 @@ def test_tutor_registration_page_loads(page: Page, base_url: str):
     expect(page.locator("#signupform")).to_be_visible()
     expect(page.locator("#applicant_register")).to_be_visible()
 
-    os.makedirs("screenshots", exist_ok=True)
-    page.screenshot(path="screenshots/tutor_registration_page.png")
     write_detail("test_tutor_registration_page_loads", {
         "message": "Tutor registration form visible at /tutor-section/application/",
-        "screenshot": "screenshots/tutor_registration_page.png",
     })
 
 
@@ -113,11 +110,8 @@ def test_tutor_registration_submits(page: Page, base_url: str, cleanup_after):
     )
 
     print(f"\n[result] registration redirect: {page.url}")
-    os.makedirs("screenshots", exist_ok=True)
-    page.screenshot(path="screenshots/tutor_registration_submit.png")
     write_detail("test_tutor_registration_submits", {
         "message": f"Registration submitted and redirected to {page.url}",
-        "screenshot": "screenshots/tutor_registration_submit.png",
     })
 
 
@@ -161,11 +155,8 @@ def test_preapplicant_application_page_loads(
         "#references tab pane not found in DOM"
     )
 
-    os.makedirs("screenshots", exist_ok=True)
-    page.screenshot(path="screenshots/preapplicant_application_page.png")
     write_detail("test_preapplicant_application_page_loads", {
         "message": "Pre-applicant application page loaded with form sections present",
-        "screenshot": "screenshots/preapplicant_application_page.png",
     })
 
 
@@ -182,13 +173,11 @@ def test_tutor_full_application_flow(page: Page, base_url: str, cleanup_after):
       1. Register as new pre-applicant at /tutor-section/application/
       2. Fill all 9 form sections (personal details â†' interview booking)
       3. Submit application â†' user promoted to 'applicant'
-      4. Screenshots: registration, mid-progress, applicant state
-      5. User deleted by cleanup endpoint (_ot_test_user=1)
+      4. User deleted by cleanup endpoint (_ot_test_user=1)
 
     Emails suppressed: wp_mail and ot_sg_mail are skipped for _ot_test_user
     accounts (see pre-app-mgmt.php).
     """
-    os.makedirs("screenshots", exist_ok=True)
     qts_pdf = str(FIXTURES_DIR / "test_qts.pdf")
 
     # Unique email per run to avoid conflicts if cleanup from a previous run failed
@@ -206,8 +195,6 @@ def test_tutor_full_application_flow(page: Page, base_url: str, cleanup_after):
     page.wait_for_url(re.compile(r".*/tutor-section/application/"), timeout=30000)
     page.wait_for_load_state("networkidle")  # let JS init + smooth-scroll settle
 
-    # Screenshot: empty application form
-    page.screenshot(path="screenshots/recruit_01_registered.png")
     print(f"\n[recruit] registered: {email}")
 
     complete_application_form(page, base_url, qts_pdf)
@@ -219,12 +206,10 @@ def test_tutor_full_application_flow(page: Page, base_url: str, cleanup_after):
         "application has been received", timeout=10000
     )
 
-    page.screenshot(path="screenshots/recruit_04_applicant.png")
     print(f"\n[recruit] application submitted -- user promoted to applicant")
 
     write_detail("test_tutor_full_application_flow", {
         "message": "Full tutor application flow completed -- pre-applicant promoted to applicant",
-        "screenshot": "screenshots/recruit_04_applicant.png",
     })
 
 
@@ -248,11 +233,8 @@ def test_logged_out_application_page_has_fields(page: Page, base_url: str):
     # (JS intercepts the click to run reCAPTCHA before submitting)
     expect(page.locator("#applicant_register")).to_be_visible()
 
-    os.makedirs("screenshots", exist_ok=True)
-    page.screenshot(path="screenshots/recruit_logged_out_form.png")
     write_detail("test_logged_out_application_page_has_fields", {
         "message": "Logged-out visitor sees registration form with email and password fields",
-        "screenshot": "screenshots/recruit_logged_out_form.png",
     })
 
 
@@ -285,11 +267,8 @@ def test_email_already_registered_error(page: Page, base_url: str, preapplicant_
         f"Expected duplicate-email error message, got: {error_text!r}"
     )
 
-    os.makedirs("screenshots", exist_ok=True)
-    page.screenshot(path="screenshots/recruit_email_exists_error.png")
     write_detail("test_email_already_registered_error", {
         "message": "Duplicate email shows 'account exists' error on registration form",
-        "screenshot": "screenshots/recruit_email_exists_error.png",
     })
 
 
@@ -356,11 +335,8 @@ def test_preapplicant_section_nav_forward_back(
         f"Expected first_names='{test_name}' after back-navigation, got: {saved_value!r}"
     )
 
-    os.makedirs("screenshots", exist_ok=True)
-    page.screenshot(path="screenshots/recruit_section_nav.png")
     write_detail("test_preapplicant_section_nav_forward_back", {
         "message": "Section nav: save → forward → back preserves personalDetails data",
-        "screenshot": "screenshots/recruit_section_nav.png",
     })
 
 
@@ -396,11 +372,8 @@ def test_client_role_on_application_page(
         f"entry-content: {(page.locator('.entry-content, article.page, main').first.inner_text() or '')[:400]!r}"
     )
 
-    os.makedirs("screenshots", exist_ok=True)
-    page.screenshot(path="screenshots/recruit_client_on_app_page.png")
     write_detail("test_client_role_on_application_page", {
         "message": "Logged-in client sees 'already signed in' on application page; registration form hidden",
-        "screenshot": "screenshots/recruit_client_on_app_page.png",
     })
 
 
@@ -453,11 +426,8 @@ def test_preapplicant_availability_tab_has_grid(
     page.wait_for_selector("button.tutor-avail-slot", timeout=10000)
     expect(page.locator("button.tutor-avail-slot").first).to_be_visible(timeout=5000)
 
-    os.makedirs("screenshots", exist_ok=True)
-    page.screenshot(path="screenshots/preapp_avail_grid.png")
     write_detail("test_preapplicant_availability_tab_has_grid", {
         "message": "Pre-applicant availability tab rendered slot grid",
-        "screenshot": "screenshots/preapp_avail_grid.png",
     })
 
 
@@ -532,11 +502,8 @@ def test_preapplicant_availability_save_and_persist(
         f"Slot [day=0, slot=16] expected is-on after save+reload, got class: {cell_class!r}"
     )
 
-    os.makedirs("screenshots", exist_ok=True)
-    page.screenshot(path="screenshots/preapp_avail_persist.png")
     write_detail("test_preapplicant_availability_save_and_persist", {
         "message": "Pre-applicant slot [day=0, slot=16] persisted with is-on after reload",
-        "screenshot": "screenshots/preapp_avail_persist.png",
     })
 
     # Cleanup: re-save empty grid to leave the fixture account clean
@@ -624,11 +591,8 @@ def test_applicant_dashboard_loads(page: Page, base_url: str, applicant_credenti
             f"Section well '{section}' not found in applicant dashboard"
         )
 
-    os.makedirs("screenshots", exist_ok=True)
-    page.screenshot(path="screenshots/applicant_dashboard.png")
     write_detail("test_applicant_dashboard_loads", {
         "message": "Applicant dashboard loaded: Stage 1 confirmed, all section wells present",
-        "screenshot": "screenshots/applicant_dashboard.png",
     })
 
 
@@ -657,11 +621,8 @@ def test_applicant_completion_scores(page: Page, base_url: str, applicant_creden
         "Expected availability well to be 'completed' — slots were saved during pre-applicant form"
     )
 
-    os.makedirs("screenshots", exist_ok=True)
-    page.screenshot(path="screenshots/applicant_completion_scores.png")
     write_detail("test_applicant_completion_scores", {
         "message": "Completion scores: docs/profile/photo=notstarted, availability=completed, Stage 1=under review",
-        "screenshot": "screenshots/applicant_completion_scores.png",
     })
 
 
@@ -694,11 +655,8 @@ def test_applicant_references_not_sent(page: Page, base_url: str, applicant_cred
         "Expected no .ot_reference_table when reference CPTs do not exist"
     )
 
-    os.makedirs("screenshots", exist_ok=True)
-    page.screenshot(path="screenshots/applicant_references_not_sent.png")
     write_detail("test_applicant_references_not_sent", {
         "message": "References tab shows 'not sent yet' message; no reference table present",
-        "screenshot": "screenshots/applicant_references_not_sent.png",
     })
 
 
@@ -738,11 +696,8 @@ def test_applicant_availability_tab_has_grid(
     page.wait_for_selector("button.tutor-avail-slot", timeout=10000)
     expect(page.locator("button.tutor-avail-slot").first).to_be_visible(timeout=5000)
 
-    os.makedirs("screenshots", exist_ok=True)
-    page.screenshot(path="screenshots/applicant_avail_grid.png")
     write_detail("test_applicant_availability_tab_has_grid", {
         "message": "Applicant availability tab rendered slot grid",
-        "screenshot": "screenshots/applicant_avail_grid.png",
     })
 
 

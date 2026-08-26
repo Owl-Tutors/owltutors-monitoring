@@ -10,6 +10,51 @@ _LIVE_DOMAIN   = "owltutors.co.uk"
 _ALLOW_LIVE_ENV = "OWL_TEST_ALLOW_LIVE"
 
 
+def pytest_sessionstart(session):
+    """Turn on the site-wide test_mode option before any test setup or collection
+    runs (owl_system docs/TESTING_REBUILD_SPEC.md, Day 1).
+
+    Deliberately raises on failure rather than letting the suite run un-suppressed:
+    test_mode gates email suppression, Stripe test keys, and other real-side-effect
+    behaviour, so a run silently proceeding without it risks real sends/charges.
+    (SMS/WhatsApp suppression is separate and doesn't depend on this option at all
+    — see ot_is_production_environment() in the plugin.)
+
+    Best-effort skip (not a hard fail) when TEST_BASE_URL/OWL_TEST_API_KEY aren't
+    set, or the target is the live domain — the base_url fixture raises its own
+    clearer errors for those cases once tests actually start.
+    """
+    raw_url = os.environ.get("TEST_BASE_URL", "")
+    api_key = os.environ.get("OWL_TEST_API_KEY", "")
+    if not raw_url or not api_key:
+        return
+    if _LIVE_DOMAIN in raw_url and not os.environ.get(_ALLOW_LIVE_ENV):
+        return
+
+    import requests
+
+    clean_url = re.sub(r"(https?://)[^:@]+:[^@]+@", r"\1", raw_url)
+    headers = {}
+    token = _basic_auth_token()
+    if token:
+        headers["Authorization"] = f"Basic {token}"
+
+    try:
+        resp = requests.post(
+            f"{clean_url}/wp-admin/admin-ajax.php",
+            data={"action": "owl_set_test_mode", "api_key": api_key},
+            headers=headers,
+            timeout=15,
+        )
+        resp.raise_for_status()
+        data = resp.json()
+    except Exception as e:
+        raise RuntimeError(f"pytest_sessionstart: could not enable test_mode: {e}") from e
+
+    if not data.get("success"):
+        raise RuntimeError(f"pytest_sessionstart: owl_set_test_mode failed: {data}")
+
+
 @pytest.fixture(scope="session")
 def base_url():
     raw = os.environ["TEST_BASE_URL"]

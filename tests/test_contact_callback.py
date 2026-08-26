@@ -5,6 +5,7 @@ from playwright.sync_api import Page, expect
 
 from utils.cleanup import delete_test_posts
 from utils.details import write_detail
+from utils.get_test_job_fields import get_test_job_fields
 
 CONTACT_URL = "/contact-us/"
 
@@ -44,10 +45,15 @@ def _flag_test_post(page: Page):
     )
 
 
-def test_contact_form_callback_submission(page: Page, base_url: str, cleanup_after):
+def test_contact_form_callback_submission(page: Page, base_url: str, api_key: str, cleanup_after):
     """
     Submit the contact form as 'Book a callback with an agent'.
     Verifies the form is accepted and the browser is redirected to the new job URL.
+
+    DB assertion (docs/TESTING_REBUILD_SPEC.md Days 2-3): job_create_type must
+    actually be 'Regular' with no requested_job_members — this is the field
+    that shipped blank on every job of every type for a month while redirect
+    behaviour looked fine.
     """
     page.goto(f"{base_url}{CONTACT_URL}")
     expect(page.locator("#tutor_request_form")).to_be_visible()
@@ -75,10 +81,21 @@ def test_contact_form_callback_submission(page: Page, base_url: str, cleanup_aft
 
     job_id = re.search(r"/jobs/(\d+)/", page.url).group(1)
     print(f"\n[result] job_id={job_id}")
+
+    fields = get_test_job_fields(base_url, api_key, job_id)
+    print(f"\n[db-assert] job {job_id} fields: {fields}")
+    assert fields["job_create_type"] == "Regular", (
+        f"job {job_id}: job_create_type={fields['job_create_type']!r}, expected 'Regular'"
+    )
+    assert fields["requested_job_members"] == [], (
+        f"job {job_id}: requested_job_members={fields['requested_job_members']!r}, expected empty"
+    )
+
     os.makedirs("screenshots", exist_ok=True)
     page.screenshot(path="screenshots/job_callback_submission.png")
     write_detail("test_contact_form_callback_submission", {
-        "message": f"Callback enquiry submitted and redirected to job {job_id}",
+        "message": f"Callback enquiry submitted and redirected to job {job_id}; job_create_type verified against DB",
         "job_id": job_id,
+        "job_create_type": fields["job_create_type"],
         "screenshot": "screenshots/job_callback_submission.png",
     })

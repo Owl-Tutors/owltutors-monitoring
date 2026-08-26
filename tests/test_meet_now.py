@@ -5,6 +5,7 @@ from playwright.sync_api import Page, expect
 
 from utils.cleanup import delete_test_posts
 from utils.details import write_detail
+from utils.get_test_job_fields import get_test_job_fields
 
 CONTACT_URL = "/contact-us/"
 FIRST_NAME  = "Owl"
@@ -113,7 +114,7 @@ def test_meet_now_form_auto_selects_type(
 # ─────────────────────────────────────────────────────────────────────────────
 
 def test_meet_now_submission(
-    page: Page, base_url: str, meet_now_tutor_id, cleanup_after
+    page: Page, base_url: str, api_key: str, meet_now_tutor_id, cleanup_after
 ):
     """
     Full meet-now submission: navigate via ?job_type=meet_now&tutor_id=X, fill
@@ -127,6 +128,10 @@ def test_meet_now_submission(
     outcome 1b.
     Covers P1: 'Meet now submission creates job, mgmt_show_on_jobs_board=0,
     auto_swap_active set to false on tutor'.
+
+    DB assertion (docs/TESTING_REBUILD_SPEC.md Days 2-3): requested_job_members
+    must contain exactly the single meet-now tutor ID, and job_create_type
+    must be 'Meet now'.
     """
     page.goto(
         f"{base_url}{CONTACT_URL}?job_type=meet_now&tutor_id={meet_now_tutor_id}"
@@ -160,10 +165,21 @@ def test_meet_now_submission(
     job_id = re.search(r"/jobs/(\d+)/", page.url).group(1)
     print(f"\n[result] meet_now job_id={job_id}")
 
+    fields = get_test_job_fields(base_url, api_key, job_id)
+    print(f"\n[db-assert] job {job_id} fields: {fields}")
+    assert fields["job_create_type"] == "Meet now", (
+        f"job {job_id}: job_create_type={fields['job_create_type']!r}, expected 'Meet now'"
+    )
+    assert fields["requested_job_members"] == [int(meet_now_tutor_id)], (
+        f"job {job_id}: requested_job_members={fields['requested_job_members']!r}, "
+        f"expected [{meet_now_tutor_id}]"
+    )
+
     os.makedirs("screenshots", exist_ok=True)
     page.screenshot(path="screenshots/meet_now_submission.png")
     write_detail("test_meet_now_submission", {
-        "message": f"Meet-now form submitted, redirected to job {job_id}",
+        "message": f"Meet-now form submitted, redirected to job {job_id}; requested_job_members verified against DB",
         "job_id": job_id,
+        "job_create_type": fields["job_create_type"],
         "screenshot": "screenshots/meet_now_submission.png",
     })

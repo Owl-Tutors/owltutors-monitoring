@@ -7,6 +7,7 @@ from playwright.sync_api import Page, expect
 
 from utils.cleanup import delete_test_posts
 from utils.details import write_detail
+from utils.get_test_job_fields import get_test_job_fields
 
 CONTACT_URL = "/contact-us/"
 TUTORS_URL  = "/tutors/"
@@ -168,10 +169,13 @@ def test_requested_tutor_cart(page: Page, base_url: str):
 # Contact form — tutor enquiry (standard, no requested tutors)
 # ─────────────────────────────────────────────────────────────────────────────
 
-def test_contact_form_tutor_submission(page: Page, base_url: str, cleanup_after):
+def test_contact_form_tutor_submission(page: Page, base_url: str, api_key: str, cleanup_after):
     """
     Submit the contact form as 'A tutor to provide tuition services'.
     Verifies the form is accepted and the browser redirects to the new job URL.
+
+    DB assertion (docs/TESTING_REBUILD_SPEC.md Days 2-3): job_create_type must
+    actually be 'Regular' with no requested_job_members.
     """
     page.goto(f"{base_url}{CONTACT_URL}")
     expect(page.locator("#tutor_request_form")).to_be_visible()
@@ -204,13 +208,24 @@ def test_contact_form_tutor_submission(page: Page, base_url: str, cleanup_after)
 
     job_id = re.search(r"/jobs/(\d+)/", page.url).group(1)
     print(f"\n[result] job_id={job_id}")
+
+    fields = get_test_job_fields(base_url, api_key, job_id)
+    print(f"\n[db-assert] job {job_id} fields: {fields}")
+    assert fields["job_create_type"] == "Regular", (
+        f"job {job_id}: job_create_type={fields['job_create_type']!r}, expected 'Regular'"
+    )
+    assert fields["requested_job_members"] == [], (
+        f"job {job_id}: requested_job_members={fields['requested_job_members']!r}, expected empty"
+    )
+
     os.makedirs("screenshots", exist_ok=True)
     page.screenshot(
         path="screenshots/job_tutor_submission.png"
     )
     write_detail("test_contact_form_tutor_submission", {
-        "message": f"Tutor enquiry submitted and redirected to job {job_id}",
+        "message": f"Tutor enquiry submitted and redirected to job {job_id}; job_create_type verified against DB",
         "job_id": job_id,
+        "job_create_type": fields["job_create_type"],
         "screenshot": "screenshots/job_tutor_submission.png",
     })
 
@@ -219,10 +234,13 @@ def test_contact_form_tutor_submission(page: Page, base_url: str, cleanup_after)
 # Contact form — something else
 # ─────────────────────────────────────────────────────────────────────────────
 
-def test_contact_form_something_else(page: Page, base_url: str, cleanup_after):
+def test_contact_form_something_else(page: Page, base_url: str, api_key: str, cleanup_after):
     """
     Submit the contact form as 'Something else'.
     Verifies the form is accepted and the browser redirects to the new job URL.
+
+    DB assertion (docs/TESTING_REBUILD_SPEC.md Days 2-3): job_create_type must
+    actually be 'Regular' with no requested_job_members.
     """
     page.goto(f"{base_url}{CONTACT_URL}")
     expect(page.locator("#tutor_request_form")).to_be_visible()
@@ -245,13 +263,24 @@ def test_contact_form_something_else(page: Page, base_url: str, cleanup_after):
 
     job_id = re.search(r"/jobs/(\d+)/", page.url).group(1)
     print(f"\n[result] job_id={job_id}")
+
+    fields = get_test_job_fields(base_url, api_key, job_id)
+    print(f"\n[db-assert] job {job_id} fields: {fields}")
+    assert fields["job_create_type"] == "Regular", (
+        f"job {job_id}: job_create_type={fields['job_create_type']!r}, expected 'Regular'"
+    )
+    assert fields["requested_job_members"] == [], (
+        f"job {job_id}: requested_job_members={fields['requested_job_members']!r}, expected empty"
+    )
+
     os.makedirs("screenshots", exist_ok=True)
     page.screenshot(
         path="screenshots/job_something_else.png"
     )
     write_detail("test_contact_form_something_else", {
-        "message": f"'Something else' enquiry submitted and redirected to job {job_id}",
+        "message": f"'Something else' enquiry submitted and redirected to job {job_id}; job_create_type verified against DB",
         "job_id": job_id,
+        "job_create_type": fields["job_create_type"],
         "screenshot": "screenshots/job_something_else.png",
     })
 
@@ -260,7 +289,7 @@ def test_contact_form_something_else(page: Page, base_url: str, cleanup_after):
 # Contact form — requested tutors (full end-to-end flow via shortlist cart)
 # ─────────────────────────────────────────────────────────────────────────────
 
-def test_contact_form_requested_tutors(page: Page, base_url: str, cleanup_after):
+def test_contact_form_requested_tutors(page: Page, base_url: str, api_key: str, cleanup_after):
     """
     Full requested-tutors flow. Adds 3 tutors to the shortlist from /tutors/,
     navigates to the contact form via the 'Submit request' link, verifies the
@@ -270,6 +299,10 @@ def test_contact_form_requested_tutors(page: Page, base_url: str, cleanup_after)
     The ot_test_post flag suppresses all side-effect emails including the
     tutor job-advert emails (guarded in job-mgmt.php by $is_test).
     Tutor IDs are discovered dynamically — no env var required.
+
+    DB assertion (docs/TESTING_REBUILD_SPEC.md Days 2-3): requested_job_members
+    must actually contain the shortlisted tutor IDs, and job_create_type must
+    be 'Requested tutors'.
     """
     # Step 1: add 3 tutors to the shortlist from the listing page
     page.goto(f"{base_url}{TUTORS_URL}")
@@ -317,12 +350,25 @@ def test_contact_form_requested_tutors(page: Page, base_url: str, cleanup_after)
 
     job_id = re.search(r"/jobs/(\d+)/", page.url).group(1)
     print(f"\n[result] job_id={job_id} tutor_ids={ids}")
+
+    fields = get_test_job_fields(base_url, api_key, job_id)
+    print(f"\n[db-assert] job {job_id} fields: {fields}")
+    assert fields["job_create_type"] == "Requested tutors", (
+        f"job {job_id}: job_create_type={fields['job_create_type']!r}, expected 'Requested tutors'"
+    )
+    expected_ids_int = sorted(int(i) for i in ids)
+    actual_ids_int = sorted(fields["requested_job_members"])
+    assert actual_ids_int == expected_ids_int, (
+        f"job {job_id}: requested_job_members={actual_ids_int}, expected {expected_ids_int} "
+        f"(shortlisted in the browser)"
+    )
+
     os.makedirs("screenshots", exist_ok=True)
     page.screenshot(
         path="screenshots/job_requested_tutors.png"
     )
     write_detail("test_contact_form_requested_tutors", {
-        "message": f"Requested tutors flow submitted and redirected to job {job_id}",
+        "message": f"Requested tutors flow submitted and redirected to job {job_id}; requested_job_members verified against DB",
         "job_id": job_id,
         "tutor_ids": ids,
         "screenshot": "screenshots/job_requested_tutors.png",
@@ -389,7 +435,7 @@ def test_new_client_banner(page: Page, base_url: str, cleanup_after):
 
 
 def test_contact_form_returning_client(
-    page: Page, base_url: str, returning_client_login, cleanup_after
+    page: Page, base_url: str, api_key: str, returning_client_login, cleanup_after
 ):
     """
     A logged-in (returning) client submitting the contact form sees personal
@@ -402,6 +448,12 @@ def test_contact_form_returning_client(
     as that already-authenticated client.
 
     Covers P2: logged-in returning client submitting a job.
+
+    DB assertion (docs/TESTING_REBUILD_SPEC.md Days 2-3): asserts the job's
+    client_id actually resolves to the returning client's account, not just
+    that the redirect happened. This is the exact shape of bug that shipped
+    undetected for a month — client_id silently resolving to 0 while the
+    page/redirect behaviour looked correct.
     """
     page.goto(f"{base_url}{CONTACT_URL}", wait_until="domcontentloaded")
     expect(page.locator("#tutor_request_form")).to_be_visible()
@@ -428,11 +480,24 @@ def test_contact_form_returning_client(
 
     job_id = re.search(r"/jobs/(\d+)/", page.url).group(1)
     print(f"\n[result] returning client job_id={job_id} (email: {returning_client_login['email']})")
+
+    fields = get_test_job_fields(base_url, api_key, job_id)
+    print(f"\n[db-assert] job {job_id} fields: {fields}")
+    expected_email = returning_client_login["email"]
+    assert fields["client_id"], (
+        f"job {job_id}: client_id is empty/0 — expected it to resolve to {expected_email}"
+    )
+    assert fields["client_email"] == expected_email, (
+        f"job {job_id}: client_id resolved to {fields['client_email']!r}, "
+        f"expected the returning client {expected_email!r}"
+    )
+
     os.makedirs("screenshots", exist_ok=True)
     page.screenshot(path="screenshots/job_returning_client.png")
     write_detail("test_contact_form_returning_client", {
-        "message": f"Returning client job submitted and redirected to job {job_id}",
+        "message": f"Returning client job submitted and redirected to job {job_id}; client_id verified against DB",
         "job_id": job_id,
+        "client_id": fields["client_id"],
         "screenshot": "screenshots/job_returning_client.png",
     })
 

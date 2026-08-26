@@ -2,6 +2,7 @@ import json
 import os
 from playwright.sync_api import Page, expect
 from utils.details import write_detail
+import pytest
 
 BLOG_URL = "/resource/"
 TESTIMONIALS_URL = "/about-us/testimonials/"
@@ -9,6 +10,7 @@ SHOP_URL = "/shop/"
 COURSES_URL = "/all-courses/"
 
 
+@pytest.mark.content
 def test_blog_listing_loads(page: Page, base_url: str):
     """Blog listing page loads with at least one article card visible."""
     page.goto(f"{base_url}{BLOG_URL}")
@@ -23,6 +25,7 @@ def test_blog_listing_loads(page: Page, base_url: str):
     })
 
 
+@pytest.mark.content
 def test_blog_article_loads(page: Page, base_url: str):
     """Clicking a blog card navigates to a full article page with body content."""
     page.goto(f"{base_url}{BLOG_URL}")
@@ -38,6 +41,7 @@ def test_blog_article_loads(page: Page, base_url: str):
     })
 
 
+@pytest.mark.content
 def test_testimonials_page_loads(page: Page, base_url: str):
     """Testimonials page loads with the hero header visible."""
     page.goto(f"{base_url}{TESTIMONIALS_URL}")
@@ -50,6 +54,7 @@ def test_testimonials_page_loads(page: Page, base_url: str):
     })
 
 
+@pytest.mark.content
 def test_shop_loads(page: Page, base_url: str):
     """Premium paper shop loads with at least one product card visible."""
     page.goto(f"{base_url}{SHOP_URL}")
@@ -63,6 +68,7 @@ def test_shop_loads(page: Page, base_url: str):
     })
 
 
+@pytest.mark.content
 def test_group_course_listing(page: Page, base_url: str):
     """Group course listing page loads with at least one course card visible."""
     page.goto(f"{base_url}{COURSES_URL}")
@@ -76,6 +82,7 @@ def test_group_course_listing(page: Page, base_url: str):
     })
 
 
+@pytest.mark.content
 def test_group_course_detail(page: Page, base_url: str):
     """Clicking a course card navigates to the course detail page."""
     page.goto(f"{base_url}{COURSES_URL}")
@@ -96,12 +103,13 @@ def test_group_course_detail(page: Page, base_url: str):
 # Blog pagination
 # ─────────────────────────────────────────────────────────────────────────────
 
+@pytest.mark.content
 def test_blog_pagination(page: Page, base_url: str):
     """
     Blog listing page 2 (/resource/page/2/) renders article cards and they
     differ from page 1 — confirms pagination is working and not just serving
     the same first-page content.
-    Covers P4: 'Blog pagination — page 2 differs from page 1'.
+    Covers: 'Blog pagination — page 2 differs from page 1'.
     """
     # Collect hrefs from page 1
     page.goto(f"{base_url}{BLOG_URL}")
@@ -139,12 +147,13 @@ def test_blog_pagination(page: Page, base_url: str):
 # Reading time on article pages
 # ─────────────────────────────────────────────────────────────────────────────
 
+@pytest.mark.content
 def test_blog_reading_time(page: Page, base_url: str):
     """
     A blog article page shows a 'X min read' reading time string inside
     <small class='text-muted'> (rendered by functions.php via
     ot_blogs_reading_estimate()).
-    Covers P4: 'Reading time displayed on article pages'.
+    Covers: 'Reading time displayed on article pages'.
     """
     page.goto(f"{base_url}{BLOG_URL}")
     page.wait_for_selector("a.text-decoration-none.d-block.h-100", timeout=10000)
@@ -169,6 +178,7 @@ def test_blog_reading_time(page: Page, base_url: str):
 # VideoObject JSON-LD
 # ─────────────────────────────────────────────────────────────────────────────
 
+@pytest.mark.content
 def test_video_object_json_ld(page: Page, base_url: str):
     """
     A blog post with the 'video_id' ACF field set outputs a VideoObject node
@@ -179,7 +189,7 @@ def test_video_object_json_ld(page: Page, base_url: str):
     one with VideoObject JSON-LD.  If none of the first 5 articles has a video,
     the test is skipped with an explanatory message — add a specific URL below
     once a known video post is identified on the dev site.
-    Covers P4: 'VideoObject JSON-LD on posts with video_id'.
+    Covers: 'VideoObject JSON-LD on posts with video_id'.
     """
     import pytest
 
@@ -226,6 +236,7 @@ def test_video_object_json_ld(page: Page, base_url: str):
 # Testimonial scores shortcode
 # ─────────────────────────────────────────────────────────────────────────────
 
+@pytest.mark.content
 def test_testimonial_scores_shortcode(page: Page, base_url: str):
     """
     The [ot_show_testimonial_scores] shortcode renders a div#testimonial_scores
@@ -236,7 +247,7 @@ def test_testimonial_scores_shortcode(page: Page, base_url: str):
     Navigates to the testimonials page (/about-us/testimonials/) where the
     shortcode is expected to appear in page content.  If it is not present there,
     update the URL to wherever the shortcode is embedded in the CMS.
-    Covers P4: '[ot_show_testimonial_scores] shortcode renders with score and count'.
+    Covers: '[ot_show_testimonial_scores] shortcode renders with score and count'.
     """
     page.goto(f"{base_url}{TESTIMONIALS_URL}")
     page.wait_for_load_state("domcontentloaded")

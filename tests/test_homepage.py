@@ -1,8 +1,10 @@
 import os
 from playwright.sync_api import Page, expect
 from utils.details import write_detail
+import pytest
 
 
+@pytest.mark.content
 def test_homepage_loads(page: Page, base_url: str):
     """Homepage loads and the hero section is visible."""
     page.goto(f"{base_url}/")

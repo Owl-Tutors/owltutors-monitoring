@@ -2,6 +2,7 @@
 import re
 from playwright.sync_api import Page, expect
 from utils.details import write_detail
+import pytest
 
 DASHBOARD_URL = "/dashboard/"
 TUTORING_URL  = "/dashboard/tutoring-section/"
@@ -35,12 +36,13 @@ def _activate_profile_tab(page: Page, tab_id: str):
     """)
 
 
+@pytest.mark.tutors
 def test_tutor_dashboard_loads(page: Page, base_url: str, tutor_credentials):
     """
     A logged-in tutor visiting /dashboard/ sees the tutor dashboard.
     Header id="tutor-listings-page" (page-dashboard.php:586).
     Outer container div#tutor_dashboard (page-dashboard.php:483).
-    Covers P2: Tutor dashboard loads for logged-in tutor.
+    Covers: Tutor dashboard loads for logged-in tutor.
     """
     _login(page, base_url, tutor_credentials["email"], tutor_credentials["password"])
     page.goto(f"{base_url}{DASHBOARD_URL}", wait_until="domcontentloaded", timeout=90000)
@@ -54,11 +56,13 @@ def test_tutor_dashboard_loads(page: Page, base_url: str, tutor_credentials):
     })
 
 
+@pytest.mark.tutors
+@pytest.mark.critical
 def test_tutor_dashboard_jobs_board(page: Page, base_url: str, tutor_credentials):
     """
     Jobs board tab pane is the default active section at /dashboard/tutoring-section/.
     page-dashboard-tutoring-section.php:97 sets show/active on div#jobs_board.
-    Covers P2: Jobs board section renders with filter form and at least one result.
+    Covers: Jobs board section renders with filter form and at least one result.
     """
     _login(page, base_url, tutor_credentials["email"], tutor_credentials["password"])
     page.goto(f"{base_url}{TUTORING_URL}", wait_until="domcontentloaded", timeout=90000)
@@ -72,11 +76,13 @@ def test_tutor_dashboard_jobs_board(page: Page, base_url: str, tutor_credentials
     })
 
 
+@pytest.mark.tutors
+@pytest.mark.critical
 def test_tutor_dashboard_timesheet_entry(page: Page, base_url: str, tutor_credentials):
     """
     The Submit a timesheet tab pane is present in the DOM at /dashboard/tutoring-section/.
     page-dashboard-tutoring-section.php:102 renders div#submit_a_timesheet.
-    Covers P2: Submit a timesheet section renders the job list entry point.
+    Covers: Submit a timesheet section renders the job list entry point.
     """
     _login(page, base_url, tutor_credentials["email"], tutor_credentials["password"])
     page.goto(f"{base_url}{TUTORING_URL}", wait_until="domcontentloaded", timeout=90000)
@@ -93,6 +99,7 @@ def test_tutor_dashboard_timesheet_entry(page: Page, base_url: str, tutor_creden
 
 # ── Batch F — tutor login tests ───────────────────────────────────────────────
 
+@pytest.mark.tutors
 def test_tutor_jobs_board_filter_returns_results(page: Page, base_url: str, tutor_credentials):
     """
     The jobs board filter on /dashboard/tutoring-section/ accepts a subject
@@ -101,7 +108,7 @@ def test_tutor_jobs_board_filter_returns_results(page: Page, base_url: str, tuto
     The jobs_board section loads its content dynamically on page load (it is
     the default active tab with class dynamic). #jobs_board_filter appears
     after the AJAX populates div.jobs_board_content.
-    Covers P3: 'Jobs board filter returns AJAX results'.
+    Covers: 'Jobs board filter returns AJAX results'.
     """
     _login(page, base_url, tutor_credentials["email"], tutor_credentials["password"])
     page.goto(f"{base_url}{TUTORING_URL}", wait_until="domcontentloaded", timeout=90000)
@@ -130,12 +137,13 @@ def test_tutor_jobs_board_filter_returns_results(page: Page, base_url: str, tuto
     })
 
 
+@pytest.mark.tutors
 def test_tutor_stripe_connect_section_renders(page: Page, base_url: str, tutor_credentials):
     """
     The Stripe Connect section at /dashboard/profile/#stripe_connect renders
     content via ot_dash_ajax_handle (content=stripe_connect). Shows either
     the onboarding prompt (no tutor_stripe_connect_id) or the connected state.
-    Covers P3: 'Stripe Connect onboarding prompt shown when no tutor_stripe_connect_id'.
+    Covers: 'Stripe Connect onboarding prompt shown when no tutor_stripe_connect_id'.
     NOTE: the specific prompt is only visible if the test tutor lacks
     tutor_stripe_connect_id — both states are accepted here. Manual check
     required to confirm the prompt appears on a fresh account.
@@ -163,12 +171,13 @@ def test_tutor_stripe_connect_section_renders(page: Page, base_url: str, tutor_c
     })
 
 
+@pytest.mark.tutors
 def test_tutor_availability_grid_renders(page: Page, base_url: str, tutor_credentials):
     """
     The availability grid at /dashboard/profile/#my_availability renders the
     [tutor_availability] shortcode output — #tutor_availability_holder with
     the slot grid inside div.tutor-avail-wrap.
-    Covers P4: 'Tutor dashboard availability slot grid renders'.
+    Covers: 'Tutor dashboard availability slot grid renders'.
     """
     _login(page, base_url, tutor_credentials["email"], tutor_credentials["password"])
     page.goto(f"{base_url}{PROFILE_URL}#my_availability", wait_until="domcontentloaded")
@@ -202,13 +211,15 @@ def test_tutor_availability_grid_renders(page: Page, base_url: str, tutor_creden
     })
 
 
+@pytest.mark.tutors
+@pytest.mark.critical
 def test_tutor_availability_grid_saves(page: Page, base_url: str, tutor_credentials):
     """
     Clicking an availability cell, confirming the save, and reloading the
     section causes the changed slot state to persist.
     Toggles the first cell, saves via the confirmation modal, reloads, and
     verifies the cell retained its new state.
-    Covers P3: 'Saving availability grid fires AJAX; slot count persists after reload'.
+    Covers: 'Saving availability grid fires AJAX; slot count persists after reload'.
     """
     _login(page, base_url, tutor_credentials["email"], tutor_credentials["password"])
     page.goto(f"{base_url}{PROFILE_URL}#my_availability", wait_until="domcontentloaded")
@@ -277,13 +288,14 @@ def test_tutor_availability_grid_saves(page: Page, base_url: str, tutor_credenti
     })
 
 
+@pytest.mark.tutors
 def test_tutor_dashboard_invoices_renders(page: Page, base_url: str, tutor_credentials):
     """
     The Invoices section at /dashboard/tutoring-section/#invoices loads its
     content via ot_dash_ajax_handle (content=invoices). Empty state is
     acceptable — the test checks the section rendered something, not that
     invoices exist.
-    Covers P4: 'Tutor dashboard invoices section renders (empty state acceptable)'.
+    Covers: 'Tutor dashboard invoices section renders (empty state acceptable)'.
     """
     _login(page, base_url, tutor_credentials["email"], tutor_credentials["password"])
     # Navigate with hash — hash-nav JS activates #invoices tab pane

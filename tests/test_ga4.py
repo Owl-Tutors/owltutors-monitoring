@@ -31,6 +31,7 @@ def _require_owltutors_domain(base_url: str):
 # sessionStorage keys set on first page load
 # ─────────────────────────────────────────────────────────────────────────────
 
+@pytest.mark.analytics
 def test_ga4_session_storage_set_on_load(page: Page, base_url: str):
     """
     On first page load, header-DL.php sets initial_url and traffic_source_r in
@@ -66,6 +67,7 @@ def test_ga4_session_storage_set_on_load(page: Page, base_url: str):
 # ga_client_id hidden input on contact form
 # ─────────────────────────────────────────────────────────────────────────────
 
+@pytest.mark.analytics
 def test_ga4_client_id_in_contact_form(page: Page, base_url: str):
     """
     When a _ga cookie is present, header-DL.php parses it and stores the client

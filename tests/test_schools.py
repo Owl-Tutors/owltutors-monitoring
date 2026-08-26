@@ -2,6 +2,7 @@ import json
 import os
 from playwright.sync_api import Page, expect
 from utils.details import write_detail
+import pytest
 
 SCHOOLS_URL = "/school-entrance-guide/"
 SCHOOL_PROFILE_URL = "/schools/westminster/"
@@ -15,6 +16,7 @@ def _dismiss_cookies(page: Page):
         pass
 
 
+@pytest.mark.schools
 def test_school_listing_page_loads(page: Page, base_url: str):
     """School entrance guide listing page loads and the filter form is visible."""
     page.goto(f"{base_url}{SCHOOLS_URL}")
@@ -27,6 +29,7 @@ def test_school_listing_page_loads(page: Page, base_url: str):
     })
 
 
+@pytest.mark.schools
 def test_school_text_search_ajax(page: Page, base_url: str):
     """Inline AJAX text search returns matching schools in the dropdown."""
     page.goto(f"{base_url}{SCHOOLS_URL}")
@@ -42,6 +45,7 @@ def test_school_text_search_ajax(page: Page, base_url: str):
     })
 
 
+@pytest.mark.schools
 def test_school_filter_form_returns_results(page: Page, base_url: str):
     """Multi-select filter form returns matching school cards when submitted."""
     page.goto(f"{base_url}{SCHOOLS_URL}")
@@ -60,6 +64,7 @@ def test_school_filter_form_returns_results(page: Page, base_url: str):
     })
 
 
+@pytest.mark.schools
 def test_school_profile_loads(page: Page, base_url: str):
     """Westminster school profile loads correctly via the AJAX text search."""
     page.goto(f"{base_url}{SCHOOLS_URL}")
@@ -81,12 +86,13 @@ def test_school_profile_loads(page: Page, base_url: str):
 # School profile — JSON-LD
 # ─────────────────────────────────────────────────────────────────────────────
 
+@pytest.mark.schools
 def test_school_profile_json_ld_present(page: Page, base_url: str):
     """
     A school profile page renders at least one valid JSON-LD block with
     schema.org context.  Checks that content-schema.php is outputting
     structured data correctly for the 'schools' CPT.
-    Covers P3: 'JSON-LD EducationalOccupationalProgram on profile'.
+    Covers: 'JSON-LD EducationalOccupationalProgram on profile'.
     Note: once EducationalOccupationalProgram is added to ot_build_school_schema_payload,
     update this test to assert that @type value specifically.
     """
@@ -127,13 +133,14 @@ def test_school_profile_json_ld_present(page: Page, base_url: str):
 # School profile — linked papers
 # ─────────────────────────────────────────────────────────────────────────────
 
+@pytest.mark.schools
 def test_school_profile_linked_papers(page: Page, base_url: str):
     """
     Westminster school profile renders an exam papers section (the
     #entrance_papers_for_westminster section) containing at least one paper
     card.  single-schools.php outputs this section when ot_get_school_papers()
     returns results for the school.
-    Covers P3: 'School-linked papers rendered on profile page'.
+    Covers: 'School-linked papers rendered on profile page'.
     """
     page.goto(f"{base_url}{SCHOOL_PROFILE_URL}")
     page.wait_for_load_state("networkidle", timeout=60000)

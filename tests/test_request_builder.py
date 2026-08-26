@@ -3,6 +3,7 @@ import re
 from playwright.sync_api import Page, expect
 
 from utils.details import write_detail
+import pytest
 
 TUTORS_URL  = "/tutors/"
 CONTACT_URL = "/contact-us/"
@@ -24,6 +25,7 @@ def _add_tutors(page: Page, count: int) -> list:
 # Add to cart — basic mechanism
 # ─────────────────────────────────────────────────────────────────────────────
 
+@pytest.mark.jobs
 def test_add_to_cart_updates_session_storage(page: Page, base_url: str):
     """
     Clicking a single Add-to-Request button on the tutor listings page writes
@@ -50,6 +52,7 @@ def test_add_to_cart_updates_session_storage(page: Page, base_url: str):
 # Badge increment
 # ─────────────────────────────────────────────────────────────────────────────
 
+@pytest.mark.jobs
 def test_request_count_badge_increments(page: Page, base_url: str):
     """
     The shortlist count badge (#rb-count) increments correctly from 1 to 3 as
@@ -77,6 +80,7 @@ def test_request_count_badge_increments(page: Page, base_url: str):
 # Remove tutor — URL updates
 # ─────────────────────────────────────────────────────────────────────────────
 
+@pytest.mark.jobs
 def test_remove_tutor_updates_url(page: Page, base_url: str):
     """
     On the contact form, removing a tutor from the shortlist widget reloads the

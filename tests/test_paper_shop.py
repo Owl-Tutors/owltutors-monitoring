@@ -1,11 +1,13 @@
 import os
 from playwright.sync_api import Page, expect
 from utils.details import write_detail
+import pytest
 
 # Generic exam papers page — confirm this URL is correct before first run
 PAPERS_URL = "/exam-papers/"
 
 
+@pytest.mark.papers
 def test_papers_load(page: Page, base_url: str):
     """Paper cards render in the catalogue grid."""
     page.goto(f"{base_url}{PAPERS_URL}")
@@ -18,6 +20,7 @@ def test_papers_load(page: Page, base_url: str):
     })
 
 
+@pytest.mark.papers
 def test_papers_ajax_filter(page: Page, base_url: str):
     """Selecting a subject filter returns a non-empty result set via AJAX."""
     page.goto(f"{base_url}{PAPERS_URL}")
@@ -33,6 +36,7 @@ def test_papers_ajax_filter(page: Page, base_url: str):
     })
 
 
+@pytest.mark.papers
 def test_papers_load_more(page: Page, base_url: str):
     """Clicking 'Load more papers' appends additional paper cards via AJAX."""
     page.goto(f"{base_url}{PAPERS_URL}")

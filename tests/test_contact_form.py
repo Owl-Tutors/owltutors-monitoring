@@ -1,11 +1,14 @@
 import os
 from playwright.sync_api import Page, expect
 from utils.details import write_detail
+import pytest
 
 CONTACT_URL = "/contact-us/"
 TUTORS_URL  = "/tutors/"
 
 
+@pytest.mark.jobs
+@pytest.mark.critical
 def test_contact_form_renders(page: Page, base_url: str):
     """Contact form page loads and the ACF form is visible."""
     page.goto(f"{base_url}{CONTACT_URL}")
@@ -18,6 +21,8 @@ def test_contact_form_renders(page: Page, base_url: str):
     })
 
 
+@pytest.mark.jobs
+@pytest.mark.critical
 def test_contact_form_has_submit(page: Page, base_url: str):
     """Submit button is present and enabled."""
     page.goto(f"{base_url}{CONTACT_URL}")
@@ -31,6 +36,7 @@ def test_contact_form_has_submit(page: Page, base_url: str):
     })
 
 
+@pytest.mark.jobs
 def test_contact_form_validation(page: Page, base_url: str):
     """
     Clicking submit without filling required fields shows ACF validation errors
@@ -69,6 +75,7 @@ def test_contact_form_validation(page: Page, base_url: str):
 # Jobs board checkbox visibility
 # ─────────────────────────────────────────────────────────────────────────────
 
+@pytest.mark.jobs
 def test_jobs_board_checkbox_hidden_on_plain_form(page: Page, base_url: str):
     """
     On the plain contact form (/contact-us/ with no URL params), the jobs board
@@ -91,6 +98,7 @@ def test_jobs_board_checkbox_hidden_on_plain_form(page: Page, base_url: str):
     })
 
 
+@pytest.mark.jobs
 def test_jobs_board_checkbox_visible_on_requested_tutors(page: Page, base_url: str):
     """
     When the contact form is loaded with job_type=requested_tutors in the URL,

@@ -119,6 +119,7 @@ def _add_tutors_to_shortlist(page: Page, count: int = 3) -> list:
 # Tutor shortlist / cart
 # ─────────────────────────────────────────────────────────────────────────────
 
+@pytest.mark.jobs
 def test_requested_tutor_cart(page: Page, base_url: str):
     """
     Navigate to /tutors/, add 3 tutors to the shortlist, and verify the
@@ -169,6 +170,8 @@ def test_requested_tutor_cart(page: Page, base_url: str):
 # Contact form — tutor enquiry (standard, no requested tutors)
 # ─────────────────────────────────────────────────────────────────────────────
 
+@pytest.mark.jobs
+@pytest.mark.critical
 def test_contact_form_tutor_submission(page: Page, base_url: str, api_key: str, cleanup_after):
     """
     Submit the contact form as 'A tutor to provide tuition services'.
@@ -234,6 +237,8 @@ def test_contact_form_tutor_submission(page: Page, base_url: str, api_key: str, 
 # Contact form — something else
 # ─────────────────────────────────────────────────────────────────────────────
 
+@pytest.mark.jobs
+@pytest.mark.critical
 def test_contact_form_something_else(page: Page, base_url: str, api_key: str, cleanup_after):
     """
     Submit the contact form as 'Something else'.
@@ -289,6 +294,8 @@ def test_contact_form_something_else(page: Page, base_url: str, api_key: str, cl
 # Contact form — requested tutors (full end-to-end flow via shortlist cart)
 # ─────────────────────────────────────────────────────────────────────────────
 
+@pytest.mark.jobs
+@pytest.mark.critical
 def test_contact_form_requested_tutors(page: Page, base_url: str, api_key: str, cleanup_after):
     """
     Full requested-tutors flow. Adds 3 tutors to the shortlist from /tutors/,
@@ -379,11 +386,12 @@ def test_contact_form_requested_tutors(page: Page, base_url: str, api_key: str, 
 # Contact form — new client banner
 # ─────────────────────────────────────────────────────────────────────────────
 
+@pytest.mark.jobs
 def test_new_client_banner(page: Page, base_url: str, cleanup_after):
     """
     After a new-client contact form submission the job page renders
     div#new_client_password_login (single-jobs.php:1581) prompting the client
-    to log in or set their password. Covers P2: post-submission
+    to log in or set their password. Covers: post-submission
     ?new_client=true banner renders on job page.
     """
     # Fresh email each run — test requires a genuinely new account to get
@@ -434,6 +442,8 @@ def test_new_client_banner(page: Page, base_url: str, cleanup_after):
 # ─────────────────────────────────────────────────────────────────────────────
 
 
+@pytest.mark.jobs
+@pytest.mark.critical
 def test_contact_form_returning_client(
     page: Page, base_url: str, api_key: str, returning_client_login, cleanup_after
 ):
@@ -447,7 +457,7 @@ def test_contact_form_returning_client(
     The same page instance is reused, so the second submission below runs
     as that already-authenticated client.
 
-    Covers P2: logged-in returning client submitting a job.
+    Covers: logged-in returning client submitting a job.
 
     DB assertion (docs/TESTING_REBUILD_SPEC.md Days 2-3): asserts the job's
     client_id actually resolves to the returning client's account, not just
@@ -506,6 +516,7 @@ def test_contact_form_returning_client(
 # Stage 1 — quality check failure
 # ─────────────────────────────────────────────────────────────────────────────
 
+@pytest.mark.jobs
 def test_stage1_quality_check_fail(page: Page, base_url: str, cleanup_after):
     """
     Submitting a job with very short tuition requirements (< 25 chars) passes
@@ -563,6 +574,7 @@ def test_stage1_quality_check_fail(page: Page, base_url: str, cleanup_after):
 # Health and safety unchecked — job still creates
 # ─────────────────────────────────────────────────────────────────────────────
 
+@pytest.mark.jobs
 def test_health_safety_unchecked_job_creates(page: Page, base_url: str, cleanup_after):
     """
     Submitting the contact form without ticking the health and safety
@@ -611,6 +623,7 @@ def test_health_safety_unchecked_job_creates(page: Page, base_url: str, cleanup_
 # Batch L — duplicate job detection
 # ─────────────────────────────────────────────────────────────────────────────
 
+@pytest.mark.jobs
 def test_duplicate_job_detection(
     page: Page, base_url: str, returning_client_login, cleanup_after
 ):
@@ -622,7 +635,7 @@ def test_duplicate_job_detection(
     Setup: returning_client_login submits job #1 with Maths and leaves the
     browser logged in. This test submits job #2 (also Maths). Both jobs are
     flagged ot_test_post=1 for cleanup.
-    Covers P3: 'Duplicate job detection — existing open job triggers Stage 1 redirect'.
+    Covers: 'Duplicate job detection — existing open job triggers Stage 1 redirect'.
     """
     page.goto(f"{base_url}{CONTACT_URL}", wait_until="domcontentloaded")
     expect(page.locator("#tutor_request_form")).to_be_visible()
@@ -673,6 +686,7 @@ def test_duplicate_job_detection(
 # Batch L — admin-submitted job path
 # ─────────────────────────────────────────────────────────────────────────────
 
+@pytest.mark.jobs
 def test_admin_job_path_redirects(page: Page, base_url: str, cleanup_after):
     """
     When the contact form POST includes admin_submited_job=true (added by PHP
@@ -683,7 +697,7 @@ def test_admin_job_path_redirects(page: Page, base_url: str, cleanup_after):
     The test browser is not an authenticated admin, so WordPress redirects to
     the login page with redirect_to pointing at /wp-admin/ — confirming the
     admin path was taken, not the normal client /jobs/ path.
-    Covers P4: 'Admin-submitted job path redirects to WP admin edit screen'.
+    Covers: 'Admin-submitted job path redirects to WP admin edit screen'.
     """
     page.goto(f"{base_url}{CONTACT_URL}")
     expect(page.locator("#tutor_request_form")).to_be_visible()

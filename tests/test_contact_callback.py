@@ -45,6 +45,8 @@ def _flag_test_post(page: Page):
     )
 
 
+@pytest.mark.jobs
+@pytest.mark.critical
 def test_contact_form_callback_submission(page: Page, base_url: str, api_key: str, cleanup_after):
     """
     Submit the contact form as 'Book a callback with an agent'.

@@ -61,6 +61,7 @@ def _check_hs(page: Page):
 # Meet now — form UI state
 # ─────────────────────────────────────────────────────────────────────────────
 
+@pytest.mark.jobs
 def test_meet_now_form_auto_selects_type(
     page: Page, base_url: str, meet_now_tutor_id
 ):
@@ -71,7 +72,7 @@ def test_meet_now_form_auto_selects_type(
     - Hide the 'show on jobs board' checkbox
 
     No form submission or data creation — read-only.
-    Covers P1: 'job_type=meet_now form auto-selects type, hides dropdown, disables
+    Covers: 'job_type=meet_now form auto-selects type, hides dropdown, disables
     Home delivery, hides jobs board checkbox'.
     """
     page.goto(f"{base_url}{CONTACT_URL}?job_type=meet_now&tutor_id={meet_now_tutor_id}")
@@ -113,6 +114,8 @@ def test_meet_now_form_auto_selects_type(
 # Meet now — full submission
 # ─────────────────────────────────────────────────────────────────────────────
 
+@pytest.mark.jobs
+@pytest.mark.critical
 def test_meet_now_submission(
     page: Page, base_url: str, api_key: str, meet_now_tutor_id, cleanup_after
 ):
@@ -126,7 +129,7 @@ def test_meet_now_submission(
     Note: TEST_MEET_NOW_TUTOR_ID must point to a tutor with auto_swap_active=true,
     include_tutor_in_auto_swap=true, online delivery enabled, and availability
     outcome 1b.
-    Covers P1: 'Meet now submission creates job, mgmt_show_on_jobs_board=0,
+    Covers: 'Meet now submission creates job, mgmt_show_on_jobs_board=0,
     auto_swap_active set to false on tutor'.
 
     DB assertion (docs/TESTING_REBUILD_SPEC.md Days 2-3): requested_job_members

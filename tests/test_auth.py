@@ -1,6 +1,7 @@
 import os
 from playwright.sync_api import Page, expect
 from utils.details import write_detail
+import pytest
 
 LOGIN_URL   = "/login/"
 DASHBOARD_URL = "/dashboard/"
@@ -21,6 +22,8 @@ def _login(page: Page, base_url: str, email: str, password: str, form_screenshot
     page.wait_for_url(lambda url: "/login/" not in url, timeout=30000)
 
 
+@pytest.mark.auth
+@pytest.mark.critical
 def test_client_login(page: Page, base_url: str, client_credentials):
     """Valid credentials are accepted and the client lands on the dashboard."""
     _login(
@@ -35,6 +38,7 @@ def test_client_login(page: Page, base_url: str, client_credentials):
     })
 
 
+@pytest.mark.auth
 def test_client_dashboard(page: Page, base_url: str, client_credentials):
     """Client dashboard loads with the main sections visible."""
     _login(page, base_url, client_credentials["email"], client_credentials["password"])

@@ -55,12 +55,13 @@ def _flag_test_user(page: Page):
 # Registration -- page loads
 # â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
+@pytest.mark.recruitment
 def test_tutor_registration_page_loads(page: Page, base_url: str):
     """
     The tutor registration page (/tutor-section/application/) loads for a
     logged-out visitor and shows the [ot_applicant_register_form] shortcode
     (rendered as #signupform).
-    Covers P1: 'Tutor registration page loads with [ot_applicant_register_form] visible'.
+    Covers: 'Tutor registration page loads with [ot_applicant_register_form] visible'.
     """
     page.goto(f"{base_url}{APPLICATION_URL}")
     expect(page.locator("#signupform")).to_be_visible()
@@ -78,6 +79,8 @@ def test_tutor_registration_page_loads(page: Page, base_url: str):
 # Registration -- full submission
 # â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
+@pytest.mark.recruitment
+@pytest.mark.critical
 def test_tutor_registration_submits(page: Page, base_url: str, cleanup_after):
     """
     Submitting the registration form with valid credentials creates a
@@ -87,7 +90,7 @@ def test_tutor_registration_submits(page: Page, base_url: str, cleanup_after):
     _ot_test_user=1 so the cleanup endpoint deletes them after the test.
     reCAPTCHA is skipped by submitting the form directly (PHP does not validate
     reCAPTCHA on registration).
-    Covers P1: 'Registration form submits, creates pre-applicant user, redirects
+    Covers: 'Registration form submits, creates pre-applicant user, redirects
     to application page (with cleanup)'.
     """
     page.goto(f"{base_url}{APPLICATION_URL}")
@@ -122,6 +125,7 @@ def test_tutor_registration_submits(page: Page, base_url: str, cleanup_after):
 # Pre-applicant -- application page sections
 # â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
+@pytest.mark.recruitment
 def test_preapplicant_application_page_loads(
     page: Page, base_url: str, preapplicant_credentials
 ):
@@ -129,7 +133,7 @@ def test_preapplicant_application_page_loads(
     A logged-in pre-applicant visiting /tutor-section/application/ sees the
     application form with its section tab-panes (#personalDetails,
     #supportingDocuments, #references).
-    Covers P1: 'Pre-applicant application page loads with correct sections visible'.
+    Covers: 'Pre-applicant application page loads with correct sections visible'.
     """
     # Log in as the test pre-applicant account
     page.goto(f"{base_url}{LOGIN_URL}")
@@ -170,6 +174,8 @@ def test_preapplicant_application_page_loads(
 # â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
 
+@pytest.mark.recruitment
+@pytest.mark.critical
 def test_tutor_full_application_flow(page: Page, base_url: str, cleanup_after):
     """
     End-to-end tutor application flow:
@@ -226,12 +232,13 @@ def test_tutor_full_application_flow(page: Page, base_url: str, cleanup_after):
 # No-auth paths — P3/P4
 # ─────────────────────────────────────────────────────────────────────────────
 
+@pytest.mark.recruitment
 def test_logged_out_application_page_has_fields(page: Page, base_url: str):
     """
     A logged-out visitor on /tutor-section/application/ sees the registration
     form with email and password inputs ready to fill — verifies the complete
     form is functional, not just the wrapper element.
-    Covers P3: 'Logged-out user visiting application page sees registration form'.
+    Covers: 'Logged-out user visiting application page sees registration form'.
     """
     page.goto(f"{base_url}{APPLICATION_URL}")
     expect(page.locator("#signupform")).to_be_visible()
@@ -249,6 +256,7 @@ def test_logged_out_application_page_has_fields(page: Page, base_url: str):
     })
 
 
+@pytest.mark.recruitment
 def test_email_already_registered_error(page: Page, base_url: str, preapplicant_credentials):
     """
     Submitting the registration form with an email address that already exists
@@ -257,7 +265,7 @@ def test_email_already_registered_error(page: Page, base_url: str, preapplicant_
     to exist without needing a static TEST_CLIENT_EMAIL on every environment.
     On error, Login.php redirects back to the application page with
     ?register-errors=email_exists and renders <p class="logregpw error">.
-    Covers P4: 'Email already registered error shown on registration form'.
+    Covers: 'Email already registered error shown on registration form'.
     """
     existing_email = preapplicant_credentials["email"]
 
@@ -289,6 +297,7 @@ def test_email_already_registered_error(page: Page, base_url: str, preapplicant_
 # Batch B — pre-applicant form navigation + applicant profile sections (P3)
 # ─────────────────────────────────────────────────────────────────────────────
 
+@pytest.mark.recruitment
 def test_preapplicant_section_nav_forward_back(
     page: Page, base_url: str, preapplicant_credentials
 ):
@@ -298,7 +307,7 @@ def test_preapplicant_section_nav_forward_back(
     Flow: fill personalDetails → Save & continue (moves to supportingDocuments)
     → click Previous → verify first_names field still has the saved value.
     Uses preapplicant_credentials (session fixture, self-creating — no env vars).
-    Covers P3: 'Form section nav (forward/back) without data loss'.
+    Covers: 'Form section nav (forward/back) without data loss'.
     """
     page.goto(f"{base_url}{LOGIN_URL}")
     expect(page.locator("#ot_login")).to_be_visible()
@@ -355,6 +364,7 @@ def test_preapplicant_section_nav_forward_back(
     })
 
 
+@pytest.mark.recruitment
 def test_client_role_on_application_page(
     page: Page, base_url: str, returning_client_login
 ):
@@ -365,7 +375,7 @@ def test_client_role_on_application_page(
     "Oops! … accidentally registered as a client" and a button to convert their
     account role to pre-applicant.
     Uses returning_client_login (conftest) — no static TEST_CLIENT_EMAIL/PASSWORD needed.
-    Covers P4: 'Client user landing on application page sees role-correction message'.
+    Covers: 'Client user landing on application page sees role-correction message'.
     """
     # returning_client_login submitted the contact form and left the page logged in.
     # Navigate to the application page in the same authenticated browser session.
@@ -398,6 +408,7 @@ def test_client_role_on_application_page(
 # Batch M — Pre-applicant availability form (P2)
 # ─────────────────────────────────────────────────────────────────────────────
 
+@pytest.mark.recruitment
 def test_preapplicant_availability_tab_has_grid(
     page: Page, base_url: str, preapplicant_credentials
 ):
@@ -408,7 +419,7 @@ def test_preapplicant_availability_tab_has_grid(
     Forcing capacity=1 via JS evaluate (same technique as the tutor dashboard
     grid tests) ensures the hide_on_zero container is visible.
     Uses preapplicant_credentials (session fixture, self-creating — no env vars).
-    Covers P2: 'Pre-applicant — availability tab has slot grid'.
+    Covers: 'Pre-applicant — availability tab has slot grid'.
     """
     page.goto(f"{base_url}{LOGIN_URL}")
     expect(page.locator("#ot_login")).to_be_visible()
@@ -450,6 +461,7 @@ def test_preapplicant_availability_tab_has_grid(
     })
 
 
+@pytest.mark.recruitment
 def test_preapplicant_availability_save_and_persist(
     page: Page, base_url: str, preapplicant_credentials
 ):
@@ -461,7 +473,7 @@ def test_preapplicant_availability_save_and_persist(
     #tutor-avail-initial-slots server-side JSON on reload).
     Cleanup: re-saves an empty grid to restore state.
     Uses preapplicant_credentials (session fixture, self-creating — no env vars).
-    Covers P2: 'Pre-applicant — availability save persists after reload'.
+    Covers: 'Pre-applicant — availability save persists after reload'.
     """
     def _open_avail_grid():
         page.goto(f"{base_url}{APPLICATION_URL}")
@@ -584,12 +596,13 @@ def _force_applicant_tab(page: Page, section_id: str):
     page.wait_for_selector(f"#{{'{section_id}'}}:is(.show, .active)", timeout=5000)
 
 
+@pytest.mark.recruitment
 def test_applicant_dashboard_loads(page: Page, base_url: str, applicant_credentials):
     """
     A logged-in applicant visiting /tutor-section/application/ sees the
     applicant dashboard: main wrapper (#tutorFormBox), the Stage 1 confirmed
     well, and all expected section wells in the DOM.
-    Covers P2: 'Applicant dashboard loads with section tabs'.
+    Covers: 'Applicant dashboard loads with section tabs'.
     """
     _login_as_applicant(page, base_url, applicant_credentials)
 
@@ -619,13 +632,14 @@ def test_applicant_dashboard_loads(page: Page, base_url: str, applicant_credenti
     })
 
 
+@pytest.mark.recruitment
 def test_applicant_completion_scores(page: Page, base_url: str, applicant_credentials):
     """
     Section wells show correct status for a fresh applicant:
     - Stage 1 is under review (app_approved=false for a new submission)
     - Supporting docs, profile text, profile photo: notstarted (not filled yet)
     - Availability: completed (slots were saved during the pre-applicant form)
-    Covers P2: 'Document completion scores show correct icons'.
+    Covers: 'Document completion scores show correct icons'.
     """
     _login_as_applicant(page, base_url, applicant_credentials)
 
@@ -651,12 +665,13 @@ def test_applicant_completion_scores(page: Page, base_url: str, applicant_creden
     })
 
 
+@pytest.mark.recruitment
 def test_applicant_references_not_sent(page: Page, base_url: str, applicant_credentials):
     """
     The references tab in the applicant dashboard shows 'We haven't sent your
     references out yet' when no reference CPT records exist for this user.
     The .ot_reference_table is absent because $references_made=false.
-    Covers P2: '"References not yet sent" message when CPTs do not exist'.
+    Covers: '"References not yet sent" message when CPTs do not exist'.
     """
     _login_as_applicant(page, base_url, applicant_credentials)
 
@@ -687,13 +702,14 @@ def test_applicant_references_not_sent(page: Page, base_url: str, applicant_cred
     })
 
 
+@pytest.mark.recruitment
 def test_applicant_availability_tab_has_grid(
     page: Page, base_url: str, applicant_credentials
 ):
     """
     The availability section in the applicant dashboard renders the
     [tutor_availability] shortcode with slot buttons present after JS init.
-    Covers P2: 'Applicant — availability tab has slot grid'.
+    Covers: 'Applicant — availability tab has slot grid'.
     """
     _login_as_applicant(page, base_url, applicant_credentials)
 
@@ -730,6 +746,7 @@ def test_applicant_availability_tab_has_grid(
     })
 
 
+@pytest.mark.recruitment
 def test_applicant_availability_save_and_persist(
     page: Page, base_url: str, applicant_credentials
 ):
@@ -737,7 +754,7 @@ def test_applicant_availability_save_and_persist(
     Saving a slot via tutor_availability_save AJAX in the applicant dashboard
     persists after a page reload (is-on class on the saved cell).
     Cleanup: restores the original slot set by the applicant_credentials fixture.
-    Covers P2: 'Applicant — availability save persists after reload'.
+    Covers: 'Applicant — availability save persists after reload'.
     """
     def _open_avail_grid():
         page.goto(f"{base_url}{APPLICATION_URL}")

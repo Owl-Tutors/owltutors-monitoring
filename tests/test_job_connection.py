@@ -26,13 +26,15 @@ def _login(page: Page, base_url: str, email: str, password: str):
 # Stage 3 — client views applicant cards
 # ─────────────────────────────────────────────────────────────────────────────
 
+@pytest.mark.jobs
+@pytest.mark.critical
 def test_stage3_job_renders_applicant_cards(
     page: Page, base_url: str, stage3_job
 ):
     """
     Logged-in client on a Stage 3 job sees applicant cards, the sort dropdown,
     and at least one 'Connect with tutor' button.
-    Covers P1: 'Stage 3 job page renders applicant cards and sort dropdown'
+    Covers: 'Stage 3 job page renders applicant cards and sort dropdown'
     and 'Logged-in client on Stage 3 job sees tutors to review dashboard state'.
     """
     _login(page, base_url, stage3_job["client_email"], stage3_job["client_password"])
@@ -56,13 +58,15 @@ def test_stage3_job_renders_applicant_cards(
 # Stage 3 — connect-with-tutor button triggers modal
 # ─────────────────────────────────────────────────────────────────────────────
 
+@pytest.mark.jobs
+@pytest.mark.critical
 def test_connect_with_tutor_triggers_modal(
     page: Page, base_url: str, stage3_job
 ):
     """
     Clicking the 'Connect with tutor' button fires the ot_job_identify_modal
     AJAX and renders a modal (accept-terms, payment, or login depending on state).
-    Covers P1: '"Connect with tutor" button present, triggers ot_job_identify_modal AJAX'.
+    Covers: '"Connect with tutor" button present, triggers ot_job_identify_modal AJAX'.
     """
     _login(page, base_url, stage3_job["client_email"], stage3_job["client_password"])
     page.goto(f"{base_url}{JOB_URL}{stage3_job['job_id']}/")
@@ -97,6 +101,7 @@ def test_connect_with_tutor_triggers_modal(
 # Stage 3 — modal renders with content
 # ─────────────────────────────────────────────────────────────────────────────
 
+@pytest.mark.jobs
 def test_accept_terms_modal_renders(
     page: Page, base_url: str, stage3_job
 ):
@@ -105,7 +110,7 @@ def test_accept_terms_modal_renders(
     content — either an accept-terms checkbox + tutor details, or a payment /
     login form.  Checks the modal is non-empty and contains a recognisable
     interactive element.
-    Covers P1: 'Accept-terms modal renders with tutor photo, name, and rate'.
+    Covers: 'Accept-terms modal renders with tutor photo, name, and rate'.
     """
     _login(page, base_url, stage3_job["client_email"], stage3_job["client_password"])
     page.goto(f"{base_url}{JOB_URL}{stage3_job['job_id']}/")
@@ -140,13 +145,14 @@ def test_accept_terms_modal_renders(
 # Stage 3 — logged-out client sees login modal
 # ─────────────────────────────────────────────────────────────────────────────
 
+@pytest.mark.jobs
 def test_logged_out_stage3_sees_login_modal(
     page: Page, base_url: str, stage3_job
 ):
     """
     A logged-out visitor on a Stage 3 job page sees the inline login form.
     Logging in via that form redirects back to the job and shows the applicant cards.
-    Covers P1: 'Logged-out client on Stage 3 job sees inline login form and can
+    Covers: 'Logged-out client on Stage 3 job sees inline login form and can
     authenticate to reach their job view'.
     """
     page.goto(f"{base_url}{JOB_URL}{stage3_job['job_id']}/")
@@ -187,13 +193,15 @@ def test_logged_out_stage3_sees_login_modal(
 # Stripe return — modal auto-triggers on page load
 # ─────────────────────────────────────────────────────────────────────────────
 
+@pytest.mark.jobs
+@pytest.mark.critical
 def test_stripe_return_auto_triggers_modal(
     page: Page, base_url: str, stage3_job
 ):
     """
     Navigating to a Stage 3 job with ?payment_method_added=true&from_stripe=true
     auto-triggers the connect modal without any click.
-    Covers P1: 'Stripe-return flow — page load with payment_method_added=true&
+    Covers: 'Stripe-return flow — page load with payment_method_added=true&
     from_stripe=true auto-triggers modal without click'.
     """
     _login(page, base_url, stage3_job["client_email"], stage3_job["client_password"])
@@ -220,6 +228,8 @@ def test_stripe_return_auto_triggers_modal(
 # advances the shared stage3_job one-way to Stage 4)
 # ─────────────────────────────────────────────────────────────────────────────
 
+@pytest.mark.jobs
+@pytest.mark.critical
 def test_accept_terms_advances_to_stage4(
     page: Page, base_url: str, stage3_job
 ):
@@ -233,7 +243,7 @@ def test_accept_terms_advances_to_stage4(
     Stage 3 tests in this session. Pytest runs tests in file order so
     placing it here (after the other Stage 3 blocks) ensures that ordering.
 
-    Covers P1: 'Accept terms advancing to Stage 4'.
+    Covers: 'Accept terms advancing to Stage 4'.
     """
     _login(page, base_url, stage3_job["client_email"], stage3_job["client_password"])
     page.goto(f"{base_url}{JOB_URL}{stage3_job['job_id']}/")
@@ -278,11 +288,13 @@ def test_accept_terms_advances_to_stage4(
 # Magic link — auto-login
 # ─────────────────────────────────────────────────────────────────────────────
 
+@pytest.mark.jobs
+@pytest.mark.critical
 def test_magic_link_auto_login(page: Page, base_url: str, magic_link_params):
     """
     A magic link URL (/jobs/{id}/?job={crc32}&email={email}) logs the client in
     silently and redirects to the job page.
-    Covers P1: 'Magic link auto-login — /jobs/{id}/?job={crc32}&email={email}
+    Covers: 'Magic link auto-login — /jobs/{id}/?job={crc32}&email={email}
     logs client in silently and redirects'.
     """
     job_id = magic_link_params["job_id"]
@@ -310,6 +322,7 @@ def test_magic_link_auto_login(page: Page, base_url: str, magic_link_params):
 # Stage 4 — client sees connected tutor
 # ─────────────────────────────────────────────────────────────────────────────
 
+@pytest.mark.jobs
 def test_client_stage4_job_shows_connected_tutor(
     page: Page, base_url: str, stage3_job
 ):
@@ -321,7 +334,7 @@ def test_client_stage4_job_shows_connected_tutor(
     time this test runs, test_accept_terms_advances_to_stage4 has already
     advanced that job to Stage 4, so no permanent client account is needed.
 
-    Covers P1: 'Logged-in client on Stage 4 job sees tutor selected dashboard state'.
+    Covers: 'Logged-in client on Stage 4 job sees tutor selected dashboard state'.
     """
     _login(page, base_url, stage3_job["client_email"], stage3_job["client_password"])
     page.goto(f"{base_url}{JOB_URL}{stage3_job['job_id']}/", wait_until="domcontentloaded")

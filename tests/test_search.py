@@ -16,6 +16,7 @@ def _dismiss_cookies(page: Page):
 
 # ── Existing core tests ──────────────────────────────────────────────────────
 
+@pytest.mark.search
 def test_tutor_search_page_loads(page: Page, base_url: str):
     """Search page loads and the search form is visible."""
     page.goto(f"{base_url}{TUTORS_URL}")
@@ -28,6 +29,8 @@ def test_tutor_search_page_loads(page: Page, base_url: str):
     })
 
 
+@pytest.mark.search
+@pytest.mark.critical
 def test_tutor_search_returns_results(page: Page, base_url: str):
     """Tutor listing AJAX search returns results — at least one tutor card loads."""
     page.goto(f"{base_url}{TUTORS_URL}")
@@ -43,6 +46,7 @@ def test_tutor_search_returns_results(page: Page, base_url: str):
     })
 
 
+@pytest.mark.search
 def test_tutor_profile_loads(page: Page, base_url: str):
     """A tutor profile page loads correctly from the search results."""
     page.goto(f"{base_url}{TUTORS_URL}")
@@ -60,6 +64,7 @@ def test_tutor_profile_loads(page: Page, base_url: str):
 
 # ── Option A: UI progressive reveal ─────────────────────────────────────────
 
+@pytest.mark.search
 def test_subject_with_levels_reveals_level_dropdown(page: Page, base_url: str):
     """Selecting a subject that has levels makes the level dropdown visible."""
     page.goto(f"{base_url}{TUTORS_URL}")
@@ -74,6 +79,7 @@ def test_subject_with_levels_reveals_level_dropdown(page: Page, base_url: str):
     })
 
 
+@pytest.mark.search
 def test_school_entrance_subject_reveals_school_filter(page: Page, base_url: str):
     """Selecting a school-entrance subject promotes the school autocomplete into the hero row."""
     page.goto(f"{base_url}{TUTORS_URL}")
@@ -92,6 +98,7 @@ def test_school_entrance_subject_reveals_school_filter(page: Page, base_url: str
     })
 
 
+@pytest.mark.search
 def test_home_delivery_reveals_location_filter(page: Page, base_url: str):
     """Clicking the Home delivery button makes the location autocomplete visible."""
     page.goto(f"{base_url}{TUTORS_URL}")
@@ -107,6 +114,7 @@ def test_home_delivery_reveals_location_filter(page: Page, base_url: str):
     })
 
 
+@pytest.mark.search
 def test_detailed_filters_reveal_sen_and_badges(page: Page, base_url: str):
     """Clicking 'Show all search options' reveals the SEN and badges selects, which can be set."""
     page.goto(f"{base_url}{TUTORS_URL}")
@@ -124,6 +132,7 @@ def test_detailed_filters_reveal_sen_and_badges(page: Page, base_url: str):
     })
 
 
+@pytest.mark.search
 def test_availability_grid_appears_and_accepts_input(page: Page, base_url: str):
     """Selecting a subject reveals the availability grid; slots can be checked."""
     page.goto(f"{base_url}{TUTORS_URL}")
@@ -145,6 +154,7 @@ def test_availability_grid_appears_and_accepts_input(page: Page, base_url: str):
 
 # ── Option B: full pipeline search ──────────────────────────────────────────
 
+@pytest.mark.search
 def test_full_search_subject_level_home_location(page: Page, base_url: str):
     """Full pipeline: English + GCSE + Home delivery + London location → AJAX results render."""
     page.goto(f"{base_url}{TUTORS_URL}")
@@ -186,12 +196,13 @@ def test_full_search_subject_level_home_location(page: Page, base_url: str):
 
 # ── Meet Now buttons ──────────────────────────────────────────────────────────
 
+@pytest.mark.search
 def test_meet_now_button_visible_on_eligible_tutor(page: Page, base_url: str):
     """
     At least one tutor card in the default search results has a 'Connect now'
     button linking to /contact-us?job_type=meet_now&tutor_id=ID. Does not rely
     on a specific tutor ID — any eligible tutor satisfies the assertion.
-    Covers P3: 'Meet Now button visible on eligible tutor card'.
+    Covers: 'Meet Now button visible on eligible tutor card'.
     """
     page.goto(f"{base_url}{TUTORS_URL}", wait_until="domcontentloaded")
     _dismiss_cookies(page)
@@ -208,11 +219,12 @@ def test_meet_now_button_visible_on_eligible_tutor(page: Page, base_url: str):
     })
 
 
+@pytest.mark.search
 def test_meet_now_button_absent_on_ineligible_tutor(page: Page, base_url: str):
     """
     Tutor cards for ineligible tutors have no 'Connect now' button.
     Finds any card that lacks a meet-now link and verifies it truly has none.
-    Covers P3: 'Meet Now button absent on ineligible tutor card'.
+    Covers: 'Meet Now button absent on ineligible tutor card'.
     """
     page.goto(f"{base_url}{TUTORS_URL}")
     _dismiss_cookies(page)
@@ -240,6 +252,7 @@ def test_meet_now_button_absent_on_ineligible_tutor(page: Page, base_url: str):
 
 # ── Batch K — availability summary ──────────────────────────────────────────
 
+@pytest.mark.search
 def test_availability_summary_on_profile(page: Page, base_url: str):
     """
     Tutor search cards include a p.availability_slots_summary element built by
@@ -247,7 +260,7 @@ def test_availability_summary_on_profile(page: Page, base_url: str):
     slots. Verifies that at least one active tutor on the dev site has slots set
     and that the rendered text is non-empty.
     Skips (not fails) if no tutors on the dev site have availability slots saved.
-    Covers P3: 'Availability summary renders correctly on public tutor profile'.
+    Covers: 'Availability summary renders correctly on public tutor profile'.
     """
     page.goto(f"{base_url}{TUTORS_URL}")
     _dismiss_cookies(page)

@@ -31,9 +31,11 @@ if [ ! -f "$ENV_FILE" ]; then
     exit 1
 fi
 
-# Source only the two values needed, without executing the rest of the file.
+# Source only the values needed, without executing the rest of the file.
 TEST_CLIENT_EMAIL=$(grep -E '^TEST_CLIENT_EMAIL=' "$ENV_FILE" | cut -d= -f2-)
 TEST_CLIENT_PASSWORD=$(grep -E '^TEST_CLIENT_PASSWORD=' "$ENV_FILE" | cut -d= -f2-)
+TEST_TUTOR_EMAIL=$(grep -E '^TEST_TUTOR_EMAIL=' "$ENV_FILE" | cut -d= -f2-)
+TEST_TUTOR_PASSWORD=$(grep -E '^TEST_TUTOR_PASSWORD=' "$ENV_FILE" | cut -d= -f2-)
 
 if [ -z "$TEST_CLIENT_EMAIL" ] || [ -z "$TEST_CLIENT_PASSWORD" ]; then
     echo "Error: TEST_CLIENT_EMAIL / TEST_CLIENT_PASSWORD not set in $ENV_FILE" >&2
@@ -54,6 +56,29 @@ else
 fi
 WP user get "$TEST_CLIENT_EMAIL" --fields=ID,user_login,roles
 
+# Test tutor: password only, never auto-created. Unlike the client, a usable
+# test tutor needs real profile data set up (tuition_delivery, availability
+# outcome, name fields -- see TESTING_SYSTEM.md's Test Accounts section), so
+# a bare `user create` here would produce an account that exists but doesn't
+# actually work for Stage 3/4 or tutor-dashboard tests. Found live 26 Aug
+# 2026: this account already existed with the correct role but a stale
+# password, which cascaded into 13 failing/erroring tests across
+# test_tutor_dashboard.py and test_job_connection.py (the latter via the
+# stage3_job fixture, which logs the tutor in as part of its own setup).
+if [ -n "$TEST_TUTOR_EMAIL" ] && [ -n "$TEST_TUTOR_PASSWORD" ]; then
+    echo
+    echo "== Test tutor: $TEST_TUTOR_EMAIL =="
+    if WP user get "$TEST_TUTOR_EMAIL" --field=ID >/dev/null 2>&1; then
+        echo "  exists -- ensuring password matches .env (role/profile data left untouched)"
+        WP user update "$TEST_TUTOR_EMAIL" --user_pass="$TEST_TUTOR_PASSWORD" >/dev/null
+        WP user get "$TEST_TUTOR_EMAIL" --fields=ID,user_login,roles
+    else
+        echo "  MISSING -- cannot auto-create (needs manual ACF profile setup, see TESTING_SYSTEM.md)" >&2
+    fi
+else
+    echo
+    echo "(TEST_TUTOR_EMAIL/PASSWORD not set in .env -- skipping tutor fixture check)"
+fi
+
 echo
-echo "Done. Add more fixture accounts to this script as they're found to need it --"
-echo "the tutor fixture (TEST_TUTOR_EMAIL) has survived syncs so far without help."
+echo "Done. Add more fixture accounts to this script as they're found to need it."

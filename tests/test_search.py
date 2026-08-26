@@ -169,22 +169,34 @@ def test_full_search_subject_level_home_location(page: Page, base_url: str):
 # ── Meet Now buttons ──────────────────────────────────────────────────────────
 
 @pytest.mark.search
-def test_meet_now_button_visible_on_eligible_tutor(page: Page, base_url: str):
+def test_meet_now_button_visible_on_eligible_tutor(page: Page, base_url: str, meet_now_eligible_tutor_id):
     """
-    At least one tutor card in the default search results has a 'Connect now'
-    button linking to /contact-us?job_type=meet_now&tutor_id=ID. Does not rely
-    on a specific tutor ID — any eligible tutor satisfies the assertion.
+    A real tutor card in the default search results has a 'Connect now' button
+    linking to /contact-us?job_type=meet_now&tutor_id=ID, once that tutor's
+    eligibility flags are forced true by the meet_now_eligible_tutor_id fixture.
+
+    docs/TESTING_REBUILD_SPEC.md Days 9-10: this test had two compounding root
+    causes, neither a timing flake. (1) auto_swap_active is a real side effect
+    of meet-now job creation (flipped to false, no automatic reset) — a prior
+    test run leaves the fixture tutor ineligible. (2) The dedicated
+    TEST_MEET_NOW_TUTOR_ID account is permanently on the site's
+    excluded_tutors blocklist, so it can never appear in real search results
+    regardless of its flags — forcing them true had no effect. The fixture
+    now picks a real, non-excluded tutor from actual search results instead
+    and restores their original flags afterward.
     Covers: 'Meet Now button visible on eligible tutor card'.
     """
     page.goto(f"{base_url}{TUTORS_URL}", wait_until="domcontentloaded")
     _dismiss_cookies(page)
     page.wait_for_selector(".add-to-cart", timeout=15000)
 
-    meet_now_link = page.locator("a[href*='job_type=meet_now']").first
+    meet_now_link = page.locator(
+        f"a[href*='job_type=meet_now'][href*='tutor_id={meet_now_eligible_tutor_id}']"
+    )
     expect(meet_now_link).to_be_visible(timeout=10000)
 
     write_detail("test_meet_now_button_visible_on_eligible_tutor", {
-        "message": "Meet Now button visible on at least one eligible tutor card",
+        "message": f"Meet Now button visible on eligible tutor {meet_now_eligible_tutor_id}'s card",
     })
 
 

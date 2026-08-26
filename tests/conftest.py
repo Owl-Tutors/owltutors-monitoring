@@ -457,6 +457,41 @@ def meet_now_tutor_id():
     return val
 
 
+@pytest.fixture
+def meet_now_eligible_tutor_id(page, base_url, api_key):
+    """Picks a real, non-excluded tutor from the actual default /tutors/
+    search results and forces their eligibility flags (include_tutor_in_auto_swap,
+    auto_swap_active) true for the duration of the test, restoring their
+    original values on teardown.
+
+    Deliberately does NOT use TEST_MEET_NOW_TUTOR_ID / meet_now_tutor_id: that
+    account is permanently on the site's excluded_tutors blocklist
+    (get_field('excluded_tutors', 'option') in tutor-mgmt.php) and can never
+    appear in real search results no matter what its eligibility flags are —
+    forcing its flags true (the original fix attempt) had no effect. That,
+    plus auto_swap_active being a real side effect of meet-now job creation
+    with no automatic reset, were the two root causes of
+    test_meet_now_button_visible_on_eligible_tutor's failure — not a timing
+    flake (docs/TESTING_REBUILD_SPEC.md Days 9-10).
+
+    Restoring afterward matters here specifically because, unlike
+    meet_now_tutor_id, this touches a real (non-fixture) tutor account.
+    """
+    from utils.set_tutor_meet_now_eligible import set_tutor_meet_now_eligible
+
+    page.goto(f"{base_url}/tutors/", wait_until="domcontentloaded")
+    page.wait_for_selector(".add-to-cart", timeout=15000)
+    candidate_id = page.locator(".add-to-cart").first.get_attribute("value")
+    assert candidate_id, "No tutor cards found in default search results — cannot pick a candidate"
+
+    result = set_tutor_meet_now_eligible(base_url, api_key, candidate_id)
+    previous = result["previous"]
+
+    yield candidate_id
+
+    set_tutor_meet_now_eligible(base_url, api_key, candidate_id, **previous)
+
+
 @pytest.fixture(scope="session")
 def stage3_job(
     browser, base_url, api_key,

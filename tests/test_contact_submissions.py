@@ -194,7 +194,12 @@ def test_contact_form_tutor_submission(page: Page, base_url: str, api_key: str, 
     )
     page.locator("div[data-name='timing_details_-_original'] textarea").fill("Flexible")
 
-    _fill_client_info(page)
+    # Unique email per run (docs/TESTING_REBUILD_SPEC.md Days 9-10): the fixed
+    # EMAIL constant was shared across several tests in this file, some of
+    # which also select Maths — an interrupted earlier run (cleanup never ran)
+    # could leave a same-email/same-subject job behind that trips duplicate-job
+    # detection for a later test, corrupting its Stage 1 alert text.
+    _fill_client_info(page, f"testbot.tutorsub.{uuid.uuid4().hex[:8]}@owltutors.co.uk")
     _check_hs(page)
     _flag_test_post(page)
 
@@ -249,7 +254,8 @@ def test_contact_form_something_else(page: Page, base_url: str, api_key: str, cl
         "Other enquiry — automated test"
     )
 
-    _fill_client_info(page)
+    # Unique email per run — see test_contact_form_tutor_submission for why.
+    _fill_client_info(page, f"testbot.something.{uuid.uuid4().hex[:8]}@owltutors.co.uk")
     _check_hs(page)
     _flag_test_post(page)
 
@@ -333,7 +339,8 @@ def test_contact_form_requested_tutors(page: Page, base_url: str, api_key: str, 
     )
     page.locator("div[data-name='timing_details_-_original'] textarea").fill("Flexible")
 
-    _fill_client_info(page)
+    # Unique email per run — see test_contact_form_tutor_submission for why.
+    _fill_client_info(page, f"testbot.reqtutors.{uuid.uuid4().hex[:8]}@owltutors.co.uk")
     _check_hs(page)
     _flag_test_post(page)
 
@@ -518,7 +525,11 @@ def test_stage1_quality_check_fail(page: Page, base_url: str, cleanup_after):
     )
     page.locator("div[data-name='timing_details_-_original'] textarea").fill("Flexible")
 
-    _fill_client_info(page)
+    # Unique email per run — see test_contact_form_tutor_submission for why. This
+    # test specifically was the one observed to flake from this: a leftover
+    # same-email Maths job from another interrupted test made duplicate_jobs
+    # trigger unexpectedly, replacing the expected 'more information' message.
+    _fill_client_info(page, f"testbot.stage1.{uuid.uuid4().hex[:8]}@owltutors.co.uk")
     _check_hs(page)
     _flag_test_post(page)
 
@@ -571,7 +582,8 @@ def test_health_safety_unchecked_job_creates(page: Page, base_url: str, cleanup_
     )
     page.locator("div[data-name='timing_details_-_original'] textarea").fill("Flexible")
 
-    _fill_client_info(page)
+    # Unique email per run — see test_contact_form_tutor_submission for why.
+    _fill_client_info(page, f"testbot.hsunchecked.{uuid.uuid4().hex[:8]}@owltutors.co.uk")
     # Deliberately do NOT call _check_hs(page) — H&S box left unticked
     _flag_test_post(page)
 
@@ -598,11 +610,23 @@ def test_duplicate_job_detection(
     """
     A logged-in client submitting a second job with the same subject as an
     existing open job triggers ot_system_check_for_duplicate_jobs(). The new
-    job is created at Stage 1 and the job page shows the 'already have an open
-    enquiry' alert.
+    job is created at Stage 1 and the job page shows a dedicated duplicate-job
+    notice with an 'already have an open enquiry' message and a link back to
+    the original job.
     Setup: returning_client_login submits job #1 with Maths and leaves the
     browser logged in. This test submits job #2 (also Maths). Both jobs are
     flagged ot_test_post=1 for cleanup.
+
+    docs/TESTING_REBUILD_SPEC.md Days 9-10: this test was not flaky, it was
+    consistently broken. It checked the generic .alert-warning box for
+    'already'/'enquiry' text, but when duplicate_jobs is a failed element,
+    ot_single_job_info_alert() (job-mgmt.php) overrides that box's own message
+    to 'You have exceeded the maximum number of enquiries' — which contains
+    neither word ('enquiries' is not a substring match for 'enquiry'). The
+    actual 'already have an open enquiry' text renders in a separate sibling
+    div, .ot_single_job_duplicate_jobs, not inside .alert-warning at all. The
+    underlying PHP duplicate-detection feature works correctly; only the
+    test's selector/assertion was wrong.
     Covers: 'Duplicate job detection — existing open job triggers Stage 1 redirect'.
     """
     page.goto(f"{base_url}{CONTACT_URL}", wait_until="domcontentloaded")
@@ -633,12 +657,16 @@ def test_duplicate_job_detection(
     job_id = re.search(r"/jobs/(\d+)/", page.url).group(1)
     print(f"\n[result] duplicate job_id={job_id} (client: {returning_client_login['email']})")
 
-    # Duplicate check keeps the job at Stage 1 with the 'already have an open enquiry' warning
-    stage1_alert = page.locator(".alert-warning")
-    expect(stage1_alert).to_be_visible(timeout=10000)
-    alert_text = (stage1_alert.text_content() or "").lower()
-    assert "already" in alert_text or "enquiry" in alert_text, (
-        f"Expected duplicate-job warning in Stage 1 alert, got: {alert_text!r}"
+    # Job stays at Stage 1 (not advanced) when the duplicate check fires.
+    expect(page.locator(".alert-warning")).to_be_visible(timeout=10000)
+
+    # The duplicate-specific notice (a sibling of .alert-warning, not nested inside
+    # it) carries the actual 'already have an open enquiry' text and job link.
+    duplicate_notice = page.locator(".ot_single_job_duplicate_jobs")
+    expect(duplicate_notice).to_be_visible(timeout=10000)
+    notice_text = (duplicate_notice.text_content() or "").lower()
+    assert "already" in notice_text and "enquiry" in notice_text, (
+        f"Expected duplicate-job notice with 'already ... enquiry' text, got: {notice_text!r}"
     )
 
     write_detail("test_duplicate_job_detection", {
@@ -680,7 +708,8 @@ def test_admin_job_path_redirects(page: Page, base_url: str, cleanup_after):
     )
     page.locator("div[data-name='timing_details_-_original'] textarea").fill("Flexible")
 
-    _fill_client_info(page)
+    # Unique email per run — see test_contact_form_tutor_submission for why.
+    _fill_client_info(page, f"testbot.adminpath.{uuid.uuid4().hex[:8]}@owltutors.co.uk")
     _check_hs(page)
     _flag_test_post(page)
 

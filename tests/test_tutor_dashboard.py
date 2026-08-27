@@ -110,10 +110,18 @@ def test_tutor_jobs_board_filter_returns_results(page: Page, base_url: str, tuto
     # A subject is required by JS — selecting by value (subject names are their own values)
     page.locator("select[name='request_search_subject']").select_option("Maths")
     page.locator("select[name='request_search_delivery']").select_option("Online")
-    page.locator("#tutor_jobs_board_filter_btn").click()
 
-    # Wait for AJAX to update #tutor_job_output (job cards or empty-state message)
-    page.wait_for_load_state("networkidle", timeout=20000)
+    # Wait for the filter's own AJAX response specifically, not networkidle. The tutor
+    # dashboard unconditionally fires a second, unrelated request on page load
+    # (ot_tutor_dash_ajax_handler('recommended_jobs') in ot_logged_in_tutor.js, for the
+    # sidebar "recommended jobs" card) that can still be in flight when the filter is
+    # submitted — networkidle waits for *all* network activity to go quiet, so it was
+    # timing out on that unrelated widget rather than the filter's own response, even
+    # once the filter's query itself was fast. Confirmed live: the filter response
+    # itself carries action=ot_jobs_board_filter, so wait for that exactly.
+    with page.expect_response(lambda r: "action=ot_jobs_board_filter" in r.url, timeout=30000):
+        page.locator("#tutor_jobs_board_filter_btn").click()
+
     output = page.locator("#tutor_job_output")
     expect(output).to_be_visible()
     assert output.inner_text().strip() != "", (

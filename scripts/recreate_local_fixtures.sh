@@ -80,5 +80,25 @@ else
     echo "(TEST_TUTOR_EMAIL/PASSWORD not set in .env -- skipping tutor fixture check)"
 fi
 
+# test_video_object_json_ld (test_content.py) needs at least one blog post
+# with the 'video_id' ACF field set, within the first page of the blog
+# listing (page-blog.php shows 12/page). Production→local syncs wipe this
+# like any other postmeta if the source post never had it set for real
+# (found 26 Aug 2026: no post in the synced DB had video_id set at all,
+# despite the field being live on the site). Reuses a real Owl Tutors
+# YouTube ID already in use elsewhere (a tutor's featured_video) rather than
+# a placeholder. Post 194262 ("The Proven Benefits of One-to-One Tuition")
+# is real editorial content, not a test fixture -- if it's gone or has moved
+# far enough down the listing after a future sync, pick a current recent
+# post instead and update the ID below.
+echo
+echo "== Blog video_id (test_video_object_json_ld) =="
+if WP post get 194262 --field=ID >/dev/null 2>&1; then
+    WP post meta update 194262 video_id "0UDU0j7Vd5w" >/dev/null
+    echo "  set video_id on post 194262"
+else
+    echo "  post 194262 not found -- pick a current recent post and update this script" >&2
+fi
+
 echo
 echo "Done. Add more fixture accounts to this script as they're found to need it."

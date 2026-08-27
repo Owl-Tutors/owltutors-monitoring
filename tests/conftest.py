@@ -492,6 +492,80 @@ def meet_now_eligible_tutor_id(page, base_url, api_key):
     set_tutor_meet_now_eligible(base_url, api_key, candidate_id, **previous)
 
 
+@pytest.fixture
+def availability_eligible_tutor_id(page, base_url, api_key):
+    """Finds a real tutor from the default /tutors/ search results who already
+    has capacity > 0 and saved tutor_search_slots rows (most active tutors
+    do), forces their availability-confirmation timestamp fresh, and restores
+    their previous values on teardown.
+
+    ot_tutor_availability_info_handler() (owl_system/includes/functions.php)
+    only ever computes availability_outcome '1a'/'1b' -- the gate for
+    p.availability_slots_summary to render at all -- when
+    time_availability_date_availability_updated_unix is within the last 30
+    days, on top of capacity > 0 and existing tutor_search_slots rows. Real
+    (non-fixture) tutors' confirmation dates drift stale within weeks of
+    nobody actively using them; as of 26 Aug 2026 only 4 of 2220 tutor
+    accounts site-wide were within the 30-day window on local, and none of
+    those 4 (all test-fixture accounts, including the excluded-from-search
+    TEST_MEET_NOW_TUTOR_ID) appear in real search results. Capacity and
+    slots aren't the blocker -- freshness is -- so this reuses
+    owl_set_tutor_meet_now_eligible purely for its
+    availability_updated_unix side effect (the same field
+    set_tutor_meet_now_eligible's own docstring documents), tried against
+    each visible candidate in turn until one actually renders the summary,
+    rather than assuming the first search result has capacity/slots set.
+
+    Skips if none of the tutors on the default listing qualify even after
+    forcing freshness.
+    """
+    from utils.set_tutor_meet_now_eligible import set_tutor_meet_now_eligible
+
+    page.goto(f"{base_url}/tutors/", wait_until="domcontentloaded")
+    page.wait_for_selector(".add-to-cart", timeout=15000)
+    candidate_ids = page.locator(".add-to-cart").evaluate_all("els => els.map(e => e.value)")
+
+    chosen_id = None
+    chosen_previous = None
+    for candidate_id in candidate_ids:
+        if not candidate_id:
+            continue
+        result = set_tutor_meet_now_eligible(base_url, api_key, candidate_id)
+        previous = result["previous"]
+
+        page.reload(wait_until="domcontentloaded")
+        page.wait_for_selector(".add-to-cart", timeout=15000)
+        card = page.locator(f"article.author-card:has(.add-to-cart[value='{candidate_id}'])")
+        card.locator("button.tutor_availability").hover()
+        try:
+            summary_text = (
+                page.locator(".tooltip.tutor-tooltip p.availability_slots_summary")
+                .text_content(timeout=2000)
+                or ""
+            ).strip()
+        except Exception:
+            summary_text = ""
+        page.mouse.move(0, 0)  # close the tooltip before the next candidate
+
+        if summary_text:
+            chosen_id, chosen_previous = candidate_id, previous
+            break
+        set_tutor_meet_now_eligible(base_url, api_key, candidate_id, **previous)
+
+    if not chosen_id:
+        pytest.skip(
+            "None of the tutors on the default /tutors/ listing render a "
+            "non-empty availability summary even after forcing their "
+            "confirmation timestamp fresh -- none currently has both "
+            "capacity > 0 and saved tutor_search_slots rows; set both for a "
+            "real tutor via the dashboard to enable this test"
+        )
+
+    yield chosen_id
+
+    set_tutor_meet_now_eligible(base_url, api_key, chosen_id, **chosen_previous)
+
+
 @pytest.fixture(scope="session")
 def stage3_job(
     browser, base_url, api_key,

@@ -231,13 +231,19 @@ def test_meet_now_button_absent_on_ineligible_tutor(page: Page, base_url: str):
 # ── Batch K — availability summary ──────────────────────────────────────────
 
 @pytest.mark.search
-def test_availability_summary_on_profile(page: Page, base_url: str):
+def test_availability_summary_on_profile(page: Page, base_url: str, availability_eligible_tutor_id: str):
     """
-    Tutor search cards include a p.availability_slots_summary element built by
+    A tutor card renders a button.tutor_availability that opens a Bootstrap
+    tooltip (owltheme/js/availability_popovers.js) on hover/focus. Its HTML
+    content -- including p.availability_slots_summary, built by
     render_slots_summary() (functions.php) for tutors with saved availability
-    slots. Verifies that at least one active tutor on the dev site has slots set
-    and that the rendered text is non-empty.
-    Skips (not fails) if no tutors on the dev site have availability slots saved.
+    slots (availability_outcome 1a/1b) -- lives entirely in the button's
+    data-bs-title attribute and is only injected into the DOM once the tooltip
+    is actually triggered, so it can never be found by a plain page-load scan
+    (the original version of this test always skipped for this reason, even
+    when qualifying tutors existed). The availability_eligible_tutor_id
+    fixture forces a real tutor's confirmation timestamp fresh so
+    availability_outcome computes 1a/1b for the duration of this test.
     Covers: 'Availability summary renders correctly on public tutor profile'.
     """
     page.goto(f"{base_url}{TUTORS_URL}")
@@ -245,15 +251,11 @@ def test_availability_summary_on_profile(page: Page, base_url: str):
     page.wait_for_load_state("networkidle")
     page.wait_for_selector(".add-to-cart", timeout=15000)
 
-    summaries = page.locator("p.availability_slots_summary")
-    if summaries.count() == 0:
-        pytest.skip(
-            "No p.availability_slots_summary found — no tutors on the dev site "
-            "have availability slots set; set slots in the tutor dashboard to enable this test"
-        )
-
-    expect(summaries.first).to_be_visible(timeout=5000)
-    summary_text = (summaries.first.text_content() or "").strip()
+    card = page.locator(f"article.author-card:has(.add-to-cart[value='{availability_eligible_tutor_id}'])")
+    card.locator("button.tutor_availability").hover()
+    tooltip_summary = page.locator(".tooltip.tutor-tooltip p.availability_slots_summary")
+    expect(tooltip_summary).to_be_visible(timeout=5000)
+    summary_text = (tooltip_summary.text_content() or "").strip()
     assert summary_text, (
         "p.availability_slots_summary is present but empty — render_slots_summary() may have broken"
     )

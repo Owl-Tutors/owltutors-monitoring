@@ -56,6 +56,21 @@ def test_shop_loads(page: Page, base_url: str):
 
 
 @pytest.mark.content
+def test_cem_product_page_loads(page: Page, base_url: str):
+    """
+    CEM product page renders the otcemmvp plugin's custom fields (child's
+    name, DOB, EAL, SEN, gender, class) inside the native WooCommerce
+    add-to-cart form — fixed 21 Jul 2026 (see TESTING_CHANGELOG.md).
+    Covers: 'CEM product page loads with otcemmvp plugin fields visible'.
+    """
+    page.goto(f"{base_url}/product/cem-primary-insight-assessment/")
+    expect(page.locator("form.cart .ot-cem-mvp-fields")).to_be_visible(timeout=10000)
+    write_detail("test_cem_product_page_loads", {
+        "message": "CEM product page loaded with otcemmvp fields visible inside form.cart",
+    })
+
+
+@pytest.mark.content
 def test_group_course_listing(page: Page, base_url: str):
     """Group course listing page loads with at least one course card visible."""
     page.goto(f"{base_url}{COURSES_URL}")
@@ -160,10 +175,15 @@ def test_video_object_json_ld(page: Page, base_url: str):
     in the page's JSON-LD @graph (content-schema.php appends it to any @graph
     schema when $_ot_video_id is non-empty).
 
-    The test scans the first few articles from the blog listing until it finds
-    one with VideoObject JSON-LD.  If none of the first 5 articles has a video,
-    the test is skipped with an explanatory message — add a specific URL below
-    once a known video post is identified on the dev site.
+    The test scans articles from the first page of the blog listing (12 per
+    page — page-blog.php's $posts_per_page) until it finds one with
+    VideoObject JSON-LD, rather than an arbitrary first 5: on local as of 26
+    Aug 2026 the most recent video post was already the 7th most recent
+    published post, one past the old 5-article window — not missing data,
+    just new posts pushing it down over time, which will only get worse. If
+    none of the 12 has a video, the test is skipped with an explanatory
+    message — add a specific URL below once a known video post is identified
+    on the dev site.
     Covers: 'VideoObject JSON-LD on posts with video_id'.
     """
     import pytest
@@ -171,7 +191,7 @@ def test_video_object_json_ld(page: Page, base_url: str):
     page.goto(f"{base_url}{BLOG_URL}")
     page.wait_for_selector("a.text-decoration-none.d-block.h-100", timeout=10000)
     article_links = page.evaluate(
-        "Array.from(document.querySelectorAll('a.text-decoration-none.d-block.h-100')).map(a => a.href).slice(0, 5)"
+        "Array.from(document.querySelectorAll('a.text-decoration-none.d-block.h-100')).map(a => a.href).slice(0, 12)"
     )
 
     found_video_object = False
@@ -195,7 +215,7 @@ def test_video_object_json_ld(page: Page, base_url: str):
 
     if not found_video_object:
         pytest.skip(
-            "None of the first 5 blog articles has VideoObject JSON-LD — "
+            "None of the first 12 blog articles has VideoObject JSON-LD — "
             "set a specific URL in this test once a post with video_id is identified on the dev site"
         )
 

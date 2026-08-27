@@ -1,27 +1,31 @@
 """
 GA4 / Analytics smoke tests.
 
-The tracking script in inc/header-DL.php only runs when get_site_url() contains
-'owltutors.co.uk'.  The dev site (otdev1602.wpengine.com) does not match, so
-these tests are skipped automatically when running against the dev site.
-
-They will run on the production site or any environment whose WordPress
-site URL contains 'owltutors.co.uk'.
+The sessionStorage/dataLayer script in inc/header-DL.php runs on production
+(owltutors.co.uk), staging (otdev1602) and local (owltutors.test) — loosened
+27 Aug 2026 (owl_system docs/TESTING_CHANGELOG.md) once it was confirmed that
+script is purely client-side (sessionStorage + a dataLayer push) with no
+network call to Google of its own; the actual GTM container loader
+(inc/header-GTM.php, the only thing that talks to Google) kept its
+production-only gate, so nothing real analytics-related ever fires outside
+production regardless of where these tests run.
 """
 import pytest
 from playwright.sync_api import Page, expect
+from urllib.parse import urlparse
 from utils.details import write_detail
 
 HOMEPAGE_URL   = "/"
 CONTACT_URL    = "/contact-us/"
+_ALLOWED_DOMAIN_SUBSTRINGS = ("owltutors.co.uk", "otdev1602", "owltutors.test")
 
 
-def _require_owltutors_domain(base_url: str):
-    """Skip this test if we're not running against an owltutors.co.uk URL.
-    header-DL.php only outputs the tracking script for that domain."""
-    if "owltutors.co.uk" not in base_url:
+def _require_ga4_enabled_domain(base_url: str):
+    """Skip this test if we're not running against an environment header-DL.php
+    actually outputs the tracking script for."""
+    if not any(d in base_url for d in _ALLOWED_DOMAIN_SUBSTRINGS):
         pytest.skip(
-            f"GA4 tracking script is only output on owltutors.co.uk URLs — "
+            f"GA4 tracking script is not output on this environment — "
             f"skipping against {base_url}"
         )
 
@@ -39,7 +43,7 @@ def test_ga4_session_storage_set_on_load(page: Page, base_url: str):
 
     Covers: 'initial_url, traffic_source_r, ga_client_id in sessionStorage on load'.
     """
-    _require_owltutors_domain(base_url)
+    _require_ga4_enabled_domain(base_url)
 
     # Fresh context — sessionStorage is empty on first navigation
     page.goto(f"{base_url}{HOMEPAGE_URL}")
@@ -74,13 +78,15 @@ def test_ga4_client_id_in_contact_form(page: Page, base_url: str):
     checks the hidden input has a non-empty value.
     Covers: 'Contact form ga_client_id input non-empty when _ga cookie present'.
     """
-    _require_owltutors_domain(base_url)
+    _require_ga4_enabled_domain(base_url)
 
     # Inject a synthetic _ga cookie matching the expected format: GA1.X.CID.TS
+    # Domain must match the actual host being tested — owltutors.co.uk on
+    # production, otdev1602... on staging, owltutors.test on local.
     page.context.add_cookies([{
         "name": "_ga",
         "value": "GA1.1.123456789.1700000000",
-        "domain": "owltutors.co.uk",
+        "domain": urlparse(base_url).hostname,
         "path": "/",
     }])
 

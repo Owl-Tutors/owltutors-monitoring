@@ -11,6 +11,7 @@ from utils.apply import (
 )
 from utils.cleanup import delete_test_posts
 from utils.details import write_detail
+from utils.test_status_records import get_test_status_record, reset_status_field
 
 FIXTURES_DIR = Path(__file__).parent / "fixtures"
 
@@ -774,4 +775,114 @@ def test_applicant_availability_save_and_persist(
     # Cleanup: restore to the slot the fixture originally set
     _save_slots('{"0": [16]}')
     page.wait_for_timeout(300)
+
+
+# ── References (single-reference.php) ────────────────────────────────────────
+# A separate feature from tutor applicant references shown on the applicant
+# dashboard (test_applicant_references_not_sent) — this is the actual external
+# reference-provider form. No crc32 URL validation here (unlike testimonials);
+# gated purely by the reference_status field.
+
+@pytest.mark.recruitment
+def test_reference_form_loads_for_incomplete(page: Page, base_url: str, api_key: str):
+    """
+    The reference form (single-reference.php) loads and shows the ACF
+    competency form for an Incomplete reference record. Uses a real record
+    from the local pool of 1,188+ Incomplete references (production-synced)
+    via owl_get_test_status_record — no dev-site setup needed.
+    Covers: 'Reference form loads at /reference/{id}-1/ for Incomplete status'.
+    """
+    record = get_test_status_record(base_url, api_key, "reference", "Incomplete")
+
+    page.goto(record["url"], wait_until="domcontentloaded")
+
+    assert page.url.rstrip("/") == record["url"].rstrip("/"), (
+        f"Expected to stay on the reference page, got redirected to: {page.url}"
+    )
+    expect(page.locator("h1")).to_contain_text("Owl Tutors Reference request")
+    expect(page.locator("form#acf-form")).to_be_visible()
+
+    write_detail("test_reference_form_loads_for_incomplete", {
+        "message": f"Reference {record['post_id']} form loaded correctly",
+    })
+
+
+@pytest.mark.recruitment
+def test_reference_revisiting_submitted_url_redirects_away(page: Page, base_url: str, api_key: str):
+    """
+    Revisiting a Submitted (or Reviewed) reference's URL redirects away
+    (single-reference.php redirects to https://owltutors.co.uk/ via a plain
+    JS location change once reference_status is no longer Incomplete) rather
+    than showing the form again — a single-use link.
+    Covers: 'Revisiting a submitted reference URL redirects away'.
+    """
+    record = get_test_status_record(base_url, api_key, "reference", "Submitted")
+    reference_path = record["url"].split("owltutors.test", 1)[-1].rstrip("/")
+
+    page.goto(record["url"], wait_until="domcontentloaded")
+    # The redirect is a plain client-side `window.location.href` change
+    # (single-reference.php), not a server-side Location header — wait for
+    # the URL to actually change rather than expecting navigation during goto().
+    page.wait_for_url(lambda url: reference_path not in url, timeout=15000)
+
+    assert reference_path not in page.url, (
+        f"Expected navigation away from the reference page, still on: {page.url}"
+    )
+
+    write_detail("test_reference_revisiting_submitted_url_redirects_away", {
+        "message": f"Submitted reference {record['post_id']} correctly redirected away to {page.url}",
+    })
+
+
+@pytest.mark.recruitment
+def test_reference_form_submission_sets_submitted(page: Page, base_url: str, api_key: str):
+    """
+    Submitting the reference form (required fields: referee first/last name +
+    6 competency ratings) triggers ot_save_references_on_front_end()
+    (acf/save_post priority 20, reference-mgmt.php), which sets
+    reference_status=Submitted and is_reference_ready=1. There is no distinct
+    "thank you" page — the page simply reloads, re-evaluates reference_status,
+    and (now Submitted) immediately JS-redirects away exactly like revisiting
+    an already-submitted reference, so that redirect is the success signal.
+
+    Uses a real Incomplete reference from the local pool; resets it back to
+    Incomplete afterward via owl_reset_status_field so repeated local runs
+    don't deplete the pool. Does not reverse the referee name/competency
+    field values the submission also wrote (accepted side effect).
+    Covers: 'Reference form submission sets reference_status=Submitted'.
+    """
+    record = get_test_status_record(base_url, api_key, "reference", "Incomplete")
+    reference_path = record["url"].split("owltutors.test", 1)[-1].rstrip("/")
+    group = "acf-field_59f8bbaa75a0e"
+
+    try:
+        page.goto(record["url"], wait_until="domcontentloaded")
+        expect(page.locator("form#acf-form")).to_be_visible()
+
+        page.locator(f"#{group}-field_59f8bbb275a0f-field_59f8bbc275a10").fill("Automated")
+        page.locator(f"#{group}-field_59f8bbb275a0f-field_59f8bbc675a11").fill("Test Referee")
+
+        for field_id in [
+            "field_59f8bc0575a18",  # interaction
+            "field_59f8bc1775a19",  # knowledge
+            "field_59f8bc3175a1b",  # planning_and_organising
+            "field_59f8bc4175a1d",  # teaching_ability
+            "field_59f99f7b49f82",  # problem_solving
+            "field_59f99f8c49f83",  # integrity
+        ]:
+            page.locator(f"#{group}-field_59f8bbf775a17-{field_id}").select_option(index=1)
+
+        page.locator("button:has-text('Submit reference')").click()
+
+        # Same redirect-away behaviour as revisiting an already-Submitted reference.
+        page.wait_for_url(lambda url: reference_path not in url, timeout=20000)
+        assert reference_path not in page.url, (
+            f"Expected navigation away after submission, still on: {page.url}"
+        )
+    finally:
+        reset_status_field(base_url, api_key, record["post_id"], "reference_status", "Incomplete")
+
+    write_detail("test_reference_form_submission_sets_submitted", {
+        "message": f"Reference {record['post_id']} submitted successfully, reset back to Incomplete",
+    })
 

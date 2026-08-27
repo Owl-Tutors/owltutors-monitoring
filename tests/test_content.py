@@ -1,6 +1,7 @@
 import json
 from playwright.sync_api import Page, expect
 from utils.details import write_detail
+from utils.test_status_records import get_test_status_record, reset_status_field
 import pytest
 
 BLOG_URL = "/resource/"
@@ -221,4 +222,106 @@ def test_video_object_json_ld(page: Page, base_url: str):
 
     write_detail("test_video_object_json_ld", {
         "message": f"VideoObject found in JSON-LD on {checked_url}",
+    })
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Testimonial feedback form (distinct from References — see docs/guides/testimonials.md)
+# ─────────────────────────────────────────────────────────────────────────────
+
+@pytest.mark.content
+def test_testimonial_feedback_form_loads_for_incomplete(page: Page, base_url: str, api_key: str):
+    """
+    The testimonial feedback form (single-testimonials.php) loads at its real
+    permalink + ?j={crc32 job_id}&c={crc32 client_id} for an Incomplete
+    testimonial, rather than redirecting away (which happens for a bad hash or
+    an already-Submitted/Reviewed record). Uses a real record from the local
+    pool of 1,188+ Incomplete testimonials (production-synced) via
+    owl_get_test_status_record — no dev-site setup needed.
+    Covers: 'Testimonial feedback form loads at its permalink for Incomplete
+    status; single-use link redirects once already Submitted'.
+    """
+    record = get_test_status_record(base_url, api_key, "testimonials", "Incomplete")
+    url = f"{record['url']}?j={record['j']}&c={record['c']}"
+
+    page.goto(url, wait_until="domcontentloaded")
+
+    assert "/testimonials/" in page.url, (
+        f"Expected to stay on the testimonial page, got redirected to: {page.url}"
+    )
+    expect(page.locator("#testimonialForm")).to_be_visible()
+    expect(page.locator("h1")).to_contain_text("Testimonial request")
+
+    write_detail("test_testimonial_feedback_form_loads_for_incomplete", {
+        "message": f"Testimonial {record['post_id']} (job {record['job_id']}) form loaded correctly",
+    })
+
+
+@pytest.mark.content
+def test_testimonial_feedback_form_submission_sets_submitted(page: Page, base_url: str, api_key: str):
+    """
+    Submitting the 5-step feedback form (single-testimonials.php / ot_testimonials.js)
+    saves ratings/comments and sets testimonial_status=Submitted, showing the
+    'Thank you!' page. Uses a real Incomplete testimonial from the local pool
+    (owl_get_test_status_record); resets it back to Incomplete afterward via
+    owl_reset_status_field so repeated local runs don't deplete the pool —
+    this does NOT reverse the tutor's live_competency_scores_testimonial_scores
+    repeater row the submission also appends (accepted side effect, same
+    precedent as test_meet_now_submission's auto_swap_active note).
+    Covers: 'Submitting the 5-step feedback form saves ratings/comments and
+    sets status to Submitted'.
+    """
+    record = get_test_status_record(base_url, api_key, "testimonials", "Incomplete")
+    url = f"{record['url']}?j={record['j']}&c={record['c']}"
+
+    try:
+        page.goto(url, wait_until="domcontentloaded")
+        expect(page.locator("#testimonialForm")).to_be_visible()
+
+        # The radios are visually hidden (CSS styles the <label> as the clickable
+        # star/face icon instead) — dispatch a real 'click' event directly via JS
+        # rather than Playwright's .check()/.click(), which requires the target
+        # itself to be visible. ot_testimonials.js listens for 'click' on these
+        # radios specifically (not 'change'), so this matches what it expects.
+        def click_radio(radio_id: str):
+            page.eval_on_selector(f"#{radio_id}", "el => { el.checked = true; el.dispatchEvent(new Event('click', { bubbles: true })); }")
+
+        # Step 1 of 5 — overall rating
+        click_radio("q1_5")
+        page.locator("#nextSection").click()
+
+        # Step 2 of 5 — 7 star ratings (all "_1" radios = value 5). Setting the
+        # last one reveals #q4_b (average >= 4) as a *child* of the still-hidden
+        # #q4 section — its own visibility only resolves once the section
+        # itself is navigated to below, so don't assert visibility yet.
+        for item in ["q3a", "q3b", "q3c", "q3d", "q3e", "q3f", "q3g"]:
+            click_radio(f"{item}_1")
+        page.locator("#nextSection").click()
+
+        # Step 3 of 5 — now on the #q4 section; public comment (required since average >= 4)
+        expect(page.locator("#q4_b")).to_be_visible()
+        page.locator("#q4_b textarea").fill("Automated test feedback — please ignore.")
+        page.locator("#nextSection").click()
+
+        # Step 4 of 5 — now on #q5; customer service happy? -> reveals #q6_b (still hidden until next section)
+        page.locator("select[name='q5']").select_option("yes")
+        page.locator("#nextSection").click()
+
+        # Step 5 of 5 — now on #q6; internal comment, then the real submit (button now reads "Submit")
+        expect(page.locator("#q6_b")).to_be_visible()
+        page.locator("#q6_b textarea").fill("Automated test — internal comment.")
+        expect(page.locator("#nextSection")).to_have_text("Submit")
+        page.locator("#nextSection").click()
+
+        # The "Thank you!" branch (single-testimonials.php) only renders after
+        # nonce verification succeeds, immediately followed unconditionally by
+        # ot_client_submits_testimonial() (which sets testimonial_status =
+        # Submitted) in the same code path — reaching this page is itself the
+        # proof the status was set, no separate DB check needed.
+        expect(page.locator("h1")).to_contain_text("Thank you!", timeout=15000)
+    finally:
+        reset_status_field(base_url, api_key, record["post_id"], "testimonial_status", "Incomplete")
+
+    write_detail("test_testimonial_feedback_form_submission_sets_submitted", {
+        "message": f"Testimonial {record['post_id']} submitted successfully, reset back to Incomplete",
     })

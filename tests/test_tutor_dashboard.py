@@ -1,7 +1,11 @@
 ﻿import os
 import re
 from playwright.sync_api import Page, expect
+from utils.create_test_job import create_test_job
 from utils.details import write_detail
+from utils.timesheet_wizard import (
+    complete_goal_wizard_via_skip, fill_and_submit_timesheet_form, submit_student_name_if_shown,
+)
 import pytest
 
 DASHBOARD_URL = "/dashboard/"
@@ -299,4 +303,117 @@ def test_tutor_dashboard_invoices_renders(page: Page, base_url: str, tutor_crede
 
     write_detail("test_tutor_dashboard_invoices_renders", {
         "message": "Invoices section rendered at /dashboard/tutoring-section/#invoices",
+    })
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Timesheet wizard (single-jobs.php #timesheet tab, timesheet-mgmt.php)
+# ─────────────────────────────────────────────────────────────────────────────
+# Each test creates its own disposable Stage 4 job (owl_create_test_job) rather
+# than reusing the shared stage3_job fixture from test_job_connection.py, since
+# these need control over mgmt_ea_or_eb_job and don't need the real applicant/
+# accept-terms flow — a fresh, isolated job per test avoids any risk of
+# interfering with the Stage 3/4 Connection tests' shared state.
+
+@pytest.mark.tutors
+@pytest.mark.critical
+def test_timesheet_wizard_renders_stripe_connect_check(
+    page: Page, base_url: str, api_key: str, meet_now_tutor_id, tutor_credentials
+):
+    """
+    For an 'EA job', ot_timesheets_tutor_create_edit() (timesheet-mgmt.php)
+    shows the Stripe Connect form before anything else — student name, goal,
+    or the timesheet itself — whenever the tutor has no tutor_stripe_connect_id
+    set (true for the local test tutor, see test_tutor_stripe_connect_section_renders's
+    note). Only checks the form renders; does not click through to the real
+    Stripe OAuth redirect.
+    Covers: 'Timesheet wizard renders (Stripe Connect check -> goal -> form)'.
+    """
+    job = create_test_job(base_url, api_key, stage=4, tutor_id=meet_now_tutor_id, job_type="EA job")
+
+    _login(page, base_url, tutor_credentials["email"], tutor_credentials["password"])
+    page.goto(f"{base_url}/jobs/{job['job_id']}/#timesheet", wait_until="domcontentloaded")
+
+    expect(page.locator("#timesheet h2:has-text('Connect to Stripe')")).to_be_visible(timeout=15000)
+
+    write_detail("test_timesheet_wizard_renders_stripe_connect_check", {
+        "message": f"EA job {job['job_id']} correctly shows the Stripe Connect form first",
+        "job_id": job["job_id"],
+    })
+
+
+@pytest.mark.tutors
+@pytest.mark.critical
+def test_eb_job_timesheet_submission_creates_timesheet_and_redirects(
+    page: Page, base_url: str, api_key: str, meet_now_tutor_id, tutor_credentials
+):
+    """
+    Drives a full EB job timesheet submission: student name (if shown) -> goal
+    wizard (via the "Skip" bypass — see timesheet_wizard.py, avoids the
+    ChatGPT-based goal-quality check) -> timesheet form -> "Submit for
+    invoicing". Confirms the real POST redirects to
+    /dashboard/tutoring-section#submit_a_timesheet (timesheet-mgmt.php's
+    success path — no distinct confirmation page).
+    Covers: 'EB job timesheet submission creates timesheet and redirects
+    correctly'.
+    """
+    job = create_test_job(base_url, api_key, stage=4, tutor_id=meet_now_tutor_id, job_type="EB job")
+
+    _login(page, base_url, tutor_credentials["email"], tutor_credentials["password"])
+    page.goto(f"{base_url}/jobs/{job['job_id']}/#timesheet", wait_until="domcontentloaded")
+
+    submit_student_name_if_shown(page)
+    complete_goal_wizard_via_skip(page)
+    fill_and_submit_timesheet_form(page, submit_type="submit_for_invoicing")
+
+    page.wait_for_url(lambda url: "/dashboard/tutoring-section" in url, timeout=20000)
+    assert "submit_a_timesheet" in page.url, (
+        f"Expected redirect to #submit_a_timesheet, got: {page.url}"
+    )
+
+    write_detail("test_eb_job_timesheet_submission_creates_timesheet_and_redirects", {
+        "message": f"EB job {job['job_id']} timesheet submitted, redirected to {page.url}",
+        "job_id": job["job_id"],
+    })
+
+
+@pytest.mark.tutors
+def test_duplicate_timesheet_check_shows_warning(
+    page: Page, base_url: str, api_key: str, meet_now_tutor_id, tutor_credentials
+):
+    """
+    ot_check_existing_eb_timesheets_month_year (AJAX, fires automatically on
+    page load once the timesheet form's month/year selects are present —
+    ot_timesheets.js) warns when a timesheet already exists for the selected
+    job/month/year. Submits one timesheet for the current month, then goes
+    through the wizard a second time for the same job and confirms the
+    auto-triggered warning appears instead of a fresh blank form.
+    Covers: 'Duplicate timesheet check AJAX shows warning'.
+    """
+    job = create_test_job(base_url, api_key, stage=4, tutor_id=meet_now_tutor_id, job_type="EB job")
+
+    _login(page, base_url, tutor_credentials["email"], tutor_credentials["password"])
+
+    # First submission — establishes a timesheet for the current month/year.
+    page.goto(f"{base_url}/jobs/{job['job_id']}/#timesheet", wait_until="domcontentloaded")
+    submit_student_name_if_shown(page)
+    complete_goal_wizard_via_skip(page)
+    fill_and_submit_timesheet_form(page, submit_type="submit_for_invoicing")
+    page.wait_for_url(lambda url: "/dashboard/tutoring-section" in url, timeout=20000)
+
+    # Second pass on the same job — goal_repeater's saved text is empty (Skip
+    # bypass), so ot_timesheets_tutor_create_edit() shows the goal wizard
+    # again rather than jumping straight to the timesheet form.
+    page.goto(f"{base_url}/jobs/{job['job_id']}/#timesheet", wait_until="domcontentloaded")
+    submit_student_name_if_shown(page)
+    complete_goal_wizard_via_skip(page)
+
+    warning = page.locator("#month_year_ajax_call")
+    expect(warning).to_be_visible(timeout=15000)
+    warning_text = (warning.text_content() or "").strip()
+    assert warning_text, "Expected non-empty duplicate-timesheet warning text in #month_year_ajax_call"
+
+    write_detail("test_duplicate_timesheet_check_shows_warning", {
+        "message": f"Job {job['job_id']}: duplicate timesheet warning shown on second submission attempt",
+        "job_id": job["job_id"],
     })

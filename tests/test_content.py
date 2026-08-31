@@ -71,6 +71,44 @@ def test_cem_product_page_loads(page: Page, base_url: str):
     })
 
 
+DBS_PRODUCT_URL = "/product/dbs-update-service-fee/"
+
+
+@pytest.mark.content
+def test_dbs_fee_form_gated_to_tutor_or_admin(page: Page, base_url: str, tutor_credentials):
+    """
+    single-product.php's $ot_staff_gated_slugs gate restricts the DBS fee
+    product (native WC add-to-cart, same template code path as the CEM fix
+    above) to logged-in administrators and tutors only. Confirms both halves:
+    a logged-out visitor is redirected away, and a logged-in tutor sees the
+    real native add-to-cart form.
+
+    Redirect target fixed 28 Aug 2026 while writing this test: the gate
+    redirected to `/tutor-login/`, a page that has never existed on this site
+    (confirmed via `wp post list` — only `/login` does), so every gated
+    visitor was silently sent to a 404. Changed to `/login`, matching the
+    convention used everywhere else in the theme. See docs/woocommerce.md.
+    Covers: 'DBS fee form gated to logged-in tutor/admin only'.
+    """
+    # Logged-out visitor redirected to the real login page, not a 404
+    page.goto(f"{base_url}{DBS_PRODUCT_URL}", wait_until="domcontentloaded")
+    page.wait_for_url(lambda url: "/login" in url, timeout=10000)
+    expect(page.locator("#ot_login")).to_be_visible()
+
+    # Logged-in tutor sees the native add-to-cart form
+    page.locator("#ot_login_name").fill(tutor_credentials["email"])
+    page.locator("#pw1").fill(tutor_credentials["password"])
+    page.locator("#login_submit").click()
+    page.wait_for_url(lambda url: "/login" not in url, timeout=30000)
+
+    page.goto(f"{base_url}{DBS_PRODUCT_URL}", wait_until="domcontentloaded")
+    expect(page.locator("form.cart")).to_be_visible(timeout=10000)
+
+    write_detail("test_dbs_fee_form_gated_to_tutor_or_admin", {
+        "message": "Logged-out visitor redirected to /login (not a 404); logged-in tutor sees native add-to-cart form",
+    })
+
+
 @pytest.mark.content
 def test_group_course_listing(page: Page, base_url: str):
     """Group course listing page loads with at least one course card visible."""

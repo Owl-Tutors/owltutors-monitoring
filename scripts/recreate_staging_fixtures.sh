@@ -52,8 +52,23 @@ SSH_HOST="otdev1602@otdev1602.ssh.wpengine.net"
 SSH_KEY="${WPENGINE_SSH_KEY:-$HOME/.ssh/owltutors_wpengine_staging}"
 ENV_FILE="$(dirname "$0")/../.env"
 
+# One fresh SSH connection per WP() call -- deliberately NOT multiplexed.
+# Tried ControlMaster/ControlPersist connection reuse 3 Sept 2026 to cut
+# down the ~7 connections this script makes (each takes 30-45s from a
+# GitHub-hosted runner, much higher latency than this machine locally, and
+# was blowing through the CI step's original 3-minute timeout). Reproduced
+# twice, consistently, even with a guaranteed-fresh control socket path:
+# the master connection got reset ("Connection reset by peer") partway
+# through, and OpenSSH's fallback-to-non-multiplexed path corrupted a
+# wp-cli call's arguments badly enough to misfire the "does this account
+# exist" check. The target account itself was never actually touched either
+# time, but this points at WP Engine's SSH gateway not tolerating
+# persistent/multiplexed connections well -- not worth fighting for a
+# repair step that only needs to be reliable, not fast. Solved with a
+# longer step timeout instead (see smoke-tests.yml).
 WP() {
-    ssh -o BatchMode=yes -o ConnectTimeout=15 -o StrictHostKeyChecking=accept-new -i "$SSH_KEY" "$SSH_HOST" wp "$@" --user=1
+    ssh -o BatchMode=yes -o ConnectTimeout=15 -o StrictHostKeyChecking=accept-new \
+        -i "$SSH_KEY" "$SSH_HOST" wp "$@" --user=1
 }
 
 # Only read .env for whichever of these aren't already set in the

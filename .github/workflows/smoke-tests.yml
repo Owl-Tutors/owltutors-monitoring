@@ -27,13 +27,19 @@ jobs:
       # docs/TESTING_REBUILD_SPEC.md §3.2 these fixture accounts are
       # deliberately kept OFF production, so every sync wipes them from
       # staging too (owl_system/docs/TESTING_SYSTEM.md's SSH/staging fixture
-      # automation section). continue-on-error: if this step fails (e.g. a
-      # transient SSH hiccup -- seen once during manual testing, not
-      # reproducible), the actual test run below still gets a chance to run
-      # rather than the whole workflow aborting on a repair step.
+      # automation section). continue-on-error: if this step fails, the
+      # actual test run below still gets a chance to run rather than the
+      # whole workflow aborting on a repair step.
+      # timeout-minutes: 8 (was 3) -- a first real CI run 3 Sept 2026 showed
+      # each fresh SSH connection from this runner to WP Engine takes
+      # 30-45s (much higher latency than testing locally), and the script
+      # makes ~7 of them (connection reuse was tried and reverted -- see
+      # recreate_staging_fixtures.sh -- WP Engine's SSH gateway didn't
+      # tolerate it well). Worst case ~7*45s = 5.25 minutes; 8 gives real
+      # headroom rather than cutting it close again.
       - name: Recreate staging test fixtures
         continue-on-error: true
-        timeout-minutes: 3
+        timeout-minutes: 8
         env:
           WPENGINE_SSH_PRIVATE_KEY: ${{ secrets.WPENGINE_SSH_PRIVATE_KEY }}
           TEST_CLIENT_EMAIL: ${{ secrets.TEST_CLIENT_EMAIL }}

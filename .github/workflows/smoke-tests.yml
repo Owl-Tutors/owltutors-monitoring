@@ -22,6 +22,31 @@ jobs:
           pip install -r requirements.txt
           playwright install chromium --with-deps
 
+      # Repairs the client/tutor test fixture accounts on staging before each
+      # run -- otdev1602 carries a full production data sync, and per
+      # docs/TESTING_REBUILD_SPEC.md §3.2 these fixture accounts are
+      # deliberately kept OFF production, so every sync wipes them from
+      # staging too (owl_system/docs/TESTING_SYSTEM.md's SSH/staging fixture
+      # automation section). continue-on-error: if this step fails (e.g. a
+      # transient SSH hiccup -- seen once during manual testing, not
+      # reproducible), the actual test run below still gets a chance to run
+      # rather than the whole workflow aborting on a repair step.
+      - name: Recreate staging test fixtures
+        continue-on-error: true
+        timeout-minutes: 3
+        env:
+          WPENGINE_SSH_PRIVATE_KEY: ${{ secrets.WPENGINE_SSH_PRIVATE_KEY }}
+          TEST_CLIENT_EMAIL: ${{ secrets.TEST_CLIENT_EMAIL }}
+          TEST_CLIENT_PASSWORD: ${{ secrets.TEST_CLIENT_PASSWORD }}
+          TEST_TUTOR_EMAIL: ${{ secrets.TEST_TUTOR_EMAIL }}
+          TEST_TUTOR_PASSWORD: ${{ secrets.TEST_TUTOR_PASSWORD }}
+          TEST_MEET_NOW_TUTOR_ID: ${{ secrets.TEST_MEET_NOW_TUTOR_ID }}
+        run: |
+          umask 077
+          printf '%s\n' "$WPENGINE_SSH_PRIVATE_KEY" > "$RUNNER_TEMP/wpengine_staging_key"
+          chmod 600 "$RUNNER_TEMP/wpengine_staging_key"
+          WPENGINE_SSH_KEY="$RUNNER_TEMP/wpengine_staging_key" bash scripts/recreate_staging_fixtures.sh
+
       - name: Run tests
         env:
           TEST_BASE_URL: ${{ secrets.TEST_BASE_URL }}

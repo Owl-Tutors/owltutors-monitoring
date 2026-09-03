@@ -106,9 +106,18 @@ def _basic_auth_token() -> str | None:
     """Return a Basic Auth token, or None if no credentials are configured.
     Prefers TEST_HTTP_USER/TEST_HTTP_PASS over URL-embedded credentials to
     avoid regex breakage when the password contains special characters like '@'.
+
+    .strip() on both -- found 3 Sept 2026: a GitHub Secret pasted with a
+    trailing newline (easy to pick up from a "copy" button depending on the
+    source page) is preserved verbatim in the secret's value, silently
+    corrupting the Base64 token and producing a 403 on every request, while
+    the exact same clipboard content pasted into a browser's single-line
+    password field gets the newline stripped automatically -- so a manual
+    browser login can succeed with credentials that still fail here unless
+    guarded against explicitly.
     """
-    user = os.environ.get("TEST_HTTP_USER", "")
-    pw   = os.environ.get("TEST_HTTP_PASS", "")
+    user = os.environ.get("TEST_HTTP_USER", "").strip()
+    pw   = os.environ.get("TEST_HTTP_PASS", "").strip()
     if user and pw:
         return base64.b64encode(f"{user}:{pw}".encode()).decode()
     raw = os.environ.get("TEST_BASE_URL", "")
@@ -121,8 +130,8 @@ def _basic_auth_token() -> str | None:
 @pytest.fixture(scope="session")
 def browser_context_args(browser_context_args):
     """Supply http_credentials so Playwright can respond to any 401 challenges."""
-    user = os.environ.get("TEST_HTTP_USER", "")
-    pw   = os.environ.get("TEST_HTTP_PASS", "")
+    user = os.environ.get("TEST_HTTP_USER", "").strip()
+    pw   = os.environ.get("TEST_HTTP_PASS", "").strip()
     if not (user and pw):
         raw = os.environ.get("TEST_BASE_URL", "")
         match = re.match(r"https?://([^:@]+):([^@]+)@", raw)

@@ -53,6 +53,19 @@ jobs:
           chmod 600 "$RUNNER_TEMP/wpengine_staging_key"
           WPENGINE_SSH_KEY="$RUNNER_TEMP/wpengine_staging_key" bash scripts/recreate_staging_fixtures.sh
 
+      # Cooldown before hitting the site again -- two real CI runs 3 Sept
+      # 2026 both got a 403 Forbidden on the very first request of "Run
+      # tests" (pytest_sessionstart enabling test_mode), immediately after
+      # the fixture step's burst of ~7 SSH connections, and neither
+      # happened on the prior run before that step existed. Looks like a
+      # rate-limit/abuse-protection block on WP Engine's or a CDN's side
+      # against the runner's IP, triggered by the connection burst, that
+      # also catches the next HTTP request. A short pause here to let that
+      # window clear is cheap to try before assuming anything more
+      # structural is wrong.
+      - name: Cooldown before test run
+        run: sleep 90
+
       - name: Run tests
         env:
           TEST_BASE_URL: ${{ secrets.TEST_BASE_URL }}

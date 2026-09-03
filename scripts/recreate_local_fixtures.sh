@@ -36,6 +36,8 @@ TEST_CLIENT_EMAIL=$(grep -E '^TEST_CLIENT_EMAIL=' "$ENV_FILE" | cut -d= -f2-)
 TEST_CLIENT_PASSWORD=$(grep -E '^TEST_CLIENT_PASSWORD=' "$ENV_FILE" | cut -d= -f2-)
 TEST_TUTOR_EMAIL=$(grep -E '^TEST_TUTOR_EMAIL=' "$ENV_FILE" | cut -d= -f2-)
 TEST_TUTOR_PASSWORD=$(grep -E '^TEST_TUTOR_PASSWORD=' "$ENV_FILE" | cut -d= -f2-)
+TEST_ADMIN_EMAIL=$(grep -E '^TEST_ADMIN_EMAIL=' "$ENV_FILE" | cut -d= -f2-)
+TEST_ADMIN_PASSWORD=$(grep -E '^TEST_ADMIN_PASSWORD=' "$ENV_FILE" | cut -d= -f2-)
 
 if [ -z "$TEST_CLIENT_EMAIL" ] || [ -z "$TEST_CLIENT_PASSWORD" ]; then
     echo "Error: TEST_CLIENT_EMAIL / TEST_CLIENT_PASSWORD not set in $ENV_FILE" >&2
@@ -91,6 +93,34 @@ fi
 # is real editorial content, not a test fixture -- if it's gone or has moved
 # far enough down the listing after a future sync, pick a current recent
 # post instead and update the ID below.
+# Real staff (role=owl) session for admin_credentials (tests/conftest.py) --
+# needed by the admin-metabox and admin-dashboard tests, which are the only
+# ones in this suite that need genuine wp-admin access rather than the
+# custom front-end /login/ form. LOCAL-ONLY -- never synced to/from
+# production or staging, same reasoning as the client/tutor fixtures above
+# (docs/TESTING_REBUILD_SPEC.md §3.2). Auto-created (unlike the tutor
+# fixture) since an 'owl' account needs no extra ACF profile data to be
+# usable, unlike a working tutor profile.
+if [ -n "$TEST_ADMIN_EMAIL" ] && [ -n "$TEST_ADMIN_PASSWORD" ]; then
+    echo
+    echo "== Test admin (role=owl): $TEST_ADMIN_EMAIL =="
+    if WP user get "$TEST_ADMIN_EMAIL" --field=ID >/dev/null 2>&1; then
+        echo "  exists -- ensuring role=owl and password matches .env"
+        WP user set-role "$TEST_ADMIN_EMAIL" owl
+        WP user update "$TEST_ADMIN_EMAIL" --user_pass="$TEST_ADMIN_PASSWORD" >/dev/null
+    else
+        echo "  missing -- creating fresh"
+        WP user create "$TEST_ADMIN_EMAIL" "$TEST_ADMIN_EMAIL" \
+            --role=owl \
+            --user_pass="$TEST_ADMIN_PASSWORD" \
+            --display_name="Test Admin"
+    fi
+    WP user get "$TEST_ADMIN_EMAIL" --fields=ID,user_login,roles
+else
+    echo
+    echo "(TEST_ADMIN_EMAIL/PASSWORD not set in .env -- skipping admin fixture check)"
+fi
+
 echo
 echo "== Blog video_id (test_video_object_json_ld) =="
 if WP post get 194262 --field=ID >/dev/null 2>&1; then

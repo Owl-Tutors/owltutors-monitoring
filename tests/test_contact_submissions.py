@@ -2,6 +2,7 @@ import os
 import re
 import uuid
 import urllib.parse
+import requests
 import pytest
 from playwright.sync_api import Page, expect
 
@@ -488,6 +489,110 @@ def test_contact_form_returning_client(
 
     write_detail("test_contact_form_returning_client", {
         "message": f"Returning client job submitted and redirected to job {job_id}; client_id verified against DB",
+        "job_id": job_id,
+        "client_id": fields["client_id"],
+    })
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Contact form — logged-out visitor, email matches an existing client account
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+@pytest.mark.jobs
+@pytest.mark.critical
+def test_contact_form_existing_email_logged_out(
+    page: Page, base_url: str, api_key: str, cleanup_after
+):
+    """
+    A logged-OUT visitor submitting the contact form with an email that
+    matches an existing client account should have the job's client_id
+    resolve to that existing account — not a new user, and not 0.
+
+    Regression test for the Aug 2026 existing_user_login vs
+    existing_user_email WP_Error ambiguity bug (docs/job-creation.md Known
+    Issues): a stripped ACF field (ACF Pro 6.9's acf_form() allowlist
+    hardening) caused the registration path to run with an empty
+    login/email, producing a WP_Error the code couldn't distinguish from
+    "email already registered" — the wrong branch was taken and client_id
+    silently resolved to 0 for every logged-out job created by an
+    already-registered email during the affected window.
+
+    Distinct from test_contact_form_returning_client above, which only
+    exercises the *logged-in* returning-client path — this is the
+    logged-out path with a known, already-registered email, which was not
+    covered by any existing test.
+
+    Uses a fresh, disposable client (owl_create_test_client) as the
+    "existing account", not the shared client_credentials fixture
+    (testclient@owltutors.co.uk). Discovered on the first real run of this
+    test: resolving an *existing* client during a test-flagged submission
+    causes the job-creation code to flag that client _ot_test_user=1 too —
+    which, for a normally-persistent shared fixture, means the very next
+    cleanup_after in any test deletes the real account outright (confirmed:
+    it did, taking test_client_login and everything else depending on that
+    account down with it until scripts/recreate_local_fixtures.sh was
+    re-run). A disposable client sidesteps this entirely — being deleted by
+    cleanup is exactly what should happen to it.
+    """
+    client_resp = requests.post(
+        f"{base_url}/wp-admin/admin-ajax.php",
+        data={"action": "owl_create_test_client", "api_key": api_key},
+        timeout=15,
+    )
+    client_resp.raise_for_status()
+    existing_client = client_resp.json()
+    assert existing_client.get("success"), f"owl_create_test_client failed: {existing_client}"
+    existing_email = existing_client["client_email"]
+
+    page.goto(f"{base_url}{CONTACT_URL}", wait_until="domcontentloaded")
+    expect(page.locator("#tutor_request_form")).to_be_visible()
+    page.wait_for_load_state("networkidle")
+
+    page.locator("select[name='acf[field_64997c72bef9f]']").select_option(
+        label="A tutor to provide tuition services"
+    )
+    _select_first_subject(page)
+
+    # Personal info fields are visible here once the form has progressed
+    # (unlike the logged-in returning-client case above, where they're
+    # hidden throughout) — this visitor has no WordPress session. Checked
+    # only after selecting type/subject: the field is hidden for *everyone*,
+    # logged in or not, until the form reaches this point — checking too
+    # early would pass or fail for the wrong reason regardless of login
+    # state. Discovered on the first real run of this test.
+    expect(page.locator("input[name='acf[field_5edf889ffb5e9]']")).to_be_visible()
+
+    _fill_client_info(page, email=existing_email)
+    page.locator("div[data-name='tuition_requirements_original'] textarea").fill(
+        "Existing-email logged-out test — automated"
+    )
+    page.locator("div[data-name='timing_details_-_original'] textarea").fill("Flexible")
+    _check_hs(page)
+    _flag_test_post(page)
+
+    page.locator("#contact_form_submit").click()
+    page.wait_for_url(re.compile(r".*/jobs/"), timeout=90000)
+
+    job_id = re.search(r"/jobs/(\d+)/", page.url).group(1)
+    print(f"\n[result] existing-email logged-out job_id={job_id} (email: {existing_email})")
+
+    fields = get_test_job_fields(base_url, api_key, job_id)
+    print(f"\n[db-assert] job {job_id} fields: {fields}")
+    assert fields["client_id"], (
+        f"job {job_id}: client_id is empty/0 — expected it to resolve to the existing "
+        f"client account {existing_email!r}. This is exactly the shape of the Aug 2026 "
+        f"client_id=0 regression: page/redirect behaviour looks correct while the DB "
+        f"value is silently wrong."
+    )
+    assert fields["client_email"] == existing_email, (
+        f"job {job_id}: client_id resolved to {fields['client_email']!r}, expected the "
+        f"existing client {existing_email!r} — a new account may have been created "
+        f"instead of matching the existing one"
+    )
+
+    write_detail("test_contact_form_existing_email_logged_out", {
+        "message": f"Logged-out submission with an existing client's email correctly resolved to job {job_id}",
         "job_id": job_id,
         "client_id": fields["client_id"],
     })

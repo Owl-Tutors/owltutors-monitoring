@@ -7,4 +7,5 @@ screenshots/
 test-results/
 previous_results.json
 results.json
+full_run_report.json
 .env

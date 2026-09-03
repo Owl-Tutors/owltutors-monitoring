@@ -1,3 +1,4 @@
+import json
 import time
 
 import pytest
@@ -270,6 +271,61 @@ def test_availability_summary_on_profile(page: Page, base_url: str, availability
     })
 
 
+# ─────────────────────────────────────────────────────────────────────────────
+# Tutor profile — JSON-LD
+# ─────────────────────────────────────────────────────────────────────────────
+
+@pytest.mark.search
+def test_tutor_profile_schema_json_ld_present(page: Page, base_url: str, availability_eligible_tutor_id: str):
+    """
+    A tutor profile page (is_singular('tutor')) renders a Person node in its
+    JSON-LD @graph with a non-empty hoursAvailable property -- the highest-
+    complexity schema output in the codebase (owltheme/docs/schema.md's
+    5-step slot-collapsing/timezone-conversion algorithm), and, per that doc,
+    "the least tested" node before this.
+
+    hoursAvailable is only emitted "if the tutor has slots set" (schema.md),
+    so this reuses availability_eligible_tutor_id -- the same fixture
+    test_availability_summary_on_profile uses -- to force a real tutor's
+    confirmation timestamp fresh for the duration of the test, since a
+    tutor's own confirmation drifts stale within weeks otherwise (see that
+    fixture's docstring in conftest.py).
+    """
+    page.goto(f"{base_url}/tutor/{availability_eligible_tutor_id}/", wait_until="domcontentloaded")
+
+    ld_blocks = page.locator("script[type='application/ld+json']")
+    assert ld_blocks.count() > 0, f"No JSON-LD script tags found on tutor profile {availability_eligible_tutor_id}"
+
+    person_node = None
+    errors = []
+    for i in range(ld_blocks.count()):
+        try:
+            data = json.loads(ld_blocks.nth(i).inner_html())
+            for node in data.get("@graph", []):
+                if node.get("@type") == "Person":
+                    person_node = node
+                    break
+        except json.JSONDecodeError as e:
+            errors.append(f"Block {i}: {e}")
+        if person_node:
+            break
+
+    assert person_node, (
+        f"No Person node found in JSON-LD @graph on tutor profile {availability_eligible_tutor_id}. "
+        f"Parse errors: {errors}"
+    )
+    hours_available = person_node.get("hoursAvailable")
+    assert hours_available, (
+        f"Person node has no non-empty hoursAvailable property, despite "
+        f"availability_eligible_tutor_id forcing this tutor's confirmation "
+        f"timestamp fresh with saved slots. Person node keys: {list(person_node.keys())}"
+    )
+
+    write_detail("test_tutor_profile_schema_json_ld_present", {
+        "message": f"Person node has hoursAvailable ({len(hours_available)} entries) for tutor {availability_eligible_tutor_id}",
+    })
+
+
 # ── Batch — day/time-filtered search (v10.2.25 regression) ──────────────────
 #
 # ot_tutor_search_db_handler() (tutor-mgmt.php) matches a searched day/time
@@ -526,4 +582,51 @@ def test_outcome_3_shows_generic_fallback_on_tutor_card(page: Page, base_url: st
 
     write_detail("test_outcome_3_shows_generic_fallback_on_tutor_card", {
         "message": f"Tutor {tutor_id} (outcome 3) shows generic 'Contact us for availability' fallback tooltip",
+    })
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Tutor listing — JSON-LD
+# ─────────────────────────────────────────────────────────────────────────────
+
+@pytest.mark.search
+def test_tutor_listing_schema_json_ld_present(page: Page, base_url: str):
+    """
+    The tutor listing page (page-tutorSearch.php) renders a Product node in
+    its JSON-LD @graph -- owltheme/docs/content-schema.md documents Product,
+    LocalBusiness, and (once the ot_tutor_listing_output_tutor_{page_id}
+    transient is warm) ItemList as the nodes emitted here.
+
+    Only asserts Product specifically, not ItemList: content-schema.php runs
+    before page-tutorListing.php in the request, so ItemList is legitimately
+    absent on a first ever visit to a given listing page until its own
+    template transient exists (docs/content-schema.md, docs/schema.md
+    'Why Availability Is Not on Listing Pages' section) -- asserting on it
+    here would make this test depend on the dev site's transient warm state
+    rather than the schema code path itself.
+    """
+    page.goto(f"{base_url}{TUTORS_URL}", wait_until="domcontentloaded")
+
+    ld_json_blocks = page.locator("script[type='application/ld+json']")
+    assert ld_json_blocks.count() > 0, "No JSON-LD script tags found on tutor listing page"
+
+    found_product = False
+    errors = []
+    for i in range(ld_json_blocks.count()):
+        raw = ld_json_blocks.nth(i).inner_html()
+        try:
+            data = json.loads(raw)
+            graph = data.get("@graph", [])
+            if any(node.get("@type") == "Product" for node in graph):
+                found_product = True
+                break
+        except json.JSONDecodeError as e:
+            errors.append(f"Block {i}: {e}")
+
+    assert found_product, (
+        f"No Product node found in JSON-LD @graph on {TUTORS_URL}. Parse errors: {errors}"
+    )
+
+    write_detail("test_tutor_listing_schema_json_ld_present", {
+        "message": "Tutor listing page has a Product node in its JSON-LD @graph",
     })

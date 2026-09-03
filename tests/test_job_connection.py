@@ -339,6 +339,58 @@ def test_client_stage4_job_shows_connected_tutor(
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# Live job — client sees Timesheet feedback section
+# ─────────────────────────────────────────────────────────────────────────────
+
+@pytest.mark.jobs
+@pytest.mark.critical
+def test_live_job_shows_timesheet_feedback(page: Page, base_url: str, live_job_with_timesheet):
+    """
+    Confirms the real, already-working mechanism that distinguishes a Live
+    job's client view from a Stage 4 one: single-jobs.php only calls
+    ot_single_job_feedback_to_client() (job-mgmt.php) for
+    'Live - Client confirmed live' jobs, and that function renders a
+    "Timesheet feedback" section (aria-label) for every real, published
+    timesheet linked to the job via job_id meta — an accordion per timesheet,
+    showing the tutor's submitted report text.
+
+    Two other candidate mechanisms were investigated and ruled out first (see
+    docs/TESTING_SYSTEM.md): page-dashboard.php's $live_jobs query and
+    ot_client_active_tutors()'s $friendly_status branch are both computed but
+    never actually used in any rendered output — cosmetically dead code, not
+    a real Live-vs-Stage-4 distinction, so no fix was needed there. This test
+    exercises the mechanism that actually does the job instead.
+
+    The live_job_with_timesheet fixture builds all of this with real
+    production code: a genuine Live-status job (owl_create_test_job,
+    stage=5) plus a real timesheet submitted through the actual tutor-facing
+    wizard (same helpers as test_eb_job_timesheet_submission_creates_timesheet_and_redirects),
+    so the report text asserted on below is exactly what the wizard's
+    #monthly_report field submitted, not a guessed-at fixture value.
+    Covers: 'Live job — correct dashboard state'.
+    """
+    _login(page, base_url, live_job_with_timesheet["client_email"], live_job_with_timesheet["client_password"])
+    page.goto(f"{base_url}{JOB_URL}{live_job_with_timesheet['job_id']}/", wait_until="domcontentloaded")
+
+    feedback_section = page.locator("section[aria-label='Timesheet feedback']")
+    expect(feedback_section).to_be_visible(timeout=15000)
+
+    accordion_button = feedback_section.locator(".accordion-button")
+    expect(accordion_button).to_be_visible()
+    accordion_button.click()
+
+    expect(feedback_section).to_contain_text("covered chapters 1-2", timeout=10000)
+
+    write_detail("test_live_job_shows_timesheet_feedback", {
+        "message": (
+            f"Live job {live_job_with_timesheet['job_id']}: Timesheet feedback section "
+            f"rendered real submitted report for timesheet {live_job_with_timesheet['timesheet_id']}"
+        ),
+        "job_id": live_job_with_timesheet["job_id"],
+    })
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # First-time client (using_default_pw=true) — prompted to set a password
 # ─────────────────────────────────────────────────────────────────────────────
 

@@ -1,8 +1,10 @@
 ﻿import os
 import re
+import requests
 from playwright.sync_api import Page, expect
 from utils.create_test_job import create_test_job
 from utils.details import write_detail
+from utils.get_test_job_fields import get_test_job_fields
 from utils.timesheet_wizard import (
     complete_goal_wizard_via_skip, fill_and_submit_timesheet_form, submit_student_name_if_shown,
 )
@@ -12,6 +14,17 @@ DASHBOARD_URL = "/dashboard/"
 TUTORING_URL  = "/dashboard/tutoring-section/"
 PROFILE_URL   = "/dashboard/profile/"
 LOGIN_URL     = "/login/"
+
+
+@pytest.fixture(autouse=False)
+def cleanup_after(base_url):
+    from utils.cleanup import delete_test_posts
+    yield
+    try:
+        result = delete_test_posts(base_url)
+        print(f"[cleanup] {result}")
+    except Exception as e:
+        print(f"[cleanup] warning: {e}")
 
 
 def _login(page: Page, base_url: str, email: str, password: str):
@@ -416,4 +429,81 @@ def test_duplicate_timesheet_check_shows_warning(
     write_detail("test_duplicate_timesheet_check_shows_warning", {
         "message": f"Job {job['job_id']}: duplicate timesheet warning shown on second submission attempt",
         "job_id": job["job_id"],
+    })
+
+
+@pytest.mark.tutors
+def test_bill_timesheet_in_stripe_creates_real_invoice(
+    page: Page, base_url: str, api_key: str, meet_now_tutor_id, tutor_credentials, cleanup_after
+):
+    """
+    ot_stripe_invoice_create() (services/stripe/system.php) -- the function
+    the real "Bill timesheet in Stripe" button calls -- successfully creates,
+    finalizes, and sends a real (Stripe test-mode) invoice for a genuine EB
+    job timesheet.
+
+    Deliberately does NOT drive the real button/admin UI
+    (ot_bill_timesheet_inline_callback(), includes/functions.php): that
+    callback unconditionally also calls ot_xero_connect_create_invoice() with
+    no test-mode gate at all, which would create a real invoice in the
+    live-connected Xero organisation on every run of this test -- exactly
+    the class of risk docs/TESTING_SYSTEM.md already excludes Xero-touching
+    flows from automating (no test-mode suppression exists for Xero, unlike
+    Stripe). ot_stripe_invoice_create() itself never touches Xero, so this
+    calls it directly via the new owl_trigger_stripe_invoice_create endpoint
+    instead -- real Stripe-side coverage with zero Xero risk.
+
+    Builds real prerequisite state rather than faking it: owl_create_test_stripe_client
+    creates a disposable client with a genuine Stripe test-mode Customer
+    (stripe_id -- the one precondition ot_stripe_invoice_create() hard-requires),
+    then a real EB job timesheet is submitted through the actual tutor-facing
+    wizard (same helpers as test_eb_job_timesheet_submission_creates_timesheet_and_redirects)
+    so every derived field (billing rates, totals, timesheet_status = '2) Ready')
+    is populated by the real production code path, not guessed at.
+    """
+    stripe_client = requests.post(
+        f"{base_url}/wp-admin/admin-ajax.php",
+        data={"action": "owl_create_test_stripe_client", "api_key": api_key},
+        timeout=15,
+    ).json()
+    assert stripe_client.get("success"), f"owl_create_test_stripe_client failed: {stripe_client}"
+
+    job = create_test_job(
+        base_url, api_key, stage=4, tutor_id=meet_now_tutor_id, job_type="EB job",
+        client_email=stripe_client["client_email"],
+    )
+
+    _login(page, base_url, tutor_credentials["email"], tutor_credentials["password"])
+    page.goto(f"{base_url}/jobs/{job['job_id']}/#timesheet", wait_until="domcontentloaded")
+    submit_student_name_if_shown(page)
+    complete_goal_wizard_via_skip(page)
+    fill_and_submit_timesheet_form(page, submit_type="submit_for_invoicing")
+    page.wait_for_url(lambda url: "/dashboard/tutoring-section" in url, timeout=20000)
+
+    fields = get_test_job_fields(base_url, api_key, job["job_id"])
+    timesheet_id = fields.get("most_recent_timesheet_id")
+    assert timesheet_id, f"Expected most_recent_timesheet_id to be set on job {job['job_id']} after submission: {fields}"
+
+    invoice_resp = requests.post(
+        f"{base_url}/wp-admin/admin-ajax.php",
+        data={
+            "action": "owl_trigger_stripe_invoice_create",
+            "api_key": api_key,
+            "timesheet_id": timesheet_id,
+            "job_id": job["job_id"],
+        },
+        timeout=30,
+    ).json()
+    assert invoice_resp.get("success"), f"owl_trigger_stripe_invoice_create failed: {invoice_resp}"
+    assert (invoice_resp.get("stripe_invoice_id") or "").startswith("in_"), (
+        f"Expected a real Stripe invoice ID (in_...), got: {invoice_resp}"
+    )
+    assert invoice_resp.get("stripe_invoice_status") == "Open", (
+        f"Expected stripe_invoice_status='Open' (finalized and sent), got: {invoice_resp}"
+    )
+
+    write_detail("test_bill_timesheet_in_stripe_creates_real_invoice", {
+        "message": f"Timesheet {timesheet_id}: Stripe invoice {invoice_resp['stripe_invoice_id']} created and sent",
+        "job_id": job["job_id"],
+        "timesheet_id": timesheet_id,
     })

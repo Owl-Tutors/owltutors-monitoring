@@ -1,13 +1,27 @@
 import json
+import re
+import requests
 from playwright.sync_api import Page, expect
+from utils.cleanup import delete_test_posts
 from utils.details import write_detail
 from utils.test_status_records import get_test_status_record, reset_status_field
+from utils.wc_checkout import complete_native_wc_checkout
 import pytest
 
 BLOG_URL = "/resource/"
 TESTIMONIALS_URL = "/about-us/testimonials/"
 SHOP_URL = "/shop/"
 COURSES_URL = "/all-courses/"
+
+
+@pytest.fixture(autouse=False)
+def cleanup_after(base_url):
+    yield
+    try:
+        result = delete_test_posts(base_url)
+        print(f"[cleanup] {result}")
+    except Exception as e:
+        print(f"[cleanup] warning: {e}")
 
 
 @pytest.mark.content
@@ -75,6 +89,106 @@ DBS_PRODUCT_URL = "/product/dbs-update-service-fee/"
 
 
 @pytest.mark.content
+@pytest.mark.critical
+def test_cem_checkout_captures_fields_to_order(page: Page, base_url: str, api_key: str, cleanup_after):
+    """
+    Full CEM checkout: fill otcemmvp's custom fields (child's name, DOB, EAL,
+    SEN, gender, class), add to the native WC cart, complete a real
+    Stripe-test-mode payment via the checkout page, and confirm
+    ot_cem_mvp_add_order_item_meta() (otcemmvp.php) persisted all six fields
+    as line-item meta on the resulting real order — the rendered "thank you"
+    page alone can't prove the meta actually saved.
+    """
+    page.goto(f"{base_url}/product/cem-primary-insight-assessment/", wait_until="domcontentloaded")
+    try:
+        page.locator("#ot_local_storage_accept").click(timeout=3000)
+    except Exception:
+        pass
+
+    page.locator("#ot_cem_mvp_child_name").fill("Test Child")
+    page.locator("#ot_cem_mvp_dob").fill("2015-01-01")
+    page.locator("#ot_cem_mvp_eal").select_option(index=1)
+    page.locator("#ot_cem_mvp_sen").select_option(index=1)
+    page.locator("#ot_cem_mvp_gender").select_option(index=1)
+    page.locator("#ot_cem_mvp_class").select_option(index=1)
+    page.locator("button.single_add_to_cart_button, input.single_add_to_cart_button").first.click()
+    page.wait_for_load_state("domcontentloaded")
+    page.wait_for_timeout(1500)
+
+    unique = re.sub(r"[^0-9]", "", str(id(page)))[-8:]
+    email = f"testbot.cem.{unique}@owltutors.co.uk"
+    order_id = complete_native_wc_checkout(page, base_url, email)
+
+    order_resp = requests.post(
+        f"{base_url}/wp-admin/admin-ajax.php",
+        data={"action": "owl_get_test_order_fields", "api_key": api_key, "order_id": order_id},
+        timeout=15,
+    )
+    order_resp.raise_for_status()
+    order = order_resp.json()
+    assert order.get("success"), f"owl_get_test_order_fields failed: {order}"
+
+    assert len(order["items"]) == 1, f"Expected exactly 1 line item, got: {order['items']}"
+    meta = order["items"][0]["meta"]
+    assert meta.get("Child's name") == "Test Child", f"Wrong/missing 'Child's name' meta: {meta}"
+    assert meta.get("Date of birth") == "2015-01-01", f"Wrong/missing 'Date of birth' meta: {meta}"
+    assert meta.get("EAL"), f"Missing 'EAL' meta: {meta}"
+    assert meta.get("SEN"), f"Missing 'SEN' meta: {meta}"
+    assert meta.get("Gender"), f"Missing 'Gender' meta: {meta}"
+    assert meta.get("Class"), f"Missing 'Class' meta: {meta}"
+
+    write_detail("test_cem_checkout_captures_fields_to_order", {
+        "message": f"Order {order_id} line item captured all 6 otcemmvp fields: {meta}",
+        "order_id": order_id,
+    })
+
+
+@pytest.mark.content
+@pytest.mark.critical
+def test_dbs_checkout_completes_for_logged_in_tutor(page: Page, base_url: str, api_key: str, tutor_credentials, cleanup_after):
+    """
+    A logged-in tutor can add the DBS update-service fee to the native WC
+    cart and complete a real Stripe-test-mode checkout, confirming the
+    resulting order exists with status 'processing' — the whole point of
+    single-product.php's staff-gate is to let exactly this role complete
+    this purchase; test_dbs_fee_form_gated_to_tutor_or_admin already covers
+    that a tutor can reach the form at all, this covers the actual purchase
+    completing successfully.
+    """
+    page.goto(f"{base_url}/login/", wait_until="domcontentloaded")
+    expect(page.locator("#ot_login")).to_be_visible()
+    page.locator("#ot_login_name").fill(tutor_credentials["email"])
+    page.locator("#pw1").fill(tutor_credentials["password"])
+    page.locator("#login_submit").click()
+    page.wait_for_url(lambda u: "/login" not in u, timeout=30000)
+
+    page.goto(f"{base_url}{DBS_PRODUCT_URL}", wait_until="domcontentloaded")
+    expect(page.locator("form.cart")).to_be_visible(timeout=10000)
+    page.locator("button.single_add_to_cart_button, input.single_add_to_cart_button").first.click()
+    page.wait_for_load_state("domcontentloaded")
+    page.wait_for_timeout(1500)
+
+    unique = re.sub(r"[^0-9]", "", str(id(page)))[-8:]
+    order_id = complete_native_wc_checkout(page, base_url, tutor_credentials["email"])
+
+    order_resp = requests.post(
+        f"{base_url}/wp-admin/admin-ajax.php",
+        data={"action": "owl_get_test_order_fields", "api_key": api_key, "order_id": order_id},
+        timeout=15,
+    )
+    order_resp.raise_for_status()
+    order = order_resp.json()
+    assert order.get("success"), f"owl_get_test_order_fields failed: {order}"
+    assert order["status"] in ("processing", "completed"), f"Expected a paid order status, got: {order['status']}"
+
+    write_detail("test_dbs_checkout_completes_for_logged_in_tutor", {
+        "message": f"Order {order_id} created successfully for logged-in tutor, status={order['status']}",
+        "order_id": order_id,
+    })
+
+
+
+@pytest.mark.content
 def test_dbs_fee_form_gated_to_tutor_or_admin(page: Page, base_url: str, tutor_credentials):
     """
     single-product.php's $ot_staff_gated_slugs gate restricts the DBS fee
@@ -106,6 +220,109 @@ def test_dbs_fee_form_gated_to_tutor_or_admin(page: Page, base_url: str, tutor_c
 
     write_detail("test_dbs_fee_form_gated_to_tutor_or_admin", {
         "message": "Logged-out visitor redirected to /login (not a 404); logged-in tutor sees native add-to-cart form",
+    })
+
+
+@pytest.mark.content
+def test_private_product_visible_to_tutor_and_applicant(
+    page: Page, base_url: str, api_key: str, tutor_credentials, applicant_credentials, cleanup_after
+):
+    """
+    REGRESSION -- currently FAILS. ot_allow_custom_roles_to_view_private_products()
+    and ot_enable_add_to_cart_for_applicant() (services/woocommerce/system.php)
+    are meant to let a logged-in tutor or applicant view and purchase a
+    private-status WC product that a logged-out visitor or client cannot
+    (docs/woocommerce.md). Confirmed 2 Sept 2026 this is dead code -- see
+    docs/woocommerce.md Known Issues for the full mechanism:
+
+    - ot_allow_custom_roles_to_view_private_products() adds a
+      woocommerce_product_is_visible filter on pre_get_posts, but that filter
+      only applies to results a query has ALREADY fetched. Catalog/shop
+      queries fetch with post_status='publish', which excludes 'private'
+      posts before the filter ever runs.
+    - Direct single-product page access is gated by an entirely separate,
+      unrelated mechanism: WordPress core's own read_private_posts
+      capability check. Neither 'tutor' nor 'applicant' has that capability,
+      so both get the exact same 404 a logged-out visitor gets.
+
+    Neither DBS nor CEM (docs/woocommerce.md's own named examples) is
+    actually post_status='private' any more -- both are 'publish' -- so this
+    uses a disposable fixture (owl_create_test_private_product) instead,
+    the only genuinely private products found on the site being real,
+    presumably licensing-restricted exam papers unsuitable as a test
+    subject.
+
+    Asserts the DOCUMENTED intended behaviour (tutor/applicant CAN view it,
+    logged-out visitor and client CANNOT) deliberately, rather than skipping,
+    so this shows as a clear red failure in the suite until the underlying
+    hooks are fixed -- see docs/TO_DO.md Silent Bugs.
+    """
+    import requests
+
+    resp = requests.post(
+        f"{base_url}/wp-admin/admin-ajax.php",
+        data={"action": "owl_create_test_private_product", "api_key": api_key},
+        timeout=15,
+    )
+    resp.raise_for_status()
+    product = resp.json()
+    assert product.get("success"), f"owl_create_test_private_product failed: {product}"
+    url = product["permalink"]
+
+    # Logged-out visitor -- cannot view
+    resp = page.goto(url, wait_until="domcontentloaded")
+    assert resp.status == 404, f"Expected 404 for a logged-out visitor, got {resp.status}"
+
+    # Logged-in client -- cannot view (not one of the allowed roles)
+    client_resp = requests.post(
+        f"{base_url}/wp-admin/admin-ajax.php",
+        data={"action": "owl_create_test_client", "api_key": api_key},
+        timeout=15,
+    )
+    client = client_resp.json()
+    assert client.get("success"), f"owl_create_test_client failed: {client}"
+    page.goto(f"{base_url}/login/", wait_until="domcontentloaded")
+    expect(page.locator("#ot_login")).to_be_visible()
+    page.locator("#ot_login_name").fill(client["client_email"])
+    page.locator("#pw1").fill(client["client_password"])
+    page.locator("#login_submit").click()
+    page.wait_for_url(lambda u: "/login" not in u, timeout=30000)
+    resp = page.goto(url, wait_until="domcontentloaded")
+    assert resp.status == 404, f"Expected 404 for a logged-in client, got {resp.status}"
+    page.context.clear_cookies()
+
+    # Logged-in tutor -- SHOULD be able to view and purchase (currently fails)
+    page.goto(f"{base_url}/login/", wait_until="domcontentloaded")
+    expect(page.locator("#ot_login")).to_be_visible()
+    page.locator("#ot_login_name").fill(tutor_credentials["email"])
+    page.locator("#pw1").fill(tutor_credentials["password"])
+    page.locator("#login_submit").click()
+    page.wait_for_url(lambda u: "/login" not in u, timeout=30000)
+    resp = page.goto(url, wait_until="domcontentloaded")
+    assert resp.status == 200, (
+        f"Expected a logged-in tutor to be able to view a private product (status 200), got {resp.status} -- "
+        f"see docs/woocommerce.md Known Issues, ot_allow_custom_roles_to_view_private_products() is dead code"
+    )
+    expect(page.locator("form.cart")).to_be_visible(timeout=10000)
+    page.context.clear_cookies()
+
+    # Logged-in applicant -- SHOULD also be able to view (currently fails)
+    page.goto(f"{base_url}/login/", wait_until="domcontentloaded")
+    expect(page.locator("#ot_login")).to_be_visible()
+    page.locator("#ot_login_name").fill(applicant_credentials["email"])
+    page.locator("#pw1").fill(applicant_credentials["password"])
+    page.locator("#login_submit").click()
+    page.wait_for_url(lambda u: "/login" not in u, timeout=30000)
+    resp = page.goto(url, wait_until="domcontentloaded")
+    assert resp.status == 200, (
+        f"Expected a logged-in applicant to be able to view a private product (status 200), got {resp.status} -- "
+        f"see docs/woocommerce.md Known Issues, ot_allow_custom_roles_to_view_private_products() is dead code"
+    )
+    expect(page.locator("form.cart")).to_be_visible(timeout=10000)
+
+    write_detail("test_private_product_visible_to_tutor_and_applicant", {
+        "message": f"Private product {product['product_id']} visibility checked across visitor/client/tutor/applicant",
+        "product_id": product["product_id"],
     })
 
 
@@ -260,6 +477,176 @@ def test_video_object_json_ld(page: Page, base_url: str):
 
     write_detail("test_video_object_json_ld", {
         "message": f"VideoObject found in JSON-LD on {checked_url}",
+    })
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Blog post — BlogPosting/Organization JSON-LD
+# ─────────────────────────────────────────────────────────────────────────────
+
+@pytest.mark.content
+def test_blog_post_schema_json_ld_present(page: Page, base_url: str):
+    """
+    A blog post (single.php, is_single()) emits BlogPosting and Organization
+    nodes in its JSON-LD @graph -- owltheme/docs/content-schema.md's
+    'Output by Page Type' table. Distinct from test_video_object_json_ld,
+    which checks for the separate, conditional VideoObject node.
+    """
+    page.goto(f"{base_url}{BLOG_URL}")
+    page.wait_for_selector("a.text-decoration-none.d-block.h-100", timeout=10000)
+    article_url = page.locator("a.text-decoration-none.d-block.h-100").first.get_attribute("href")
+    assert article_url, "No blog article link found on the listing page"
+
+    page.goto(article_url)
+    page.wait_for_load_state("domcontentloaded")
+
+    ld_blocks = page.locator("script[type='application/ld+json']")
+    assert ld_blocks.count() > 0, f"No JSON-LD script tags found on {article_url}"
+
+    found_types = set()
+    errors = []
+    for i in range(ld_blocks.count()):
+        try:
+            data = json.loads(ld_blocks.nth(i).inner_html())
+            for node in data.get("@graph", []):
+                node_type = node.get("@type")
+                if node_type:
+                    found_types.add(node_type)
+        except json.JSONDecodeError as e:
+            errors.append(f"Block {i}: {e}")
+
+    assert "BlogPosting" in found_types, (
+        f"No BlogPosting node found in JSON-LD @graph on {article_url}. "
+        f"Found types: {found_types}. Parse errors: {errors}"
+    )
+    assert "Organization" in found_types, (
+        f"No Organization node found in JSON-LD @graph on {article_url}. "
+        f"Found types: {found_types}. Parse errors: {errors}"
+    )
+
+    write_detail("test_blog_post_schema_json_ld_present", {
+        "message": f"BlogPosting and Organization nodes both present in JSON-LD @graph on {article_url}",
+    })
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Generic static page — WebPage/LocalBusiness JSON-LD
+# ─────────────────────────────────────────────────────────────────────────────
+
+# A real page-dynamic-content.php page with no more specific template match --
+# owltheme/docs/content-schema.md's is_page() catch-all branch. This template
+# is used across ~100 pages (owltheme/docs/TEMPLATE_MAPPING.md) so any one of
+# them exercises the same code path; this one was picked because it's a
+# stable, low-churn "About us" page unlikely to be restructured or deleted.
+GENERIC_PAGE_URL = "/about-us/introduction/"
+
+
+@pytest.mark.content
+def test_generic_page_schema_json_ld_present(page: Page, base_url: str):
+    """
+    A static page with no page-type-specific template (page-dynamic-content.php,
+    reached via content-schema.php's generic is_page() branch) emits WebPage
+    and LocalBusiness nodes in its JSON-LD @graph -- owltheme/docs/content-schema.md's
+    'Output by Page Type' table, distinct from the specialist templates
+    (tutor listing, tutor profile, school profile, papers) covered elsewhere.
+    """
+    page.goto(f"{base_url}{GENERIC_PAGE_URL}", wait_until="domcontentloaded")
+
+    ld_blocks = page.locator("script[type='application/ld+json']")
+    assert ld_blocks.count() > 0, f"No JSON-LD script tags found on {GENERIC_PAGE_URL}"
+
+    found_types = set()
+    errors = []
+    for i in range(ld_blocks.count()):
+        try:
+            data = json.loads(ld_blocks.nth(i).inner_html())
+            for node in data.get("@graph", []):
+                node_type = node.get("@type")
+                if node_type:
+                    found_types.add(node_type)
+        except json.JSONDecodeError as e:
+            errors.append(f"Block {i}: {e}")
+
+    assert "WebPage" in found_types, (
+        f"No WebPage node found in JSON-LD @graph on {GENERIC_PAGE_URL}. "
+        f"Found types: {found_types}. Parse errors: {errors}"
+    )
+    assert "LocalBusiness" in found_types, (
+        f"No LocalBusiness node found in JSON-LD @graph on {GENERIC_PAGE_URL}. "
+        f"Found types: {found_types}. Parse errors: {errors}"
+    )
+
+    write_detail("test_generic_page_schema_json_ld_present", {
+        "message": f"WebPage and LocalBusiness nodes both present in JSON-LD @graph on {GENERIC_PAGE_URL}",
+    })
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# FAQPage — present when configured, absent when not
+# ─────────────────────────────────────────────────────────────────────────────
+
+# A real page-dynamic-content.php page with a populated ACF 'faqs' repeater
+# (confirmed via direct DB query, 6 real FAQ entries) -- $faq_schema
+# (owltheme/docs/content-schema.md) is built unconditionally from this field
+# on any post/page type, so this exercises the same code path GENERIC_PAGE_URL
+# above does, just with FAQ content present.
+FAQ_PAGE_URL = "/advice/ib/"
+
+
+def _ld_faq_page_node(page: Page) -> dict | None:
+    """
+    Finds an FAQPage node in the current page's JSON-LD, wherever it lives.
+    On the is_page() catch-all branch (content-schema.php), $faq_schema is
+    NOT pushed as its own top-level @graph node the way it is on the papers/
+    schools branches -- it's nested as the WebPage node's own 'mainEntity'
+    property instead (content-schema.php ~line 1580: $webpage_schema['mainEntity']
+    = ['@type' => 'FAQPage', 'mainEntity' => ...]). Checks both shapes so this
+    helper is correct regardless of which branch a given URL happens to hit.
+    """
+    ld_blocks = page.locator("script[type='application/ld+json']")
+    for i in range(ld_blocks.count()):
+        try:
+            data = json.loads(ld_blocks.nth(i).inner_html())
+        except json.JSONDecodeError:
+            continue
+        for node in data.get("@graph", []):
+            if node.get("@type") == "FAQPage":
+                return node
+            main_entity = node.get("mainEntity")
+            if isinstance(main_entity, dict) and main_entity.get("@type") == "FAQPage":
+                return main_entity
+    return None
+
+
+@pytest.mark.content
+def test_faq_schema_present_when_faqs_configured(page: Page, base_url: str):
+    """
+    The shared $faq_schema component (owltheme/docs/content-schema.md) emits
+    an FAQPage node (as a top-level @graph node on some page types, nested
+    under the WebPage node's 'mainEntity' on the is_page() catch-all branch
+    -- see _ld_faq_page_node) when a page's ACF 'faqs' repeater has data, and
+    correctly omits it when the repeater is empty -- confirmed on two real
+    pages rather than asserting presence alone, since an always-present
+    FAQPage node would be just as wrong as an always-absent one.
+    """
+    page.goto(f"{base_url}{FAQ_PAGE_URL}", wait_until="domcontentloaded")
+    faq_node = _ld_faq_page_node(page)
+    assert faq_node, (
+        f"No FAQPage node found (top-level or nested under WebPage.mainEntity) in JSON-LD "
+        f"on {FAQ_PAGE_URL}, which has a populated 'faqs' ACF repeater"
+    )
+    assert faq_node.get("mainEntity"), (
+        f"FAQPage node found on {FAQ_PAGE_URL} but its own mainEntity (the Question list) is empty"
+    )
+
+    page.goto(f"{base_url}{GENERIC_PAGE_URL}", wait_until="domcontentloaded")
+    assert _ld_faq_page_node(page) is None, (
+        f"FAQPage node found in JSON-LD on {GENERIC_PAGE_URL}, which has no 'faqs' ACF "
+        f"repeater configured -- $faq_schema should have been omitted entirely"
+    )
+
+    write_detail("test_faq_schema_present_when_faqs_configured", {
+        "message": f"FAQPage present on {FAQ_PAGE_URL} (has faqs), absent on {GENERIC_PAGE_URL} (no faqs)",
     })
 
 

@@ -395,6 +395,24 @@ def client_credentials():
     }
 
 @pytest.fixture(scope="session")
+def admin_credentials():
+    """Login credentials for a real staff (administrator/owl-role) account on
+    the dev site — needed for any wp-admin screen (metaboxes, admin dashboard
+    pages, native user-profile ACF forms). No prior fixture in this suite has
+    ever logged in as staff; every existing test uses a client, tutor, or
+    applicant session instead. Deliberately does NOT create a throwaway admin
+    account on demand (unlike owl_create_test_client for clients) — minting
+    new administrator-capable users automatically is a materially bigger
+    security surface than disposable client/tutor accounts, so this points
+    at one real, already-existing dev-only account instead.
+    Set TEST_ADMIN_EMAIL and TEST_ADMIN_PASSWORD."""
+    email    = os.environ.get("TEST_ADMIN_EMAIL", "")
+    password = os.environ.get("TEST_ADMIN_PASSWORD", "")
+    if not (email and password):
+        pytest.skip("TEST_ADMIN_EMAIL/PASSWORD not set — skipping wp-admin tests")
+    return {"email": email, "password": password}
+
+@pytest.fixture(scope="session")
 def api_key():
     return os.environ.get("OWL_TEST_API_KEY", "")
 
@@ -788,6 +806,93 @@ def magic_link_params(base_url, api_key, meet_now_tutor_id):
     client_email = result["client_email"]
     crc32_val    = binascii.crc32(str(job_id).encode()) & 0xffffffff
     return {"job_id": job_id, "crc32": str(crc32_val), "email": client_email}
+
+
+@pytest.fixture
+def live_job_with_timesheet(browser, base_url, api_key, meet_now_tutor_id, tutor_credentials, client_credentials):
+    """Creates a real Live-status ('Live - Client confirmed live') EB job owned
+    by the static client_credentials account, then drives the actual tutor
+    timesheet wizard (utils/timesheet_wizard.py — same helpers used by
+    test_eb_job_timesheet_submission_creates_timesheet_and_redirects) in a
+    separate browser context to submit a genuine timesheet against it.
+
+    Exists to exercise ot_single_job_feedback_to_client()'s "Timesheet
+    feedback" section (job-mgmt.php) — the real, already-working mechanism
+    that distinguishes a Live job's client view from a Stage 4 one (only Live
+    calls it, see single-jobs.php). Two earlier-flagged code paths
+    ($live_jobs in page-dashboard.php, $friendly_status in
+    ot_client_active_tutors()) turned out to be cosmetically dead, not this —
+    see docs/TESTING_SYSTEM.md.
+
+    The submitted timesheet has no fixture concept of its own (it's created
+    by real production code, same as every other timesheet-wizard test), so
+    this flags it _ot_test_post=1 via the new owl_flag_test_timesheet endpoint
+    once submitted, so owl_delete_test_posts (triggered by the cleanup_after
+    fixture) removes it along with the job.
+    """
+    import requests
+    from utils.create_test_job import create_test_job
+    from utils.timesheet_wizard import (
+        submit_student_name_if_shown,
+        complete_goal_wizard_via_skip,
+        fill_and_submit_timesheet_form,
+    )
+
+    job = create_test_job(
+        base_url, api_key, stage=5, tutor_id=meet_now_tutor_id,
+        client_email=client_credentials["email"], job_type="EB job",
+    )
+    job_id = job["job_id"]
+
+    ctx, tutor_page = _new_authed_page(browser)
+    try:
+        tutor_page.goto(f"{base_url}/login/")
+        tutor_page.locator("#ot_login_name").fill(tutor_credentials["email"])
+        tutor_page.locator("#pw1").fill(tutor_credentials["password"])
+        tutor_page.locator("#login_submit").click()
+        tutor_page.wait_for_url(lambda url: "/login/" not in url, timeout=30000)
+
+        tutor_page.goto(f"{base_url}/jobs/{job_id}/#timesheet", wait_until="domcontentloaded")
+        submit_student_name_if_shown(tutor_page)
+        complete_goal_wizard_via_skip(tutor_page)
+        fill_and_submit_timesheet_form(tutor_page, submit_type="submit_for_invoicing")
+        tutor_page.wait_for_url(lambda url: "/dashboard/tutoring-section" in url, timeout=20000)
+    finally:
+        ctx.close()
+
+    fields_resp = requests.post(
+        f"{base_url}/wp-admin/admin-ajax.php",
+        data={"action": "owl_get_test_job_fields", "api_key": api_key, "job_id": job_id},
+        timeout=15,
+    )
+    fields_resp.raise_for_status()
+    fields = fields_resp.json()
+    timesheet_id = fields.get("most_recent_timesheet_id")
+    assert timesheet_id, f"owl_get_test_job_fields returned no most_recent_timesheet_id: {fields}"
+
+    flag_resp = requests.post(
+        f"{base_url}/wp-admin/admin-ajax.php",
+        data={"action": "owl_flag_test_timesheet", "api_key": api_key, "timesheet_id": timesheet_id},
+        timeout=15,
+    )
+    flag_resp.raise_for_status()
+    assert flag_resp.json().get("success"), f"owl_flag_test_timesheet failed: {flag_resp.json()}"
+
+    yield {
+        "job_id": job_id,
+        "timesheet_id": timesheet_id,
+        "client_email": client_credentials["email"],
+        "client_password": client_credentials["password"],
+    }
+
+    # client_credentials is a shared, persistent test account (unlike the
+    # auto-created disposable clients most fixtures use) — clean up explicitly
+    # rather than letting the Live job + timesheet accumulate on it run after run.
+    requests.post(
+        f"{base_url}/wp-admin/admin-ajax.php",
+        data={"action": "owl_delete_test_posts", "api_key": api_key},
+        timeout=15,
+    )
 
 
 @pytest.fixture(scope="session")

@@ -37,7 +37,26 @@ jobs:
       # recreate_staging_fixtures.sh -- WP Engine's SSH gateway didn't
       # tolerate it well). Worst case ~7*45s = 5.25 minutes; 8 gives real
       # headroom rather than cutting it close again.
+      # TEMPORARILY DISABLED 4 Sept 2026 for diagnosis -- every run since this
+      # step was added (2 Sept) has failed with a 403 on the very first HTTP
+      # request of "Run tests" (pytest_sessionstart), while every run before
+      # it existed succeeded (18 consecutive daily runs, 13 Aug - 2 Sept).
+      # Confirmed via WP Engine's own access log: the 403 is a genuine nginx-
+      # level block on otdev1602 against the runner's IP (135.232.211.219,
+      # an Azure/GitHub Actions range), not a Basic Auth failure (that would
+      # be 401) -- Password Protection, Global Edge Security, and Web Rules
+      # were all checked and ruled out as the source. Strong suspicion is
+      # this step's burst of ~7 SSH connections to WP Engine's SSH gateway
+      # trips an abuse/rate-limit block that then also catches the next
+      # HTTP request from the same IP -- the existing 90s cooldown below
+      # hasn't been enough (every run has still failed with it in place).
+      # This run disables the step entirely to test that hypothesis in
+      # isolation. Re-enable (remove the `if: false` line) once confirmed
+      # either way -- see docs/TESTING_SYSTEM.md and TO_DO.md for the fix
+      # once the real cause (connection count / spacing / cooldown length)
+      # is known.
       - name: Recreate staging test fixtures
+        if: false
         continue-on-error: true
         timeout-minutes: 8
         env:

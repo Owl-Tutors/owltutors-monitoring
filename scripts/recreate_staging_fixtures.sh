@@ -66,9 +66,23 @@ ENV_FILE="$(dirname "$0")/../.env"
 # persistent/multiplexed connections well -- not worth fighting for a
 # repair step that only needs to be reliable, not fast. Solved with a
 # longer step timeout instead (see smoke-tests.yml).
+# SSH_CONNECTION_DELAY: seconds to pause after each connection (default 3).
+# Added 4 Sept 2026 -- WP Engine support confirmed the ~7-connection burst
+# this script makes trips their automated brute-force protection, placing
+# the runner's IP on a server-level deny list (instant 403, before WordPress
+# even loads) that then also blocks the actual test run's HTTP requests.
+# This won't necessarily clear an IP already on that list (GitHub-hosted
+# runners appear to reuse a small pool of egress IPs rather than a fresh one
+# per run, so a prior burst can still be blocking a later, unrelated run) --
+# it only reduces the odds of tripping a fresh block going forward.
+SSH_CONNECTION_DELAY="${SSH_CONNECTION_DELAY:-3}"
+
 WP() {
+    local rc=0
     ssh -o BatchMode=yes -o ConnectTimeout=15 -o StrictHostKeyChecking=accept-new \
-        -i "$SSH_KEY" "$SSH_HOST" wp "$@" --user=1
+        -i "$SSH_KEY" "$SSH_HOST" wp "$@" --user=1 || rc=$?
+    sleep "$SSH_CONNECTION_DELAY"
+    return $rc
 }
 
 # Only read .env for whichever of these aren't already set in the

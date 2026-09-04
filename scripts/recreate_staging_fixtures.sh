@@ -52,38 +52,31 @@ SSH_HOST="otdev1602@otdev1602.ssh.wpengine.net"
 SSH_KEY="${WPENGINE_SSH_KEY:-$HOME/.ssh/owltutors_wpengine_staging}"
 ENV_FILE="$(dirname "$0")/../.env"
 
-# One fresh SSH connection per WP() call -- deliberately NOT multiplexed.
-# Tried ControlMaster/ControlPersist connection reuse 3 Sept 2026 to cut
-# down the ~7 connections this script makes (each takes 30-45s from a
-# GitHub-hosted runner, much higher latency than this machine locally, and
-# was blowing through the CI step's original 3-minute timeout). Reproduced
-# twice, consistently, even with a guaranteed-fresh control socket path:
-# the master connection got reset ("Connection reset by peer") partway
-# through, and OpenSSH's fallback-to-non-multiplexed path corrupted a
-# wp-cli call's arguments badly enough to misfire the "does this account
-# exist" check. The target account itself was never actually touched either
-# time, but this points at WP Engine's SSH gateway not tolerating
-# persistent/multiplexed connections well -- not worth fighting for a
-# repair step that only needs to be reliable, not fast. Solved with a
-# longer step timeout instead (see smoke-tests.yml).
-# SSH_CONNECTION_DELAY: seconds to pause after each connection (default 3).
-# Added 4 Sept 2026 -- WP Engine support confirmed the ~7-connection burst
-# this script makes trips their automated brute-force protection, placing
-# the runner's IP on a server-level deny list (instant 403, before WordPress
-# even loads) that then also blocks the actual test run's HTTP requests.
-# This won't necessarily clear an IP already on that list (GitHub-hosted
-# runners appear to reuse a small pool of egress IPs rather than a fresh one
-# per run, so a prior burst can still be blocking a later, unrelated run) --
-# it only reduces the odds of tripping a fresh block going forward.
+# One SSH connection per ACCOUNT (2 total), each running a small remote
+# script over stdin that does all of that account's wp-cli calls in one
+# session -- reduced from ~7 separate connections (one per wp-cli call)
+# 4 Sept 2026. WP Engine support confirmed the previous per-call connection
+# burst was tripping their automated brute-force protection (an instant,
+# server-level 403 on the runner's IP that then also blocked the actual test
+# run's HTTP requests) -- and confirmed the block is genuinely IP-count-based
+# (17 distinct blocked IPs found across our attempts, all auto-clearing after
+# 30-60 min), not something a small delay between connections meaningfully
+# helps with, since each connection already takes 30-45s of its own latency
+# from a GitHub-hosted runner regardless of any added sleep. Cutting the
+# actual connection COUNT is the more direct fix.
+#
+# This is NOT the same thing as the connection-reuse (ControlMaster/
+# ControlPersist) approach tried and reverted 3 Sept 2026, which multiplexed
+# multiple SEPARATE `ssh` invocations over one persistent control socket --
+# that broke because WP Engine's SSH gateway didn't tolerate the persistent
+# socket well ("Connection reset by peer" partway through). This is simpler
+# and doesn't touch that mechanism at all: one `ssh` call, one remote bash
+# session (piped via stdin), several `wp` commands run sequentially inside
+# it. Values are passed as positional args ($1, $2, ...) rather than
+# interpolated into the heredoc, so a password containing shell-special
+# characters can't break the remote script.
 SSH_CONNECTION_DELAY="${SSH_CONNECTION_DELAY:-3}"
-
-WP() {
-    local rc=0
-    ssh -o BatchMode=yes -o ConnectTimeout=15 -o StrictHostKeyChecking=accept-new \
-        -i "$SSH_KEY" "$SSH_HOST" wp "$@" --user=1 || rc=$?
-    sleep "$SSH_CONNECTION_DELAY"
-    return $rc
-}
+SSH_OPTS=(-o BatchMode=yes -o ConnectTimeout=15 -o StrictHostKeyChecking=accept-new -i "$SSH_KEY")
 
 # Only read .env for whichever of these aren't already set in the
 # environment -- avoids requiring a .env file in CI, where these arrive as
@@ -109,18 +102,28 @@ if [ -z "$TEST_CLIENT_EMAIL" ] || [ -z "$TEST_CLIENT_PASSWORD" ]; then
 fi
 
 echo "== Test client: $TEST_CLIENT_EMAIL =="
-if WP user get "$TEST_CLIENT_EMAIL" --field=ID >/dev/null 2>&1; then
+client_output=$(ssh "${SSH_OPTS[@]}" "$SSH_HOST" bash -s -- "$TEST_CLIENT_EMAIL" "$TEST_CLIENT_PASSWORD" <<'REMOTE'
+set -euo pipefail
+EMAIL="$1"
+PASS="$2"
+if wp user get "$EMAIL" --field=ID --user=1 >/dev/null 2>&1; then
+    echo "STATUS:EXISTS"
+    wp user set-role "$EMAIL" client --user=1
+    wp user update "$EMAIL" --user_pass="$PASS" --user=1 >/dev/null
+else
+    echo "STATUS:MISSING"
+    wp user create "$EMAIL" "$EMAIL" --role=client --user_pass="$PASS" --display_name="Test Client" --user=1 >/dev/null
+fi
+wp user get "$EMAIL" --fields=ID,user_login,roles --user=1
+REMOTE
+)
+if printf '%s\n' "$client_output" | grep -q "^STATUS:EXISTS"; then
     echo "  exists -- ensuring role=client and password matches .env"
-    WP user set-role "$TEST_CLIENT_EMAIL" client
-    WP user update "$TEST_CLIENT_EMAIL" --user_pass="$TEST_CLIENT_PASSWORD" >/dev/null
 else
     echo "  missing -- creating fresh"
-    WP user create "$TEST_CLIENT_EMAIL" "$TEST_CLIENT_EMAIL" \
-        --role=client \
-        --user_pass="$TEST_CLIENT_PASSWORD" \
-        --display_name="Test Client"
 fi
-WP user get "$TEST_CLIENT_EMAIL" --fields=ID,user_login,roles
+printf '%s\n' "$client_output" | grep -v "^STATUS:"
+sleep "$SSH_CONNECTION_DELAY"
 
 # Test tutor: password only, never auto-created -- same reasoning as
 # recreate_local_fixtures.sh: a usable test tutor needs real profile data
@@ -137,15 +140,29 @@ if [ -n "$TEST_TUTOR_EMAIL" ] && [ -n "$TEST_TUTOR_PASSWORD" ]; then
     # deeper in the stack, not the CLAUDE.md BOM-in-a-PHP-file risk, but it
     # was enough to break a plain string comparison below). Strip it plus any
     # stray whitespace before comparing.
-    if actual_id_raw=$(WP user get "$TEST_TUTOR_EMAIL" --field=ID 2>/dev/null); then
+    tutor_output=$(ssh "${SSH_OPTS[@]}" "$SSH_HOST" bash -s -- "$TEST_TUTOR_EMAIL" "$TEST_TUTOR_PASSWORD" <<'REMOTE'
+set -euo pipefail
+EMAIL="$1"
+PASS="$2"
+if actual_id_raw=$(wp user get "$EMAIL" --field=ID --user=1 2>/dev/null); then
+    echo "STATUS:EXISTS"
+    echo "RAW_ID:${actual_id_raw}"
+    wp user update "$EMAIL" --user_pass="$PASS" --user=1 >/dev/null
+    wp user get "$EMAIL" --fields=ID,user_login,roles --user=1
+else
+    echo "STATUS:MISSING"
+fi
+REMOTE
+)
+    if printf '%s\n' "$tutor_output" | grep -q "^STATUS:EXISTS"; then
         # A WP user ID is always plain digits -- stripping to digits-only
         # sidesteps the BOM entirely rather than trying to match its exact
         # byte sequence, and also covers ordinary trailing whitespace/CR.
+        actual_id_raw=$(printf '%s\n' "$tutor_output" | grep "^RAW_ID:" | sed 's/^RAW_ID://')
         actual_id=$(printf '%s' "$actual_id_raw" | tr -cd '0-9')
         expected_id=$(printf '%s' "$TEST_MEET_NOW_TUTOR_ID" | tr -cd '0-9')
         echo "  exists -- ensuring password matches .env (role/profile data left untouched)"
-        WP user update "$TEST_TUTOR_EMAIL" --user_pass="$TEST_TUTOR_PASSWORD" >/dev/null
-        WP user get "$TEST_TUTOR_EMAIL" --fields=ID,user_login,roles
+        printf '%s\n' "$tutor_output" | grep -v "^STATUS:\|^RAW_ID:"
 
         # TEST_MEET_NOW_TUTOR_ID (a separate GitHub Secret / .env value) is
         # this same account's WP user ID, used directly as tutor_id by
@@ -162,6 +179,7 @@ if [ -n "$TEST_TUTOR_EMAIL" ] && [ -n "$TEST_TUTOR_PASSWORD" ]; then
     else
         echo "  MISSING -- cannot auto-create (needs manual ACF profile setup, see TESTING_SYSTEM.md)" >&2
     fi
+    sleep "$SSH_CONNECTION_DELAY"
 else
     echo
     echo "(TEST_TUTOR_EMAIL/PASSWORD not set in .env -- skipping tutor fixture check)"

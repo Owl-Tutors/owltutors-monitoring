@@ -30,52 +30,40 @@ jobs:
       # automation section). continue-on-error: if this step fails, the
       # actual test run below still gets a chance to run rather than the
       # whole workflow aborting on a repair step.
-      # timeout-minutes: 8 (was 3) -- a first real CI run 3 Sept 2026 showed
-      # each fresh SSH connection from this runner to WP Engine takes
-      # 30-45s (much higher latency than testing locally), and the script
-      # makes ~7 of them (connection reuse was tried and reverted -- see
-      # recreate_staging_fixtures.sh -- WP Engine's SSH gateway didn't
-      # tolerate it well). Worst case ~7*45s = 5.25 minutes; 8 gives real
-      # headroom rather than cutting it close again.
-      # Re-enabled 4 Sept 2026 -- a diagnostic run with this step fully
-      # disabled (if: false) still got the same 403 on the first HTTP
-      # request, disproving "the SSH burst needs to run in THIS execution to
-      # cause it." Current best theory: the first time this step actually
-      # authenticated (WPENGINE_SSH_PRIVATE_KEY was added 2026-09-03 10:26
-      # UTC; the very next run 2 minutes later, 10:28 UTC, was the first
-      # failure) tripped a standing block on WP Engine's side that has
-      # persisted independent of this step ever since (confirmed via WP
-      # Engine's own access log as a genuine nginx 403, not a 401 credentials
-      # failure -- Password Protection, Global Edge Security, and Web Rules
-      # all checked and ruled out). Since disabling this step doesn't clear
-      # the block, there's no reason to keep it off -- see TO_DO.md for the
-      # live status of the WP Engine support conversation.
+      #
+      # Switched from SSH (recreate_staging_fixtures.sh) to a plain AJAX call
+      # (recreate_staging_fixtures.py -> owl_repair_test_fixtures in
+      # owl_system) on 5 Sept 2026. History: this step originally made ~7
+      # fresh SSH connections per run; WP Engine support confirmed that burst
+      # trips their automated brute-force protection, instantly blocking the
+      # runner's IP before WordPress even loads -- which then also blocked
+      # the "Run tests" step's first HTTP request below. Two mitigations
+      # (a connection delay, then consolidating to 2 SSH connections) both
+      # failed a genuinely clean test (18h44m gap, 5 Sept). This change
+      # removes SSH from the pipeline entirely, to test whether that was the
+      # complete explanation. If runs still 403 with zero SSH connections and
+      # a clean gap, that's strong evidence something else is the real cause
+      # -- see docs/TO_DO.md for the full history and what happens next
+      # either way. The old SSH script is left in the repo, unused by CI, for
+      # manual debugging.
       - name: Recreate staging test fixtures
         continue-on-error: true
-        timeout-minutes: 8
+        timeout-minutes: 2
         env:
-          WPENGINE_SSH_PRIVATE_KEY: ${{ secrets.WPENGINE_SSH_PRIVATE_KEY }}
+          TEST_BASE_URL: ${{ secrets.TEST_BASE_URL }}
+          OWL_TEST_API_KEY: ${{ secrets.OWL_TEST_API_KEY }}
           TEST_CLIENT_EMAIL: ${{ secrets.TEST_CLIENT_EMAIL }}
           TEST_CLIENT_PASSWORD: ${{ secrets.TEST_CLIENT_PASSWORD }}
           TEST_TUTOR_EMAIL: ${{ secrets.TEST_TUTOR_EMAIL }}
           TEST_TUTOR_PASSWORD: ${{ secrets.TEST_TUTOR_PASSWORD }}
           TEST_MEET_NOW_TUTOR_ID: ${{ secrets.TEST_MEET_NOW_TUTOR_ID }}
-        run: |
-          umask 077
-          printf '%s\n' "$WPENGINE_SSH_PRIVATE_KEY" > "$RUNNER_TEMP/wpengine_staging_key"
-          chmod 600 "$RUNNER_TEMP/wpengine_staging_key"
-          WPENGINE_SSH_KEY="$RUNNER_TEMP/wpengine_staging_key" bash scripts/recreate_staging_fixtures.sh
+          TEST_HTTP_USER: ${{ secrets.TEST_HTTP_USER }}
+          TEST_HTTP_PASS: ${{ secrets.TEST_HTTP_PASS }}
+        run: python scripts/recreate_staging_fixtures.py
 
-      # Cooldown before hitting the site again -- two real CI runs 3 Sept
-      # 2026 both got a 403 Forbidden on the very first request of "Run
-      # tests" (pytest_sessionstart enabling test_mode), immediately after
-      # the fixture step's burst of ~7 SSH connections, and neither
-      # happened on the prior run before that step existed. Looks like a
-      # rate-limit/abuse-protection block on WP Engine's or a CDN's side
-      # against the runner's IP, triggered by the connection burst, that
-      # also catches the next HTTP request. A short pause here to let that
-      # window clear is cheap to try before assuming anything more
-      # structural is wrong.
+      # Cooldown kept even with SSH removed, to change only one variable at
+      # a time in this experiment -- if runs stop 403'ing, worth revisiting
+      # whether this is still needed at all.
       - name: Cooldown before test run
         run: sleep 90
 

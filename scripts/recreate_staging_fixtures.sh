@@ -1,4 +1,12 @@
 #!/usr/bin/env bash
+# SUPERSEDED 5 Sept 2026 for CI use -- smoke-tests.yml now calls
+# scripts/recreate_staging_fixtures.py (an ordinary AJAX request to
+# owl_repair_test_fixtures in owl_system) instead of this SSH-based script,
+# to test whether removing the SSH connection burst resolves the otdev1602
+# 403 block WP Engine support confirmed it was triggering (see
+# owl_system/docs/TO_DO.md for the full history). Left in place, unused by
+# CI, for manual debugging directly on staging over SSH if ever needed.
+#
 # Recreates staging-only test fixture accounts that a production->staging DB
 # sync wipes out (docs/TESTING_REBUILD_SPEC.md §3.2 deliberately keeps these
 # OFF production -- see owl_system/docs/TESTING_SYSTEM.md's Test Accounts

@@ -11,6 +11,14 @@ jobs:
     permissions:
       contents: write
     steps:
+      # Diagnostic only, added 5 Sept 2026 to test the "shared/overlapping
+      # runner IP" theory behind the otdev1602 403s -- see docs/TO_DO.md.
+      # Logs this runner's public egress IP so it can be compared against the
+      # IP logged by the equivalent step in deploy-staging.yml. Remove once
+      # the 403 investigation is closed.
+      - name: Log runner public IP
+        run: curl -s https://api.ipify.org
+
       - uses: actions/checkout@v4
 
       - uses: actions/setup-python@v5

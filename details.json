@@ -9,8 +9,8 @@
     "message": "Clients can log in and see the dashboard"
   },
   "test_contact_form_callback_submission": {
-    "message": "Callback enquiry submitted and redirected to job 203024; job_create_type verified against DB",
-    "job_id": "203024",
+    "message": "Callback enquiry submitted and redirected to job 203072; job_create_type verified against DB",
+    "job_id": "203072",
     "job_create_type": "Regular"
   },
   "test_contact_form_renders": {
@@ -37,18 +37,18 @@
     ]
   },
   "test_contact_form_tutor_submission": {
-    "message": "Tutor enquiry submitted and redirected to job 203026; job_create_type verified against DB",
-    "job_id": "203026",
+    "message": "Tutor enquiry submitted and redirected to job 203074; job_create_type verified against DB",
+    "job_id": "203074",
     "job_create_type": "Regular"
   },
   "test_contact_form_something_else": {
-    "message": "'Something else' enquiry submitted and redirected to job 203028; job_create_type verified against DB",
-    "job_id": "203028",
+    "message": "'Something else' enquiry submitted and redirected to job 203076; job_create_type verified against DB",
+    "job_id": "203076",
     "job_create_type": "Regular"
   },
   "test_contact_form_requested_tutors": {
-    "message": "Requested tutors flow submitted and redirected to job 203030; requested_job_members verified against DB",
-    "job_id": "203030",
+    "message": "Requested tutors flow submitted and redirected to job 203078; requested_job_members verified against DB",
+    "job_id": "203078",
     "tutor_ids": [
       "39666",
       "23603",
@@ -56,32 +56,32 @@
     ]
   },
   "test_new_client_banner": {
-    "message": "New client banner visible at https://otdev1602.wpengine.com/jobs/203032/?new_client=true&generate_lead=true&c=1900985046&job_status=1&job_create_type=regular"
+    "message": "New client banner visible at https://otdev1602.wpengine.com/jobs/203080/?new_client=true&generate_lead=true&c=3587018576&job_status=1&job_create_type=regular"
   },
   "test_contact_form_returning_client": {
-    "message": "Returning client job submitted and redirected to job 203036; client_id verified against DB",
-    "job_id": "203036",
-    "client_id": 40581
+    "message": "Returning client job submitted and redirected to job 203084; client_id verified against DB",
+    "job_id": "203084",
+    "client_id": 40612
   },
   "test_contact_form_existing_email_logged_out": {
-    "message": "Logged-out submission with an existing client's email correctly resolved to job 203038",
-    "job_id": "203038",
-    "client_id": 40582
+    "message": "Logged-out submission with an existing client's email correctly resolved to job 203086",
+    "job_id": "203086",
+    "client_id": 40613
   },
   "test_stage1_quality_check_fail": {
-    "message": "Short requirements triggered Stage 1 alert on job 203040",
-    "job_id": "203040"
+    "message": "Short requirements triggered Stage 1 alert on job 203088",
+    "job_id": "203088"
   },
   "test_health_safety_unchecked_job_creates": {
-    "message": "H&S unchecked: job still created at 203042; notes_on_status note must be verified in WP admin",
-    "job_id": "203042"
+    "message": "H&S unchecked: job still created at 203090; notes_on_status note must be verified in WP admin",
+    "job_id": "203090"
   },
   "test_duplicate_job_detection": {
-    "message": "Duplicate Maths job (job 203046) stayed at Stage 1 with duplicate warning",
-    "job_id": "203046"
+    "message": "Duplicate Maths job (job 203094) stayed at Stage 1 with duplicate warning",
+    "job_id": "203094"
   },
   "test_admin_job_path_redirects": {
-    "message": "Admin job path redirected to wp-admin (not /jobs/): https://otdev1602.wpengine.com/wp-admin/post.php?post=203048&action=edit"
+    "message": "Admin job path redirected to wp-admin (not /jobs/): https://otdev1602.wpengine.com/wp-admin/post.php?post=203096&action=edit"
   },
   "test_blog_listing_loads": {
     "message": "Blog listing page loaded with article cards visible"
@@ -99,11 +99,11 @@
     "message": "CEM product page loaded with otcemmvp fields visible inside form.cart"
   },
   "test_cem_checkout_captures_fields_to_order": {
-    "message": "Failed \u2014 Timeout 30000ms exceeded. [6 failed request(s), e.g. 'GET https://3ac3b84235a5.w.hcaptcha.com/logo.png \u2014 net::ERR_ABORTED'; 43 console error/warning(s)]",
+    "message": "Failed \u2014 Timeout 30000ms exceeded. [16 failed request(s), e.g. 'GET https://js.stripe.com/v3/m-outer-3437aaddcdf6922d623e172c2d6f9278.html \u2014 net::ERR_ABORTED'; 37 console error/warning(s)]",
     "screenshot": "screenshots/test_cem_checkout_captures_fields_to_order.png",
     "step": null,
     "console_errors": [
-      "[console:warning] [.WebGL-0x2a2402efc000]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)",
+      "[console:warning] [.WebGL-0x5b401d8b100]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)",
       "[console:warning] Third-party cookie will be blocked. Learn more in the Issues tab.",
       "[console:warning] Third-party cookie will be blocked. Learn more in the Issues tab.",
       "[console:warning] Third-party cookie will be blocked. Learn more in the Issues tab.",
@@ -116,8 +116,12 @@
     ],
     "page_errors": [],
     "failed_requests": [
-      "GET https://3ac3b84235a5.w.hcaptcha.com/logo.png \u2014 net::ERR_ABORTED",
-      "GET https://7b10606b7f81.w.hcaptcha.com/logo.png \u2014 net::ERR_ABORTED",
+      "POST https://r.stripe.com/b \u2014 net::ERR_ABORTED",
+      "POST https://r.stripe.com/b \u2014 net::ERR_ABORTED",
+      "POST https://r.stripe.com/b \u2014 net::ERR_ABORTED",
+      "POST https://r.stripe.com/b \u2014 net::ERR_ABORTED",
+      "GET https://b4ce9a0714cc.w.hcaptcha.com/logo.png \u2014 net::ERR_ABORTED",
+      "GET https://91b47cd5dade.w.hcaptcha.com/logo.png \u2014 net::ERR_ABORTED",
       "  [response 401] POST https://api.stripe.com/v1/consumers/sessions/lookup",
       "  [response 401] POST https://api.stripe.com/v1/consumers/sessions/lookup",
       "  [response 401] POST https://api.stripe.com/v1/consumers/sessions/lookup",
@@ -144,8 +148,8 @@
       "requestStorageAccess not allowed"
     ],
     "failed_requests": [
-      "GET https://8e92d7b003b3.w.hcaptcha.com/logo.png \u2014 net::ERR_ABORTED",
-      "GET https://7f78bb8c252c.w.hcaptcha.com/logo.png \u2014 net::ERR_ABORTED",
+      "GET https://071ed6eb7e4f.w.hcaptcha.com/logo.png \u2014 net::ERR_ABORTED",
+      "GET https://f2da1ed9a188.w.hcaptcha.com/logo.png \u2014 net::ERR_ABORTED",
       "  [response 401] POST https://api.stripe.com/v1/consumers/sessions/lookup",
       "  [response 401] POST https://api.stripe.com/v1/consumers/sessions/lookup",
       "  [response 401] POST https://api.stripe.com/v1/consumers/sessions/lookup",
@@ -187,17 +191,17 @@
     "message": "Testimonial 202861 submitted successfully, reset back to Incomplete"
   },
   "test_stale_scheduled_event_is_safe_noop": {
-    "message": "Stale ot_jobs_schedule_stage_1_more_info_1 event on Stage-3 job 203050 correctly no-op'd",
-    "job_id": "203050"
+    "message": "Stale ot_jobs_schedule_stage_1_more_info_1 event on Stage-3 job 203098 correctly no-op'd",
+    "job_id": "203098"
   },
   "test_ams_editor_reminder_email_sends": {
-    "message": "AMS editor reminder (SGTM001) correctly logged for post 203051",
-    "post_id": "203051"
+    "message": "AMS editor reminder (SGTM001) correctly logged for post 203099",
+    "post_id": "203099"
   },
   "test_duplicate_job_event_notifies_client": {
-    "message": "Duplicate-job event correctly logged client email (SGCU009) for job 203053, original job 203052",
-    "duplicate_job_id": "203053",
-    "original_job_id": "203052"
+    "message": "Duplicate-job event correctly logged client email (SGCU009) for job 203101, original job 203100",
+    "duplicate_job_id": "203101",
+    "original_job_id": "203100"
   },
   "test_ga4_session_storage_set_on_load": {
     "message": "initial_url='https://otdev1602.wpengine.com/'  traffic_source_r='$direct'"
@@ -228,11 +232,11 @@
     "page_errors": [],
     "failed_requests": [
       "  [response 401] POST https://merchant-ui-api.stripe.com/elements/wallet-config",
-      "  [response 401] POST https://api.stripe.com/v1/payment_intents/pi_3UDNnyDIH3kBTRJv0lOMITiu/confirm"
+      "  [response 401] POST https://api.stripe.com/v1/payment_intents/pi_3UDPWoDIH3kBTRJv0X0p06aU/confirm"
     ]
   },
   "test_client_dashboard_shows_course_bookings": {
-    "message": "Enrolment 203054: 'My course bookings' section rendered for testbot.coursebooking.6a9ffa92506fe@owltutors.co.uk"
+    "message": "Enrolment 203102: 'My course bookings' section rendered for testbot.coursebooking.6aa01472f310e@owltutors.co.uk"
   },
   "test_course_materials_visible_to_logged_in_tutor": {
     "message": "Course materials section visible for course 202948's own tutor"
@@ -241,55 +245,55 @@
     "message": "Homepage loaded with hero section visible"
   },
   "test_stage3_job_renders_applicant_cards": {
-    "message": "Stage 3 job 203055 rendered applicant cards and sort dropdown",
-    "job_id": "203055"
+    "message": "Stage 3 job 203103 rendered applicant cards and sort dropdown",
+    "job_id": "203103"
   },
   "test_connect_with_tutor_triggers_modal": {
-    "message": "ot_job_identify_modal fired for job 203055 / tutor 20049",
-    "job_id": "203055"
+    "message": "ot_job_identify_modal fired for job 203103 / tutor 20049",
+    "job_id": "203103"
   },
   "test_accept_terms_modal_renders": {
-    "message": "Stage 3 modal rendered with content for job 203055",
-    "job_id": "203055"
+    "message": "Stage 3 modal rendered with content for job 203103",
+    "job_id": "203103"
   },
   "test_logged_out_stage3_sees_login_modal": {
-    "message": "Logged-out user logged in via inline form and reached Stage 3 job 203055",
-    "job_id": "203055"
+    "message": "Logged-out user logged in via inline form and reached Stage 3 job 203103",
+    "job_id": "203103"
   },
   "test_stripe_return_auto_triggers_modal": {
-    "message": "Stripe-return params auto-opened modal on job 203055",
-    "job_id": "203055"
+    "message": "Stripe-return params auto-opened modal on job 203103",
+    "job_id": "203103"
   },
   "test_accept_terms_advances_to_stage4": {
-    "message": "Job 203055 advanced to Stage 4 after accepting terms",
-    "job_id": "203055"
+    "message": "Job 203103 advanced to Stage 4 after accepting terms",
+    "job_id": "203103"
   },
   "test_magic_link_auto_login": {
-    "message": "Magic link authenticated for job 203057",
-    "job_id": "203057"
+    "message": "Magic link authenticated for job 203105",
+    "job_id": "203105"
   },
   "test_client_stage4_job_shows_connected_tutor": {
-    "message": "Stage 4 job 203055 shows 'Your chosen tutor' section",
-    "job_id": "203055"
+    "message": "Stage 4 job 203103 shows 'Your chosen tutor' section",
+    "job_id": "203103"
   },
   "test_live_job_shows_timesheet_feedback": {
-    "message": "Live job 203058: Timesheet feedback section rendered real submitted report for timesheet 203059",
-    "job_id": "203058"
+    "message": "Live job 203106: Timesheet feedback section rendered real submitted report for timesheet 203107",
+    "job_id": "203106"
   },
   "test_first_time_client_prompted_to_set_password": {
-    "message": "Job 203060: first-time client shown Set PW modal, not login",
-    "job_id": "203060"
+    "message": "Job 203108: first-time client shown Set PW modal, not login",
+    "job_id": "203108"
   },
   "test_tutor_dashboard_active_jobs_renders_cards": {
-    "message": "Submit a timesheet tab shows a live-job card for job 203055",
-    "job_id": "203055"
+    "message": "Submit a timesheet tab shows a live-job card for job 203103",
+    "job_id": "203103"
   },
   "test_meet_now_form_auto_selects_type": {
     "message": "Meet-now form state correct: type hidden, home delivery disabled, jobs board hidden"
   },
   "test_meet_now_submission": {
-    "message": "Meet-now form submitted, redirected to job 203061; requested_job_members verified against DB",
-    "job_id": "203061",
+    "message": "Meet-now form submitted, redirected to job 203109; requested_job_members verified against DB",
+    "job_id": "203109",
     "job_create_type": "Meet now"
   },
   "test_validate_number_classifies_uk_mobile_landline_and_invalid": {
@@ -314,7 +318,7 @@
     "message": "Load More clicked \u2014 6 initial papers expanded to 105, scrolled to newly loaded content"
   },
   "test_general_basket_checkout_flow": {
-    "message": "Failed \u2014 Timeout 30000ms exceeded. [7 failed request(s), e.g. 'GET https://m.stripe.network/inner.html \u2014 net::ERR_ABORTED'; 28 console error/warning(s)]",
+    "message": "Failed \u2014 Timeout 30000ms exceeded. [7 failed request(s), e.g. 'GET https://b.stripecdn.com/stripethirdparty-srv/assets/v33.10/HCaptchaInvisible.html?wrmkcp-ky=wrm\u2026'; 33 console error/warning(s)]",
     "screenshot": "screenshots/test_general_basket_checkout_flow.png",
     "step": null,
     "console_errors": [
@@ -331,9 +335,9 @@
     ],
     "page_errors": [],
     "failed_requests": [
-      "GET https://m.stripe.network/inner.html \u2014 net::ERR_ABORTED",
-      "GET https://a7ef715f9a47.w.hcaptcha.com/logo.png \u2014 net::ERR_ABORTED",
-      "GET https://cdb86ca368a9.w.hcaptcha.com/logo.png \u2014 net::ERR_ABORTED",
+      "GET https://b.stripecdn.com/stripethirdparty-srv/assets/v33.10/HCaptchaInvisible.html?wrmkcp-ky=wrmkcp-value&id=9f9f152a-fa86-44e1-bd64-cf4a41633a88&origin=https%3A%2F%2Fjs.stripe.com \u2014 net::ERR_ABORTED",
+      "GET https://6ff67070c7e6.w.hcaptcha.com/logo.png \u2014 net::ERR_ABORTED",
+      "GET https://7b523cf24621.w.hcaptcha.com/logo.png \u2014 net::ERR_ABORTED",
       "  [response 401] POST https://api.stripe.com/v1/consumers/sessions/lookup",
       "  [response 401] POST https://api.stripe.com/v1/consumers/sessions/lookup",
       "  [response 401] POST https://api.stripe.com/v1/consumers/sessions/lookup",
@@ -362,7 +366,7 @@
     "failed_requests": []
   },
   "test_tutor_full_application_flow": {
-    "message": "Failed \u2014 Locator expected to be visible \u2014 waiting for locator(\"form#isappreadyForm\") [13 JS error(s), e.g. 'requestStorageAccess not allowed'; 3 failed request(s), e.g. 'GET https://www.gstatic.com/recaptcha/api2/logo_48.png \u2014 net::ERR_ABORTED'; 11 console error/warning(s)]",
+    "message": "Failed \u2014 Locator expected to be visible \u2014 waiting for locator(\"form#isappreadyForm\") [13 JS error(s), e.g. 'requestStorageAccess not allowed'; 2 failed request(s), e.g. 'GET https://www.gstatic.com/recaptcha/releases/8x-4t2pegToiW8KmThtO4AQt/recaptcha__en.js \u2014 net::ERR\u2026'; 11 console error/warning(s)]",
     "screenshot": "screenshots/test_tutor_full_application_flow.png",
     "step": null,
     "console_errors": [
@@ -390,9 +394,8 @@
       "requestStorageAccess not allowed"
     ],
     "failed_requests": [
-      "GET https://www.gstatic.com/recaptcha/api2/logo_48.png \u2014 net::ERR_ABORTED",
-      "GET https://fonts.gstatic.com/s/roboto/v48/KFO7CnqEu92Fr1ME7kSn66aGLdTylUAMa3yUBA.woff2 \u2014 net::ERR_ABORTED",
-      "POST https://otdev1602.wpengine.com/wp-admin/admin-ajax.php?_=1788869595679 \u2014 net::ERR_ABORTED"
+      "GET https://www.gstatic.com/recaptcha/releases/8x-4t2pegToiW8KmThtO4AQt/recaptcha__en.js \u2014 net::ERR_ABORTED",
+      "POST https://otdev1602.wpengine.com/wp-admin/admin-ajax.php?_=1788876252372 \u2014 net::ERR_ABORTED"
     ]
   },
   "test_logged_out_application_page_has_fields": {
@@ -572,10 +575,10 @@
     "message": "Tutor listing page has a Product node in its JSON-LD @graph"
   },
   "test_add_card_checkout_session_returns_stripe_session": {
-    "message": "ot_create_checkout_session returned session cs_test_c17eS8prrg7i0Mp90g7r24lBtWcqwqQf9qg4dsJuYk7nqMFmJ6bLKXHOox"
+    "message": "ot_create_checkout_session returned session cs_test_c1a6UOhd7WvXKGMGL4ycz41ygkcBf1KT360blvuiO4QBrDZ8lyAIpEcjmO"
   },
   "test_post_checkout_return_saves_card_and_sets_client_active": {
-    "message": "Failed \u2014 Locator.fill: Timeout 30000ms exceeded. \u2014 waiting for locator(\"#cardNumber\") [1 JS error(s), e.g. 'requestStorageAccess not allowed'; 1 failed request(s), e.g. '[response 401] POST https://api.stripe.com/v1/payment_pages/cs_test_c1kJMNkRcvlEbb2plPVzeLisfSnPLjj\u2026'; 8 console error/warning(s)]",
+    "message": "Failed \u2014 Locator.fill: Timeout 30000ms exceeded. \u2014 waiting for locator(\"#cardNumber\") [1 JS error(s), e.g. 'requestStorageAccess not allowed'; 1 failed request(s), e.g. '[response 401] POST https://api.stripe.com/v1/payment_pages/cs_test_c1wngOcW1iO8jweVViHjkHHApzYDKRE\u2026'; 8 console error/warning(s)]",
     "screenshot": "screenshots/test_post_checkout_return_saves_card_and_sets_client_active.png",
     "step": null,
     "console_errors": [
@@ -592,11 +595,11 @@
       "requestStorageAccess not allowed"
     ],
     "failed_requests": [
-      "  [response 401] POST https://api.stripe.com/v1/payment_pages/cs_test_c1kJMNkRcvlEbb2plPVzeLisfSnPLjjAtSkPsMqbnaOOt7yxuQ1cPhPunR/init"
+      "  [response 401] POST https://api.stripe.com/v1/payment_pages/cs_test_c1wngOcW1iO8jweVViHjkHHApzYDKREhGzhHOdhOg9ejx6Lg9QYp5c3WJA/init"
     ]
   },
   "test_prepaid_card_rejected": {
-    "message": "Failed \u2014 Locator.fill: Timeout 30000ms exceeded. \u2014 waiting for locator(\"#cardNumber\") [1 JS error(s), e.g. 'requestStorageAccess not allowed'; 1 failed request(s), e.g. '[response 401] POST https://api.stripe.com/v1/payment_pages/cs_test_c1UGCodX9X01LCyIoadebla3ooXx6kY\u2026'; 8 console error/warning(s)]",
+    "message": "Failed \u2014 Locator.fill: Timeout 30000ms exceeded. \u2014 waiting for locator(\"#cardNumber\") [1 JS error(s), e.g. 'requestStorageAccess not allowed'; 1 failed request(s), e.g. '[response 401] POST https://api.stripe.com/v1/payment_pages/cs_test_c1YvVL6vLeR4idE7I5vMGGffSkwbBwe\u2026'; 8 console error/warning(s)]",
     "screenshot": "screenshots/test_prepaid_card_rejected.png",
     "step": null,
     "console_errors": [
@@ -613,7 +616,7 @@
       "requestStorageAccess not allowed"
     ],
     "failed_requests": [
-      "  [response 401] POST https://api.stripe.com/v1/payment_pages/cs_test_c1UGCodX9X01LCyIoadebla3ooXx6kYQllBJOGr40XdOYTKURIZMnPlSfM/init"
+      "  [response 401] POST https://api.stripe.com/v1/payment_pages/cs_test_c1YvVL6vLeR4idE7I5vMGGffSkwbBweJTVFHaNs7h5NajfDMFJjkmbbSae/init"
     ]
   },
   "test_tutor_dashboard_loads": {
@@ -657,17 +660,17 @@
     ]
   },
   "test_eb_job_timesheet_submission_creates_timesheet_and_redirects": {
-    "message": "EB job 203066 timesheet submitted, redirected to https://otdev1602.wpengine.com/dashboard/tutoring-section/#submit_a_timesheet",
-    "job_id": "203066"
+    "message": "EB job 203114 timesheet submitted, redirected to https://otdev1602.wpengine.com/dashboard/tutoring-section/#submit_a_timesheet",
+    "job_id": "203114"
   },
   "test_duplicate_timesheet_check_shows_warning": {
-    "message": "Job 203068: duplicate timesheet warning shown on second submission attempt",
-    "job_id": "203068"
+    "message": "Job 203116: duplicate timesheet warning shown on second submission attempt",
+    "job_id": "203116"
   },
   "test_bill_timesheet_in_stripe_creates_real_invoice": {
-    "message": "Timesheet 203071: Stripe invoice in_1UDO3TDIH3kBTRJv9gxekDkm created and sent",
-    "job_id": "203070",
-    "timesheet_id": "203071"
+    "message": "Timesheet 203119: Stripe invoice in_1UDPndDIH3kBTRJvm7Yy9LaA created and sent",
+    "job_id": "203118",
+    "timesheet_id": "203119"
   },
   "test_whatsapp_template_preview_rejects_path_traversal": {
     "message": "Failed \u2014 Expected 200 (graceful no-match), got 403 for '../../../../wp-config' [1 JS error(s), e.g. 'requestStorageAccess not allowed'; 1 console error/warning(s)]",

@@ -232,6 +232,11 @@ def _diagnostics(page, request):
     - writes a details.json entry (message, screenshot, step, and capped
       console/page/network error lists) that overwrites any stale pass-time
       entry, so the dashboard widget reflects the current failure
+
+    On every test, pass or fail (added 8 Sept 2026, alongside --video=on in
+    smoke-tests.yml): records this test's video path into details.json too,
+    so the dashboard's "View recording" link works for a passing test's
+    footage, not just a failure's.
     """
     ajax_responses = []
     ajax_failed = []
@@ -305,13 +310,46 @@ def _diagnostics(page, request):
         if "[console:error]" in msg or "[console:warning]" in msg:
             print(msg)
 
-    # ---- failure-only screenshot + details.json entry ----
+    # ---- video path, every test regardless of outcome ----
     report = getattr(request.node, "rep_call", None) or getattr(request.node, "rep_setup", None)
-    if report is None or report.passed or report.skipped:
+    if report is None or report.skipped:
         return
 
     test_name = request.node.name.split("[")[0]
 
+    # page.video.path() looks tempting here but is wrong -- it returns
+    # Playwright's own temp recording location, not where pytest-playwright
+    # actually saves the video. pytest-playwright's own fixture teardown does
+    # that move (via video.save_as() into --output=test-results/<slugified
+    # nodeid>/video.webm), but that happens AFTER this fixture's teardown
+    # runs -- fixture teardown is LIFO, and `page` is a dependency of this
+    # fixture, so pytest-playwright's own page/video fixture tears down
+    # later, not earlier. Confirmed directly: page.video.path() returned a
+    # tmp\playwright-pytest-*\<hash>.webm path that never matched the real
+    # file under test-results/ (8 Sept 2026 local test).
+    #
+    # So: compute the same deterministic path pytest-playwright will use,
+    # via its own slugify() call on the nodeid -- not our own reimplementation,
+    # to stay byte-for-byte consistent with whatever it actually does.
+    video_path = None
+    if page.video:
+        try:
+            from slugify import slugify
+            from pytest_playwright.pytest_playwright import truncate_file_name
+            output_dir = request.config.getoption("--output")
+            video_path = os.path.join(
+                output_dir, truncate_file_name(slugify(request.node.nodeid)), "video.webm"
+            ).replace(os.sep, "/")
+        except Exception as e:
+            print(f"[diagnostics] could not resolve video path for {test_name}: {e}")
+
+    from utils.details import write_detail
+
+    if report.passed:
+        write_detail(test_name, { "video": video_path })
+        return
+
+    # ---- failure-only screenshot + full details.json entry ----
     screenshot_path = None
     try:
         os.makedirs("screenshots", exist_ok=True)
@@ -325,7 +363,6 @@ def _diagnostics(page, request):
     exception_text = str(report.longrepr) if report.longrepr else "Unknown failure"
 
     from utils.summarize import summarize_failure
-    from utils.details import write_detail
 
     summary = summarize_failure(
         test_name=test_name,
@@ -339,6 +376,7 @@ def _diagnostics(page, request):
     write_detail(test_name, {
         "message":         summary,
         "screenshot":      screenshot_path,
+        "video":           video_path,
         "step":            step_name,
         "console_errors":  console_errors[-10:],
         "page_errors":     page_errors[-10:],

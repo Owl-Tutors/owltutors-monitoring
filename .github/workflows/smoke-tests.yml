@@ -152,20 +152,22 @@ jobs:
           TEST_HTTP_USER: ${{ secrets.TEST_HTTP_USER }}
           TEST_HTTP_PASS: ${{ secrets.TEST_HTTP_PASS }}
           PYTEST_MARKERS: ${{ github.event.inputs.pytest_markers }}
-        # --video=retain-on-failure: pytest-playwright's own built-in mode --
-        # records everything, then deletes any test's video itself once that
-        # test passes, no separate prune step needed. Changed 7 Sept 2026
-        # from --video=on + a hand-rolled utils/prune_videos.py that also
-        # unconditionally kept every critical test's video (pass or fail):
-        # with dozens of critical tests, that meant paying storage for a
-        # passing test's video every single day, which has no debugging
-        # value -- only a failure's video is ever actually opened.
+        # --video=on: every test's video is kept, not just failures. Changed
+        # 8 Sept 2026 from --video=retain-on-failure -- the site owner's
+        # dashboard sign-off review needs to watch passing runs too, not
+        # just failures. The earlier retain-on-failure/prune-videos history
+        # (see git log) was about storage cost for passing critical tests;
+        # that's now handled downstream instead -- videos aren't committed
+        # anywhere, they live only in the test-videos GitHub Actions
+        # artifact, which the existing "Delete old video artifacts" step
+        # already actively deletes after 2 days (7-day safety-net cap)
+        # regardless of pass/fail, so storage stays bounded either way.
         run: |
           if [ -n "$PYTEST_MARKERS" ]; then
             echo "Targeted run -- pytest -m \"$PYTEST_MARKERS\""
-            pytest -m "$PYTEST_MARKERS" --video=retain-on-failure --output=test-results --json-report --json-report-file=pytest-report.json -v
+            pytest -m "$PYTEST_MARKERS" --video=on --output=test-results --json-report --json-report-file=pytest-report.json -v
           else
-            pytest --video=retain-on-failure --output=test-results --json-report --json-report-file=pytest-report.json -v
+            pytest --video=on --output=test-results --json-report --json-report-file=pytest-report.json -v
           fi
         continue-on-error: true
 

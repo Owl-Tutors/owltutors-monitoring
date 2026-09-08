@@ -1,0 +1,773 @@
+{
+  "last_run": "2026-09-08T16:01:31Z",
+  "results": {
+    "test_admin_reports_and_data_pages_load_without_fatal": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 14889
+    },
+    "test_job_scheduled_events_metabox_reschedule_and_unschedule": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 70091
+    },
+    "test_student_client_metabox_shows_correct_name_order": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 19306
+    },
+    "test_legacy_client_students_metabox_scoped_to_client": {
+      "status": "skip",
+      "message": "('C:\\\\Users\\\\mikey\\\\Documents\\\\owltutors-monitoring\\\\tests\\\\test_admin_metaboxes.py', 140, \"Skipped: Blocked on a second, independent bug: 'students' has no ACF field definition on the Jobs post type any more, so the metabox always shows the wrong (fixed) student name regardless of client -- see doc",
+      "duration_ms": 0
+    },
+    "test_make_client_user_stores_client_id_as_array": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 18933
+    },
+    "test_client_login": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 27724
+    },
+    "test_show_password_toggle": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 5719
+    },
+    "test_client_dashboard": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 28240
+    },
+    "test_contact_form_callback_submission": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 24544
+    },
+    "test_contact_form_renders": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 3125
+    },
+    "test_contact_form_has_submit": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 3445
+    },
+    "test_contact_form_validation": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 5859
+    },
+    "test_jobs_board_checkbox_hidden_on_plain_form": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 2287
+    },
+    "test_jobs_board_checkbox_visible_on_requested_tutors": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 11165
+    },
+    "test_client_contact_log_modal_renders_in_job_edit_metabox": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 38388
+    },
+    "test_tutor_contact_log_entry_via_job_edit_metabox": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 40473
+    },
+    "test_client_contact_log_entry_via_jobs_list": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 30600
+    },
+    "test_client_contact_log_entry_via_user_profile": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 27610
+    },
+    "test_tutor_contact_log_entry_via_user_profile": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 33307
+    },
+    "test_tutor_contact_log_entry_via_tutor_list": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 30801
+    },
+    "test_requested_tutor_cart": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 6138
+    },
+    "test_contact_form_tutor_submission": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 32013
+    },
+    "test_contact_form_something_else": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 24911
+    },
+    "test_contact_form_requested_tutors": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 38261
+    },
+    "test_new_client_banner": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 27707
+    },
+    "test_contact_form_returning_client": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 26979
+    },
+    "test_contact_form_existing_email_logged_out": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 28364
+    },
+    "test_stage1_quality_check_fail": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 27752
+    },
+    "test_health_safety_unchecked_job_creates": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 27990
+    },
+    "test_duplicate_job_detection": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 27011
+    },
+    "test_admin_job_path_redirects": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 30797
+    },
+    "test_blog_listing_loads": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 6326
+    },
+    "test_blog_article_loads": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 3853
+    },
+    "test_testimonials_page_loads": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 1624
+    },
+    "test_shop_loads": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 2783
+    },
+    "test_cem_product_page_loads": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 2226
+    },
+    "test_cem_checkout_captures_fields_to_order": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 35990
+    },
+    "test_dbs_checkout_completes_for_logged_in_tutor": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 40819
+    },
+    "test_dbs_fee_form_gated_to_tutor_or_admin": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 10772
+    },
+    "test_group_course_listing": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 1800
+    },
+    "test_group_course_detail": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 4507
+    },
+    "test_blog_pagination": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 5855
+    },
+    "test_blog_reading_time": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 4002
+    },
+    "test_video_object_json_ld": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 20942
+    },
+    "test_blog_post_schema_json_ld_present": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 3350
+    },
+    "test_generic_page_schema_json_ld_present": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 1811
+    },
+    "test_faq_schema_present_when_faqs_configured": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 2922
+    },
+    "test_testimonial_feedback_form_loads_for_incomplete": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 2274
+    },
+    "test_testimonial_feedback_form_submission_sets_submitted": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 6279
+    },
+    "test_stale_scheduled_event_is_safe_noop": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 4966
+    },
+    "test_ams_editor_reminder_email_sends": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 39672
+    },
+    "test_duplicate_job_event_notifies_client": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 17308
+    },
+    "test_ga4_session_storage_set_on_load": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 2043
+    },
+    "test_ga4_client_id_in_contact_form": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 3519
+    },
+    "test_course_checkout_page_loads_for_guest": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 2010
+    },
+    "test_course_payment_intent_ajax_returns_client_secret": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 5933
+    },
+    "test_successful_course_payment_redirects_with_enrolment_confirmed": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 23281
+    },
+    "test_client_dashboard_shows_course_bookings": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 12205
+    },
+    "test_course_materials_visible_to_logged_in_tutor": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 9203
+    },
+    "test_homepage_loads": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 2243
+    },
+    "test_stage3_job_renders_applicant_cards": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 13973
+    },
+    "test_connect_with_tutor_triggers_modal": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 15468
+    },
+    "test_accept_terms_modal_renders": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 15053
+    },
+    "test_logged_out_stage3_sees_login_modal": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 13905
+    },
+    "test_stripe_return_auto_triggers_modal": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 14559
+    },
+    "test_accept_terms_advances_to_stage4": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 29024
+    },
+    "test_magic_link_auto_login": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 5195
+    },
+    "test_client_stage4_job_shows_connected_tutor": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 9888
+    },
+    "test_live_job_shows_timesheet_feedback": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 25100
+    },
+    "test_first_time_client_prompted_to_set_password": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 8997
+    },
+    "test_tutor_dashboard_active_jobs_renders_cards": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 20086
+    },
+    "test_manifest_matches_pytest_functions": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 1117
+    },
+    "test_meet_now_form_auto_selects_type": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 4315
+    },
+    "test_meet_now_submission": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 33420
+    },
+    "test_validate_number_classifies_uk_mobile_landline_and_invalid": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 2449
+    },
+    "test_job_phone_validation_tolerates_invisible_unicode_chars": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 1616
+    },
+    "test_gpa_calculator_returns_result_for_valid_input": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 3889
+    },
+    "test_school_fee_calculator_returns_result_for_valid_input": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 4259
+    },
+    "test_papers_load": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 1979
+    },
+    "test_papers_ajax_filter": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 4363
+    },
+    "test_papers_load_more": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 4638
+    },
+    "test_general_basket_checkout_flow": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 41888
+    },
+    "test_tutor_registration_page_loads": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 2757
+    },
+    "test_tutor_registration_submits": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 3156
+    },
+    "test_preapplicant_application_page_loads": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 12331
+    },
+    "test_tutor_full_application_flow": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 85918
+    },
+    "test_logged_out_application_page_has_fields": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 2914
+    },
+    "test_email_already_registered_error": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 5747
+    },
+    "test_preapplicant_section_nav_forward_back": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 22998
+    },
+    "test_client_role_on_application_page": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 2113
+    },
+    "test_preapplicant_availability_tab_has_grid": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 14087
+    },
+    "test_preapplicant_availability_save_and_persist": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 20604
+    },
+    "test_applicant_dashboard_loads": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 13123
+    },
+    "test_applicant_completion_scores": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 13276
+    },
+    "test_applicant_references_not_sent": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 12836
+    },
+    "test_applicant_availability_tab_has_grid": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 13222
+    },
+    "test_applicant_availability_save_and_persist": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 21992
+    },
+    "test_reference_form_loads_for_incomplete": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 3222
+    },
+    "test_reference_revisiting_submitted_url_redirects_away": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 3943
+    },
+    "test_reference_form_submission_sets_submitted": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 8584
+    },
+    "test_add_to_cart_updates_session_storage": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 4877
+    },
+    "test_request_count_badge_increments": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 4971
+    },
+    "test_remove_tutor_updates_url": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 15070
+    },
+    "test_rest_schools_endpoint_filters_by_subject": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 13330
+    },
+    "test_rest_papers_endpoint_filters_by_subject": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 11856
+    },
+    "test_rest_endpoint_rejects_logged_out_request": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 1027
+    },
+    "test_school_listing_page_loads": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 1791
+    },
+    "test_school_text_search_ajax": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 3610
+    },
+    "test_school_filter_form_returns_results": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 6437
+    },
+    "test_school_profile_loads": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 10396
+    },
+    "test_school_profile_json_ld_present": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 4233
+    },
+    "test_school_profile_linked_papers": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 4009
+    },
+    "test_tutor_search_page_loads": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 1784
+    },
+    "test_tutor_search_returns_results": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 4858
+    },
+    "test_tutor_profile_loads": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 6802
+    },
+    "test_subject_with_levels_reveals_level_dropdown": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 1613
+    },
+    "test_school_entrance_subject_reveals_school_filter": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 3824
+    },
+    "test_home_delivery_reveals_location_filter": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 1979
+    },
+    "test_detailed_filters_reveal_sen_and_badges": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 1846
+    },
+    "test_availability_grid_appears_and_accepts_input": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 2661
+    },
+    "test_full_search_subject_level_home_location": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 4374
+    },
+    "test_meet_now_button_visible_on_eligible_tutor": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 3076
+    },
+    "test_meet_now_button_absent_on_ineligible_tutor": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 2764
+    },
+    "test_availability_summary_on_profile": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 4359
+    },
+    "test_tutor_profile_schema_json_ld_present": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 1472
+    },
+    "test_day_time_search_excludes_outcome_2": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 10113
+    },
+    "test_day_time_search_excludes_outcome_3": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 9382
+    },
+    "test_day_time_search_includes_outcome_1": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 10846
+    },
+    "test_day_time_search_total_count_reflects_exclusion": {
+      "status": "fail",
+      "message": "page = <Page url='http://owltutors.test/tutors/?subject=Economics&availability=AQAA'>\nbase_url = 'http://owltutors.test', api_key = 'KD6PRmbphZnZZMmaVhKQqVFktWG9S7z2'\n\n    @pytest.mark.search\n    def test_day_time_search_total_count_reflects_exclusion(page: Page, base_url: str, api_key: str):\n      ",
+      "duration_ms": 15533
+    },
+    "test_admin_day_time_search_applies_same_outcome_filter": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 8149
+    },
+    "test_outcome_2_shows_waitlist_and_future_date_on_tutor_card": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 8873
+    },
+    "test_outcome_3_shows_generic_fallback_on_tutor_card": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 8429
+    },
+    "test_tutor_listing_schema_json_ld_present": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 1639
+    },
+    "test_platform_webhook_returns_200_for_valid_signed_payload": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 1167
+    },
+    "test_webhook_invalid_signature_returns_400_not_500": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 1022
+    },
+    "test_connect_webhook_returns_200_for_valid_signed_payload": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 966
+    },
+    "test_add_card_checkout_session_returns_stripe_session": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 15722
+    },
+    "test_post_checkout_return_saves_card_and_sets_client_active": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 32628
+    },
+    "test_prepaid_card_rejected": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 27831
+    },
+    "test_tutor_dashboard_loads": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 5577
+    },
+    "test_tutor_dashboard_jobs_board": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 7993
+    },
+    "test_tutor_dashboard_timesheet_entry": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 11193
+    },
+    "test_tutor_jobs_board_filter_returns_results": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 13030
+    },
+    "test_tutor_stripe_connect_section_renders": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 12784
+    },
+    "test_tutor_availability_grid_renders": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 12318
+    },
+    "test_tutor_availability_grid_saves": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 15638
+    },
+    "test_tutor_dashboard_invoices_renders": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 10879
+    },
+    "test_timesheet_wizard_renders_stripe_connect_check": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 14376
+    },
+    "test_eb_job_timesheet_submission_creates_timesheet_and_redirects": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 32203
+    },
+    "test_duplicate_timesheet_check_shows_warning": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 65126
+    },
+    "test_bill_timesheet_in_stripe_creates_real_invoice": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 30414
+    },
+    "test_whatsapp_template_preview_rejects_path_traversal": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 8143
+    },
+    "test_whatsapp_template_preview_resolves_real_template": {
+      "status": "pass",
+      "message": "OK",
+      "duration_ms": 9618
+    }
+  },
+  "plugin_version": "10.2.59",
+  "theme_version": "10.2.59",
+  "commit_sha": "1ad0f921403a"
+}

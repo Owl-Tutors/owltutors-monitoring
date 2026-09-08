@@ -1,0 +1,556 @@
+{
+  "test_admin_reports_and_data_pages_load_without_fatal[kpis_home]": {
+    "message": "?page=kpis_home loaded with status 200"
+  },
+  "test_admin_reports_and_data_pages_load_without_fatal": {
+    "video": "test-results/tests-test-admin-dashboard-py-test-admin-reports-and-data-pages-load-without-fatal-chromium-tutor-landing-pages/video.webm"
+  },
+  "test_admin_reports_and_data_pages_load_without_fatal[kpis2_home]": {
+    "message": "?page=kpis2_home loaded with status 200"
+  },
+  "test_admin_reports_and_data_pages_load_without_fatal[data_home]": {
+    "message": "?page=data_home loaded with status 200"
+  },
+  "test_admin_reports_and_data_pages_load_without_fatal[kpi_recruitment]": {
+    "message": "?page=kpi_recruitment loaded with status 200"
+  },
+  "test_admin_reports_and_data_pages_load_without_fatal[kpi_marketing]": {
+    "message": "?page=kpi_marketing loaded with status 200"
+  },
+  "test_admin_reports_and_data_pages_load_without_fatal[kpi_sales]": {
+    "message": "?page=kpi_sales loaded with status 200"
+  },
+  "test_admin_reports_and_data_pages_load_without_fatal[kpi_operations]": {
+    "message": "?page=kpi_operations loaded with status 200"
+  },
+  "test_admin_reports_and_data_pages_load_without_fatal[kpi_education]": {
+    "message": "?page=kpi_education loaded with status 200"
+  },
+  "test_admin_reports_and_data_pages_load_without_fatal[kpi_efficiency]": {
+    "message": "?page=kpi_efficiency loaded with status 403"
+  },
+  "test_admin_reports_and_data_pages_load_without_fatal[job_management]": {
+    "message": "?page=job_management loaded with status 200"
+  },
+  "test_admin_reports_and_data_pages_load_without_fatal[timesheet_management]": {
+    "message": "?page=timesheet_management loaded with status 200"
+  },
+  "test_admin_reports_and_data_pages_load_without_fatal[client_management]": {
+    "message": "?page=client_management loaded with status 200"
+  },
+  "test_admin_reports_and_data_pages_load_without_fatal[recruitment_management]": {
+    "message": "?page=recruitment_management loaded with status 200"
+  },
+  "test_admin_reports_and_data_pages_load_without_fatal[marketing_management]": {
+    "message": "?page=marketing_management loaded with status 200"
+  },
+  "test_admin_reports_and_data_pages_load_without_fatal[sales_management]": {
+    "message": "?page=sales_management loaded with status 200"
+  },
+  "test_admin_reports_and_data_pages_load_without_fatal[tutor_engagement]": {
+    "message": "?page=tutor_engagement loaded with status 200"
+  },
+  "test_admin_reports_and_data_pages_load_without_fatal[seo_report]": {
+    "message": "?page=seo_report loaded with status 200"
+  },
+  "test_admin_reports_and_data_pages_load_without_fatal[billing_invoice_actions]": {
+    "message": "?page=billing_invoice_actions loaded with status 200"
+  },
+  "test_admin_reports_and_data_pages_load_without_fatal[billing_payment_actions]": {
+    "message": "?page=billing_payment_actions loaded with status 200"
+  },
+  "test_admin_reports_and_data_pages_load_without_fatal[billing_analysis_actions]": {
+    "message": "?page=billing_analysis_actions loaded with status 200"
+  },
+  "test_admin_reports_and_data_pages_load_without_fatal[dev_info]": {
+    "message": "?page=dev_info loaded with status 200"
+  },
+  "test_admin_reports_and_data_pages_load_without_fatal[content_analysis]": {
+    "message": "?page=content_analysis loaded with status 200"
+  },
+  "test_admin_reports_and_data_pages_load_without_fatal[systems_testing]": {
+    "message": "?page=systems_testing loaded with status 200"
+  },
+  "test_admin_reports_and_data_pages_load_without_fatal[ams_dashboard]": {
+    "message": "?page=ams_dashboard loaded with status 200"
+  },
+  "test_admin_reports_and_data_pages_load_without_fatal[stripe_tools]": {
+    "message": "?page=stripe_tools loaded with status 200"
+  },
+  "test_admin_reports_and_data_pages_load_without_fatal[tutor_landing_pages]": {
+    "message": "?page=tutor_landing_pages loaded with status 200"
+  },
+  "test_job_scheduled_events_metabox_reschedule_and_unschedule": {
+    "video": "test-results/tests-test-admin-metaboxes-py-test-job-scheduled-events-metabox-reschedule-and-unschedule-chromium/video.webm"
+  },
+  "test_student_client_metabox_shows_correct_name_order": {
+    "video": "test-results/tests-test-admin-metaboxes-py-test-student-client-metabox-shows-correct-name-order-chromium/video.webm"
+  },
+  "test_make_client_user_stores_client_id_as_array": {
+    "video": "test-results/tests-test-admin-metaboxes-py-test-make-client-user-stores-client-id-as-array-chromium/video.webm"
+  },
+  "test_client_login": {
+    "video": "test-results/tests-test-auth-py-test-client-login-chromium/video.webm"
+  },
+  "test_show_password_toggle": {
+    "video": "test-results/tests-test-auth-py-test-show-password-toggle-chromium/video.webm"
+  },
+  "test_client_dashboard": {
+    "video": "test-results/tests-test-auth-py-test-client-dashboard-chromium/video.webm"
+  },
+  "test_contact_form_callback_submission": {
+    "video": "test-results/tests-test-contact-callback-py-test-contact-form-callback-submission-chromium/video.webm"
+  },
+  "test_contact_form_renders": {
+    "video": "test-results/tests-test-contact-form-py-test-contact-form-renders-chromium/video.webm"
+  },
+  "test_contact_form_has_submit": {
+    "video": "test-results/tests-test-contact-form-py-test-contact-form-has-submit-chromium/video.webm"
+  },
+  "test_contact_form_validation": {
+    "video": "test-results/tests-test-contact-form-py-test-contact-form-validation-chromium/video.webm"
+  },
+  "test_jobs_board_checkbox_hidden_on_plain_form": {
+    "video": "test-results/tests-test-contact-form-py-test-jobs-board-checkbox-hidden-on-plain-form-chromium/video.webm"
+  },
+  "test_jobs_board_checkbox_visible_on_requested_tutors": {
+    "video": "test-results/tests-test-contact-form-py-test-jobs-board-checkbox-visible-on-requested-tutors-chromium/video.webm"
+  },
+  "test_client_contact_log_modal_renders_in_job_edit_metabox": {
+    "video": "test-results/tests-test-contact-logging-py-test-client-contact-log-modal-renders-in-job-edit-metabox-chromium/video.webm"
+  },
+  "test_tutor_contact_log_entry_via_job_edit_metabox": {
+    "video": "test-results/tests-test-contact-logging-py-test-tutor-contact-log-entry-via-job-edit-metabox-chromium/video.webm"
+  },
+  "test_client_contact_log_entry_via_jobs_list": {
+    "video": "test-results/tests-test-contact-logging-py-test-client-contact-log-entry-via-jobs-list-chromium/video.webm"
+  },
+  "test_client_contact_log_entry_via_user_profile": {
+    "video": "test-results/tests-test-contact-logging-py-test-client-contact-log-entry-via-user-profile-chromium/video.webm"
+  },
+  "test_tutor_contact_log_entry_via_user_profile": {
+    "video": "test-results/tests-test-contact-logging-py-test-tutor-contact-log-entry-via-user-profile-chromium/video.webm"
+  },
+  "test_tutor_contact_log_entry_via_tutor_list": {
+    "video": "test-results/tests-test-contact-logging-py-test-tutor-contact-log-entry-via-tutor-list-chromium/video.webm"
+  },
+  "test_requested_tutor_cart": {
+    "video": "test-results/tests-test-contact-submissions-py-test-requested-tutor-cart-chromium/video.webm"
+  },
+  "test_contact_form_tutor_submission": {
+    "video": "test-results/tests-test-contact-submissions-py-test-contact-form-tutor-submission-chromium/video.webm"
+  },
+  "test_contact_form_something_else": {
+    "video": "test-results/tests-test-contact-submissions-py-test-contact-form-something-else-chromium/video.webm"
+  },
+  "test_contact_form_requested_tutors": {
+    "video": "test-results/tests-test-contact-submissions-py-test-contact-form-requested-tutors-chromium/video.webm"
+  },
+  "test_new_client_banner": {
+    "video": "test-results/tests-test-contact-submissions-py-test-new-client-banner-chromium/video.webm"
+  },
+  "test_contact_form_returning_client": {
+    "video": "test-results/tests-test-contact-submissions-py-test-contact-form-returning-client-chromium/video.webm"
+  },
+  "test_contact_form_existing_email_logged_out": {
+    "video": "test-results/tests-test-contact-submissions-py-test-contact-form-existing-email-logged-out-chromium/video.webm"
+  },
+  "test_stage1_quality_check_fail": {
+    "video": "test-results/tests-test-contact-submissions-py-test-stage1-quality-check-fail-chromium/video.webm"
+  },
+  "test_health_safety_unchecked_job_creates": {
+    "video": "test-results/tests-test-contact-submissions-py-test-health-safety-unchecked-job-creates-chromium/video.webm"
+  },
+  "test_duplicate_job_detection": {
+    "video": "test-results/tests-test-contact-submissions-py-test-duplicate-job-detection-chromium/video.webm"
+  },
+  "test_admin_job_path_redirects": {
+    "video": "test-results/tests-test-contact-submissions-py-test-admin-job-path-redirects-chromium/video.webm"
+  },
+  "test_blog_listing_loads": {
+    "video": "test-results/tests-test-content-py-test-blog-listing-loads-chromium/video.webm"
+  },
+  "test_blog_article_loads": {
+    "video": "test-results/tests-test-content-py-test-blog-article-loads-chromium/video.webm"
+  },
+  "test_testimonials_page_loads": {
+    "video": "test-results/tests-test-content-py-test-testimonials-page-loads-chromium/video.webm"
+  },
+  "test_shop_loads": {
+    "video": "test-results/tests-test-content-py-test-shop-loads-chromium/video.webm"
+  },
+  "test_cem_product_page_loads": {
+    "video": "test-results/tests-test-content-py-test-cem-product-page-loads-chromium/video.webm"
+  },
+  "test_cem_checkout_captures_fields_to_order": {
+    "video": "test-results/tests-test-content-py-test-cem-checkout-captures-fields-to-order-chromium/video.webm"
+  },
+  "test_dbs_checkout_completes_for_logged_in_tutor": {
+    "video": "test-results/tests-test-content-py-test-dbs-checkout-completes-for-logged-in-tutor-chromium/video.webm"
+  },
+  "test_dbs_fee_form_gated_to_tutor_or_admin": {
+    "video": "test-results/tests-test-content-py-test-dbs-fee-form-gated-to-tutor-or-admin-chromium/video.webm"
+  },
+  "test_group_course_listing": {
+    "video": "test-results/tests-test-content-py-test-group-course-listing-chromium/video.webm"
+  },
+  "test_group_course_detail": {
+    "video": "test-results/tests-test-content-py-test-group-course-detail-chromium/video.webm"
+  },
+  "test_blog_pagination": {
+    "video": "test-results/tests-test-content-py-test-blog-pagination-chromium/video.webm"
+  },
+  "test_blog_reading_time": {
+    "video": "test-results/tests-test-content-py-test-blog-reading-time-chromium/video.webm"
+  },
+  "test_video_object_json_ld": {
+    "video": "test-results/tests-test-content-py-test-video-object-json-ld-chromium/video.webm"
+  },
+  "test_blog_post_schema_json_ld_present": {
+    "video": "test-results/tests-test-content-py-test-blog-post-schema-json-ld-present-chromium/video.webm"
+  },
+  "test_generic_page_schema_json_ld_present": {
+    "video": "test-results/tests-test-content-py-test-generic-page-schema-json-ld-present-chromium/video.webm"
+  },
+  "test_faq_schema_present_when_faqs_configured": {
+    "video": "test-results/tests-test-content-py-test-faq-schema-present-when-faqs-configured-chromium/video.webm"
+  },
+  "test_testimonial_feedback_form_loads_for_incomplete": {
+    "video": "test-results/tests-test-content-py-test-testimonial-feedback-form-loads-for-incomplete-chromium/video.webm"
+  },
+  "test_testimonial_feedback_form_submission_sets_submitted": {
+    "video": "test-results/tests-test-content-py-test-testimonial-feedback-form-submission-sets-submitted-chromium/video.webm"
+  },
+  "test_stale_scheduled_event_is_safe_noop": {
+    "video": "test-results/tests-test-event-mgmt-py-test-stale-scheduled-event-is-safe-noop-chromium/video.webm"
+  },
+  "test_ams_editor_reminder_email_sends": {
+    "video": "test-results/tests-test-event-mgmt-py-test-ams-editor-reminder-email-sends-chromium/video.webm"
+  },
+  "test_duplicate_job_event_notifies_client": {
+    "video": "test-results/tests-test-event-mgmt-py-test-duplicate-job-event-notifies-client-chromium/video.webm"
+  },
+  "test_ga4_session_storage_set_on_load": {
+    "video": "test-results/tests-test-ga4-py-test-ga4-session-storage-set-on-load-chromium/video.webm"
+  },
+  "test_ga4_client_id_in_contact_form": {
+    "video": "test-results/tests-test-ga4-py-test-ga4-client-id-in-contact-form-chromium/video.webm"
+  },
+  "test_course_checkout_page_loads_for_guest": {
+    "video": "test-results/tests-test-group-tuition-py-test-course-checkout-page-loads-for-guest-chromium/video.webm"
+  },
+  "test_course_payment_intent_ajax_returns_client_secret": {
+    "video": "test-results/tests-test-group-tuition-py-test-course-payment-intent-ajax-returns-client-secret-chromium/video.webm"
+  },
+  "test_successful_course_payment_redirects_with_enrolment_confirmed": {
+    "video": "test-results/tests-test-group-tuition-py-test-successful-course-payment-redirects-with-enrolment-confirmed-chromium/video.webm"
+  },
+  "test_client_dashboard_shows_course_bookings": {
+    "video": "test-results/tests-test-group-tuition-py-test-client-dashboard-shows-course-bookings-chromium/video.webm"
+  },
+  "test_course_materials_visible_to_logged_in_tutor": {
+    "video": "test-results/tests-test-group-tuition-py-test-course-materials-visible-to-logged-in-tutor-chromium/video.webm"
+  },
+  "test_homepage_loads": {
+    "video": "test-results/tests-test-homepage-py-test-homepage-loads-chromium/video.webm"
+  },
+  "test_stage3_job_renders_applicant_cards": {
+    "video": "test-results/tests-test-job-connection-py-test-stage3-job-renders-applicant-cards-chromium/video.webm"
+  },
+  "test_connect_with_tutor_triggers_modal": {
+    "video": "test-results/tests-test-job-connection-py-test-connect-with-tutor-triggers-modal-chromium/video.webm"
+  },
+  "test_accept_terms_modal_renders": {
+    "video": "test-results/tests-test-job-connection-py-test-accept-terms-modal-renders-chromium/video.webm"
+  },
+  "test_logged_out_stage3_sees_login_modal": {
+    "video": "test-results/tests-test-job-connection-py-test-logged-out-stage3-sees-login-modal-chromium/video.webm"
+  },
+  "test_stripe_return_auto_triggers_modal": {
+    "video": "test-results/tests-test-job-connection-py-test-stripe-return-auto-triggers-modal-chromium/video.webm"
+  },
+  "test_accept_terms_advances_to_stage4": {
+    "video": "test-results/tests-test-job-connection-py-test-accept-terms-advances-to-stage4-chromium/video.webm"
+  },
+  "test_magic_link_auto_login": {
+    "video": "test-results/tests-test-job-connection-py-test-magic-link-auto-login-chromium/video.webm"
+  },
+  "test_client_stage4_job_shows_connected_tutor": {
+    "video": "test-results/tests-test-job-connection-py-test-client-stage4-job-shows-connected-tutor-chromium/video.webm"
+  },
+  "test_live_job_shows_timesheet_feedback": {
+    "video": "test-results/tests-test-job-connection-py-test-live-job-shows-timesheet-feedback-chromium/video.webm"
+  },
+  "test_first_time_client_prompted_to_set_password": {
+    "video": "test-results/tests-test-job-connection-py-test-first-time-client-prompted-to-set-password-chromium/video.webm"
+  },
+  "test_tutor_dashboard_active_jobs_renders_cards": {
+    "video": "test-results/tests-test-job-connection-py-test-tutor-dashboard-active-jobs-renders-cards-chromium/video.webm"
+  },
+  "test_manifest_matches_pytest_functions": {
+    "video": "test-results/tests-test-manifest-drift-py-test-manifest-matches-pytest-functions-chromium/video.webm"
+  },
+  "test_meet_now_form_auto_selects_type": {
+    "video": "test-results/tests-test-meet-now-py-test-meet-now-form-auto-selects-type-chromium/video.webm"
+  },
+  "test_meet_now_submission": {
+    "video": "test-results/tests-test-meet-now-py-test-meet-now-submission-chromium/video.webm"
+  },
+  "test_validate_number_classifies_uk_mobile_landline_and_invalid": {
+    "video": "test-results/tests-test-misc-utilities-py-test-validate-number-classifies-uk-mobile-landline-and-invalid-chromium/video.webm"
+  },
+  "test_job_phone_validation_tolerates_invisible_unicode_chars": {
+    "video": "test-results/tests-test-misc-utilities-py-test-job-phone-validation-tolerates-invisible-unicode-chars-chromium/video.webm"
+  },
+  "test_gpa_calculator_returns_result_for_valid_input": {
+    "video": "test-results/tests-test-misc-utilities-py-test-gpa-calculator-returns-result-for-valid-input-chromium/video.webm"
+  },
+  "test_school_fee_calculator_returns_result_for_valid_input": {
+    "video": "test-results/tests-test-misc-utilities-py-test-school-fee-calculator-returns-result-for-valid-input-chromium/video.webm"
+  },
+  "test_papers_load": {
+    "video": "test-results/tests-test-paper-shop-py-test-papers-load-chromium/video.webm"
+  },
+  "test_papers_ajax_filter": {
+    "video": "test-results/tests-test-paper-shop-py-test-papers-ajax-filter-chromium/video.webm"
+  },
+  "test_papers_load_more": {
+    "video": "test-results/tests-test-paper-shop-py-test-papers-load-more-chromium/video.webm"
+  },
+  "test_general_basket_checkout_flow": {
+    "video": "test-results/tests-test-paper-shop-py-test-general-basket-checkout-flow-chromium/video.webm"
+  },
+  "test_tutor_registration_page_loads": {
+    "video": "test-results/tests-test-recruitment-py-test-tutor-registration-page-loads-chromium/video.webm"
+  },
+  "test_tutor_registration_submits": {
+    "video": "test-results/tests-test-recruitment-py-test-tutor-registration-submits-chromium/video.webm"
+  },
+  "test_preapplicant_application_page_loads": {
+    "video": "test-results/tests-test-recruitment-py-test-preapplicant-application-page-loads-chromium/video.webm"
+  },
+  "test_tutor_full_application_flow": {
+    "video": "test-results/tests-test-recruitment-py-test-tutor-full-application-flow-chromium/video.webm"
+  },
+  "test_logged_out_application_page_has_fields": {
+    "video": "test-results/tests-test-recruitment-py-test-logged-out-application-page-has-fields-chromium/video.webm"
+  },
+  "test_email_already_registered_error": {
+    "video": "test-results/tests-test-recruitment-py-test-email-already-registered-error-chromium/video.webm"
+  },
+  "test_preapplicant_section_nav_forward_back": {
+    "video": "test-results/tests-test-recruitment-py-test-preapplicant-section-nav-forward-back-chromium/video.webm"
+  },
+  "test_client_role_on_application_page": {
+    "video": "test-results/tests-test-recruitment-py-test-client-role-on-application-page-chromium/video.webm"
+  },
+  "test_preapplicant_availability_tab_has_grid": {
+    "video": "test-results/tests-test-recruitment-py-test-preapplicant-availability-tab-has-grid-chromium/video.webm"
+  },
+  "test_preapplicant_availability_save_and_persist": {
+    "video": "test-results/tests-test-recruitment-py-test-preapplicant-availability-save-and-persist-chromium/video.webm"
+  },
+  "test_applicant_dashboard_loads": {
+    "video": "test-results/tests-test-recruitment-py-test-applicant-dashboard-loads-chromium/video.webm"
+  },
+  "test_applicant_completion_scores": {
+    "video": "test-results/tests-test-recruitment-py-test-applicant-completion-scores-chromium/video.webm"
+  },
+  "test_applicant_references_not_sent": {
+    "video": "test-results/tests-test-recruitment-py-test-applicant-references-not-sent-chromium/video.webm"
+  },
+  "test_applicant_availability_tab_has_grid": {
+    "video": "test-results/tests-test-recruitment-py-test-applicant-availability-tab-has-grid-chromium/video.webm"
+  },
+  "test_applicant_availability_save_and_persist": {
+    "video": "test-results/tests-test-recruitment-py-test-applicant-availability-save-and-persist-chromium/video.webm"
+  },
+  "test_reference_form_loads_for_incomplete": {
+    "video": "test-results/tests-test-recruitment-py-test-reference-form-loads-for-incomplete-chromium/video.webm"
+  },
+  "test_reference_revisiting_submitted_url_redirects_away": {
+    "video": "test-results/tests-test-recruitment-py-test-reference-revisiting-submitted-url-redirects-away-chromium/video.webm"
+  },
+  "test_reference_form_submission_sets_submitted": {
+    "video": "test-results/tests-test-recruitment-py-test-reference-form-submission-sets-submitted-chromium/video.webm"
+  },
+  "test_add_to_cart_updates_session_storage": {
+    "video": "test-results/tests-test-request-builder-py-test-add-to-cart-updates-session-storage-chromium/video.webm"
+  },
+  "test_request_count_badge_increments": {
+    "video": "test-results/tests-test-request-builder-py-test-request-count-badge-increments-chromium/video.webm"
+  },
+  "test_remove_tutor_updates_url": {
+    "video": "test-results/tests-test-request-builder-py-test-remove-tutor-updates-url-chromium/video.webm"
+  },
+  "test_rest_schools_endpoint_filters_by_subject": {
+    "video": "test-results/tests-test-rest-api-py-test-rest-schools-endpoint-filters-by-subject-chromium/video.webm"
+  },
+  "test_rest_papers_endpoint_filters_by_subject": {
+    "video": "test-results/tests-test-rest-api-py-test-rest-papers-endpoint-filters-by-subject-chromium/video.webm"
+  },
+  "test_rest_endpoint_rejects_logged_out_request": {
+    "video": "test-results/tests-test-rest-api-py-test-rest-endpoint-rejects-logged-out-request-chromium/video.webm"
+  },
+  "test_school_listing_page_loads": {
+    "video": "test-results/tests-test-schools-py-test-school-listing-page-loads-chromium/video.webm"
+  },
+  "test_school_text_search_ajax": {
+    "video": "test-results/tests-test-schools-py-test-school-text-search-ajax-chromium/video.webm"
+  },
+  "test_school_filter_form_returns_results": {
+    "video": "test-results/tests-test-schools-py-test-school-filter-form-returns-results-chromium/video.webm"
+  },
+  "test_school_profile_loads": {
+    "video": "test-results/tests-test-schools-py-test-school-profile-loads-chromium/video.webm"
+  },
+  "test_school_profile_json_ld_present": {
+    "video": "test-results/tests-test-schools-py-test-school-profile-json-ld-present-chromium/video.webm"
+  },
+  "test_school_profile_linked_papers": {
+    "video": "test-results/tests-test-schools-py-test-school-profile-linked-papers-chromium/video.webm"
+  },
+  "test_tutor_search_page_loads": {
+    "video": "test-results/tests-test-search-py-test-tutor-search-page-loads-chromium/video.webm"
+  },
+  "test_tutor_search_returns_results": {
+    "video": "test-results/tests-test-search-py-test-tutor-search-returns-results-chromium/video.webm"
+  },
+  "test_tutor_profile_loads": {
+    "video": "test-results/tests-test-search-py-test-tutor-profile-loads-chromium/video.webm"
+  },
+  "test_subject_with_levels_reveals_level_dropdown": {
+    "video": "test-results/tests-test-search-py-test-subject-with-levels-reveals-level-dropdown-chromium/video.webm"
+  },
+  "test_school_entrance_subject_reveals_school_filter": {
+    "video": "test-results/tests-test-search-py-test-school-entrance-subject-reveals-school-filter-chromium/video.webm"
+  },
+  "test_home_delivery_reveals_location_filter": {
+    "video": "test-results/tests-test-search-py-test-home-delivery-reveals-location-filter-chromium/video.webm"
+  },
+  "test_detailed_filters_reveal_sen_and_badges": {
+    "video": "test-results/tests-test-search-py-test-detailed-filters-reveal-sen-and-badges-chromium/video.webm"
+  },
+  "test_availability_grid_appears_and_accepts_input": {
+    "video": "test-results/tests-test-search-py-test-availability-grid-appears-and-accepts-input-chromium/video.webm"
+  },
+  "test_full_search_subject_level_home_location": {
+    "video": "test-results/tests-test-search-py-test-full-search-subject-level-home-location-chromium/video.webm"
+  },
+  "test_meet_now_button_visible_on_eligible_tutor": {
+    "video": "test-results/tests-test-search-py-test-meet-now-button-visible-on-eligible-tutor-chromium/video.webm"
+  },
+  "test_meet_now_button_absent_on_ineligible_tutor": {
+    "video": "test-results/tests-test-search-py-test-meet-now-button-absent-on-ineligible-tutor-chromium/video.webm"
+  },
+  "test_availability_summary_on_profile": {
+    "video": "test-results/tests-test-search-py-test-availability-summary-on-profile-chromium/video.webm"
+  },
+  "test_tutor_profile_schema_json_ld_present": {
+    "video": "test-results/tests-test-search-py-test-tutor-profile-schema-json-ld-present-chromium/video.webm"
+  },
+  "test_day_time_search_excludes_outcome_2": {
+    "video": "test-results/tests-test-search-py-test-day-time-search-excludes-outcome-2-chromium/video.webm"
+  },
+  "test_day_time_search_excludes_outcome_3": {
+    "video": "test-results/tests-test-search-py-test-day-time-search-excludes-outcome-3-chromium/video.webm"
+  },
+  "test_day_time_search_includes_outcome_1": {
+    "video": "test-results/tests-test-search-py-test-day-time-search-includes-outcome-1-chromium/video.webm"
+  },
+  "test_day_time_search_total_count_reflects_exclusion": {
+    "message": "Failed \u2014 Expected total to increase by exactly 1 tutor once outcome flips to 1b \u2014 excluded total=0, included total=188 [6 failed request(s), e.g. '[response 404] GET http://owltutors.test/wp-content/uploads/2026/05/danrichconf.jpg'; 6 console error/warning(s)]",
+    "screenshot": "screenshots/test_day_time_search_total_count_reflects_exclusion.png",
+    "video": "test-results/tests-test-search-py-test-day-time-search-total-count-reflects-exclusion-chromium/video.webm",
+    "step": null,
+    "console_errors": [
+      "[console:error] Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "[console:error] Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "[console:error] Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "[console:error] Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "[console:error] Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "[console:error] Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ],
+    "page_errors": [],
+    "failed_requests": [
+      "  [response 404] GET http://owltutors.test/wp-content/uploads/2026/05/danrichconf.jpg",
+      "  [response 404] GET http://owltutors.test/wp-content/uploads/2026/06/mboultonconf.jpg",
+      "  [response 404] GET http://owltutors.test/wp-content/uploads/2026/06/mboultonconf.jpg",
+      "  [response 404] GET http://owltutors.test/wp-content/uploads/2026/05/danrichconf.jpg",
+      "  [response 404] GET http://owltutors.test/wp-content/uploads/2026/06/mboultonconf.jpg",
+      "  [response 404] GET http://owltutors.test/wp-content/uploads/2026/05/danrichconf.jpg"
+    ]
+  },
+  "test_admin_day_time_search_applies_same_outcome_filter": {
+    "video": "test-results/tests-test-search-py-test-admin-day-time-search-applies-same-outcome-filter-chromium/video.webm"
+  },
+  "test_outcome_2_shows_waitlist_and_future_date_on_tutor_card": {
+    "video": "test-results/tests-test-search-py-test-outcome-2-shows-waitlist-and-future-date-on-tutor-card-chromium/video.webm"
+  },
+  "test_outcome_3_shows_generic_fallback_on_tutor_card": {
+    "video": "test-results/tests-test-search-py-test-outcome-3-shows-generic-fallback-on-tutor-card-chromium/video.webm"
+  },
+  "test_tutor_listing_schema_json_ld_present": {
+    "video": "test-results/tests-test-search-py-test-tutor-listing-schema-json-ld-present-chromium/video.webm"
+  },
+  "test_platform_webhook_returns_200_for_valid_signed_payload": {
+    "video": "test-results/tests-test-stripe-billing-py-test-platform-webhook-returns-200-for-valid-signed-payload-chromium/video.webm"
+  },
+  "test_webhook_invalid_signature_returns_400_not_500": {
+    "video": "test-results/tests-test-stripe-billing-py-test-webhook-invalid-signature-returns-400-not-500-chromium/video.webm"
+  },
+  "test_connect_webhook_returns_200_for_valid_signed_payload": {
+    "video": "test-results/tests-test-stripe-billing-py-test-connect-webhook-returns-200-for-valid-signed-payload-chromium/video.webm"
+  },
+  "test_add_card_checkout_session_returns_stripe_session": {
+    "video": "test-results/tests-test-stripe-billing-py-test-add-card-checkout-session-returns-stripe-session-chromium/video.webm"
+  },
+  "test_post_checkout_return_saves_card_and_sets_client_active": {
+    "video": "test-results/tests-test-stripe-billing-py-test-post-checkout-return-saves-card-and-sets-client-active-chromium/video.webm"
+  },
+  "test_prepaid_card_rejected": {
+    "video": "test-results/tests-test-stripe-billing-py-test-prepaid-card-rejected-chromium/video.webm"
+  },
+  "test_tutor_dashboard_loads": {
+    "video": "test-results/tests-test-tutor-dashboard-py-test-tutor-dashboard-loads-chromium/video.webm"
+  },
+  "test_tutor_dashboard_jobs_board": {
+    "video": "test-results/tests-test-tutor-dashboard-py-test-tutor-dashboard-jobs-board-chromium/video.webm"
+  },
+  "test_tutor_dashboard_timesheet_entry": {
+    "video": "test-results/tests-test-tutor-dashboard-py-test-tutor-dashboard-timesheet-entry-chromium/video.webm"
+  },
+  "test_tutor_jobs_board_filter_returns_results": {
+    "video": "test-results/tests-test-tutor-dashboard-py-test-tutor-jobs-board-filter-returns-results-chromium/video.webm"
+  },
+  "test_tutor_stripe_connect_section_renders": {
+    "video": "test-results/tests-test-tutor-dashboard-py-test-tutor-stripe-connect-section-renders-chromium/video.webm"
+  },
+  "test_tutor_availability_grid_renders": {
+    "video": "test-results/tests-test-tutor-dashboard-py-test-tutor-availability-grid-renders-chromium/video.webm"
+  },
+  "test_tutor_availability_grid_saves": {
+    "video": "test-results/tests-test-tutor-dashboard-py-test-tutor-availability-grid-saves-chromium/video.webm"
+  },
+  "test_tutor_dashboard_invoices_renders": {
+    "video": "test-results/tests-test-tutor-dashboard-py-test-tutor-dashboard-invoices-renders-chromium/video.webm"
+  },
+  "test_timesheet_wizard_renders_stripe_connect_check": {
+    "video": "test-results/tests-test-tutor-dashboard-py-test-timesheet-wizard-renders-stripe-connect-check-chromium/video.webm"
+  },
+  "test_eb_job_timesheet_submission_creates_timesheet_and_redirects": {
+    "video": "test-results/tests-test-tutor-dashboard-py-test-eb-job-timesheet-submission-creates-timesheet-and-redirects-chromium/video.webm"
+  },
+  "test_duplicate_timesheet_check_shows_warning": {
+    "video": "test-results/tests-test-tutor-dashboard-py-test-duplicate-timesheet-check-shows-warning-chromium/video.webm"
+  },
+  "test_bill_timesheet_in_stripe_creates_real_invoice": {
+    "video": "test-results/tests-test-tutor-dashboard-py-test-bill-timesheet-in-stripe-creates-real-invoice-chromium/video.webm"
+  },
+  "test_whatsapp_template_preview_rejects_path_traversal": {
+    "video": "test-results/tests-test-whatsapp-py-test-whatsapp-template-preview-rejects-path-traversal-chromium/video.webm"
+  },
+  "test_whatsapp_template_preview_resolves_real_template": {
+    "video": "test-results/tests-test-whatsapp-py-test-whatsapp-template-preview-resolves-real-template-chromium/video.webm"
+  }
+}

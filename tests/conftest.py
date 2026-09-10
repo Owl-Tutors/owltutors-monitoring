@@ -167,6 +167,63 @@ def browser_context_args(browser_context_args):
     return browser_context_args
 
 
+_shared_browser = {"instance": None}
+
+
+@pytest.fixture(scope="session", autouse=True)
+def _close_shared_browser_at_session_end():
+    """Session-scoped, autouse purely for its teardown -- closes whatever
+    browser instance the `browser` override below is holding once the whole
+    run finishes. Needs to be its own fixture rather than living inside
+    `browser` itself, since `browser` is function-scoped (see its docstring
+    for why) and would otherwise close/reopen every single test."""
+    yield
+    instance = _shared_browser["instance"]
+    if instance is not None:
+        try:
+            instance.close()
+        except Exception:
+            pass
+
+
+@pytest.fixture
+def browser(launch_browser) -> Browser:
+    """Overrides pytest-playwright's own session-scoped `browser` fixture
+    with a self-healing version.
+
+    Found 10 Sept 2026 (owl_system docs/TO_DO.md): one test's teardown
+    throwing TargetClosedError -- the browser process itself had died, not
+    just that test's own page/context -- cascaded into an immediate ERROR
+    for every other test scheduled afterward in the same run (60+ of them),
+    since the stock fixture launches exactly once per session and has no way
+    to notice the instance it handed out has died. `new_context()` on a dead
+    browser fails instantly, which is also why those cascaded errors all
+    showed 0ms duration -- nothing had a chance to actually run.
+
+    Checked before every test instead of once per session. Relaunching is
+    the exception path, not the common one (an `is_connected()` check costs
+    nothing), so this doesn't add real overhead to a healthy run -- it only
+    pays the relaunch cost on the one test after a crash, instead of paying
+    it (as a full suite failure) on every test after a crash.
+    """
+    existing = _shared_browser["instance"]
+    if existing is not None:
+        try:
+            if existing.is_connected():
+                return existing
+        except Exception:
+            pass
+        print("[browser fixture] previous browser instance is no longer connected -- relaunching")
+        try:
+            existing.close()
+        except Exception:
+            pass
+
+    fresh = launch_browser()
+    _shared_browser["instance"] = fresh
+    return fresh
+
+
 @pytest.fixture(autouse=True)
 def inject_basic_auth(page):
     """Intercept every request from the page and add the Authorization header.

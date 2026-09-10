@@ -75,49 +75,45 @@
     "video": "test-results/tests-test-content-py-test-cem-product-page-loads-chromium/video.webm"
   },
   "test_cem_checkout_captures_fields_to_order": {
-    "message": "Failed \u2014 Timeout 30000ms exceeded. [9 failed request(s), e.g. 'GET https://merchant-ui-api.stripe.com/link/get-cookie?referrer_host=otdev1602.wpengine.com \u2014 net::\u2026'; 41 console error/warning(s)]",
+    "message": "Failed \u2014 Locator.fill: Timeout 30000ms exceeded. \u2014 waiting for frame_locator(\"iframe[title='Secure payment input frame']\").locator(\"[name=\\\"number\\\"]\") [1 JS error(s), e.g. '(0 , w.default) is not a function'; 3 failed request(s), e.g. 'GET https://api.stripe.com/v1/elements/sessions?deferred_intent[mode]=payment&deferred_intent[amoun\u2026'; 16 console error/warning(s)]",
     "screenshot": "screenshots/test_cem_checkout_captures_fields_to_order.png",
     "video": "test-results/tests-test-content-py-test-cem-checkout-captures-fields-to-order-chromium/video.webm",
     "step": null,
     "console_errors": [
-      "[console:warning] [.WebGL-0x283402b9e900]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
       "[console:warning] Third-party cookie will be blocked. Learn more in the Issues tab.",
       "[console:warning] Third-party cookie will be blocked. Learn more in the Issues tab.",
       "[console:warning] Third-party cookie will be blocked. Learn more in the Issues tab.",
       "[console:warning] Third-party cookie will be blocked. Learn more in the Issues tab.",
-      "[console:warning] [WooCommerce] An inline or unknown script accessed wc.wcBlocksData without proper dependency declaration. This script should declare \"wc-blocks-data-store\" as a dependency.",
-      "[console:error] Failed to load resource: the server responded with a status of 401 ()",
-      "[console:error] Failed to load resource: the server responded with a status of 401 ()",
-      "[console:error] Failed to load resource: the server responded with a status of 401 ()",
-      "[console:error] Failed to load resource: the server responded with a status of 401 ()"
+      "[console:warning] Third-party cookie will be blocked. Learn more in the Issues tab.",
+      "[console:error] Failed to load resource: net::ERR_FAILED",
+      "[console:error] TypeError: j(...) is not a function\n    at https://otdev1602.wpengine.com/wp-content/plugins/woocommerce/assets/client/blocks/checkout-frontend.js:5:4237\n    at Id (https://otdev1602.wpengine.com/wp-includes/js/dist/vendor/react-dom.min.js:165:137)\n    at Xb (https://otdev1602.wpengine.com/wp-includes/js/dist/vendor/react-dom.min.js:200:284)\n    at Li (https://otdev1602.wpengine.com/wp-includes/js/dist/vendor/react-dom.min.js:189:119)\n    at db (https://otdev1602.wpengine.com/wp-includes/js/dist/vendor/react-dom.min.js:79:182)\n    at Rk (https://otdev1602.wpengine.com/wp-includes/js/dist/vendor/react-dom.min.js:198:175)\n    at xb (https://otdev1602.wpengine.com/wp-includes/js/dist/vendor/react-dom.min.js:196:166)\n    at Ni (https://otdev1602.wpengine.com/wp-includes/js/dist/vendor/react-dom.min.js:187:246)\n    at S (https://otdev1602.wpengine.com/wp-includes/js/dist/vendor/react.min.js:17:25)\n    at MessagePort.U (https://otdev1602.wpengine.com/wp-includes/js/dist/vendor/react.min.js:21:229)",
+      "[console:error] Failed to load resource: net::ERR_FAILED",
+      "[console:warning] Third-party cookie will be blocked. Learn more in the Issues tab.",
+      "[console:warning] Third-party cookie will be blocked. Learn more in the Issues tab."
     ],
-    "page_errors": [],
+    "page_errors": [
+      "(0 , w.default) is not a function"
+    ],
     "failed_requests": [
-      "GET https://merchant-ui-api.stripe.com/link/get-cookie?referrer_host=otdev1602.wpengine.com \u2014 net::ERR_ABORTED",
-      "GET https://api.stripe.com/v1/elements/sessions?deferred_intent[mode]=payment&deferred_intent[amount]=9750&deferred_intent[currency]=gbp&deferred_intent[payment_method_types][0]=card&currency=gbp&key=pk_live_5182e7KDIH3kBTRJvZKJM7Op2QcdQmZ7xH1TfJTma9RXC3y4RkNwVp16v9LD72PeBcDvYiqYPTWKLGBhudLQTlbaC00RYw2KNCt&_stripe_version=2026-03-25.dahlia&elements_init_source=stripe.elements&referrer_host=otdev1602.wpengine.com&stripe_js_id=019811f0-b841-4552-b666-9841b175b655&locale=en-GB&browser_timezone=UTC&type=deferred_intent \u2014 net::ERR_ABORTED",
-      "GET https://api.stripe.com/v1/elements/sessions?deferred_intent[mode]=payment&deferred_intent[amount]=9750&deferred_intent[currency]=gbp&deferred_intent[payment_method_types][0]=card&deferred_intent[payment_method_types][1]=link&currency=gbp&key=pk_live_5182e7KDIH3kBTRJvZKJM7Op2QcdQmZ7xH1TfJTma9RXC3y4RkNwVp16v9LD72PeBcDvYiqYPTWKLGBhudLQTlbaC00RYw2KNCt&_stripe_version=2026-03-25.dahlia&elements_init_source=stripe.elements&referrer_host=otdev1602.wpengine.com&stripe_js_id=019811f0-b841-4552-b666-9841b175b655&locale=en-GB&browser_timezone=UTC&type=deferred_intent \u2014 net::ERR_ABORTED",
-      "GET https://c830d4b69c83.w.hcaptcha.com/logo.png \u2014 net::ERR_ABORTED",
-      "GET https://74cb521f2c91.w.hcaptcha.com/logo.png \u2014 net::ERR_ABORTED",
-      "  [response 401] POST https://api.stripe.com/v1/consumers/sessions/lookup",
-      "  [response 401] POST https://api.stripe.com/v1/consumers/sessions/lookup",
-      "  [response 401] POST https://api.stripe.com/v1/consumers/sessions/lookup",
-      "  [response 401] POST https://api.stripe.com/v1/consumers/sessions/lookup"
+      "GET https://api.stripe.com/v1/elements/sessions?deferred_intent[mode]=payment&deferred_intent[amount]=9750&deferred_intent[currency]=gbp&deferred_intent[payment_method_types][0]=card&currency=gbp&key=pk_test_5182e7KDIH3kBTRJvqCzPYKBZJ52IWXPsYe23guUGstzsTdW6uF8GLawZPbEp1PiGKAAAeBTvpJoXxzxzWH76EJba00WrBPKTM7&_stripe_version=2026-03-25.dahlia&elements_init_source=stripe.elements&referrer_host=otdev1602.wpengine.com&stripe_js_id=59538ea5-959e-454c-a1c5-434744b26289&locale=en-GB&browser_timezone=UTC&type=deferred_intent \u2014 net::ERR_ABORTED",
+      "GET https://api.stripe.com/v1/elements/sessions?deferred_intent[mode]=payment&deferred_intent[amount]=9750&deferred_intent[currency]=gbp&deferred_intent[payment_method_types][0]=card&deferred_intent[payment_method_types][1]=link&currency=gbp&key=pk_test_5182e7KDIH3kBTRJvqCzPYKBZJ52IWXPsYe23guUGstzsTdW6uF8GLawZPbEp1PiGKAAAeBTvpJoXxzxzWH76EJba00WrBPKTM7&_stripe_version=2026-03-25.dahlia&elements_init_source=stripe.elements&referrer_host=otdev1602.wpengine.com&stripe_js_id=59538ea5-959e-454c-a1c5-434744b26289&locale=en-GB&browser_timezone=UTC&type=deferred_intent \u2014 net::ERR_ABORTED",
+      "GET https://otdev1602.wpengine.com/wp-includes/js/dist/dom-ready.min.js \u2014 net::ERR_FAILED"
     ]
   },
   "test_dbs_checkout_completes_for_logged_in_tutor": {
-    "message": "Failed \u2014 Timeout 30000ms exceeded. [1 JS error(s), e.g. 'requestStorageAccess not allowed'; 17 failed request(s), e.g. 'GET https://otdev1602.wpengine.com/wp-admin/admin-ajax.php?action=ot_dash_ajax_handle&content=recom\u2026'; 57 console error/warning(s)]",
+    "message": "Failed \u2014 Timeout 30000ms exceeded. [1 JS error(s), e.g. 'requestStorageAccess not allowed'; 11 failed request(s), e.g. 'GET https://otdev1602.wpengine.com/wp-admin/admin-ajax.php?action=ot_dash_ajax_handle&content=recom\u2026'; 61 console error/warning(s)]",
     "screenshot": "screenshots/test_dbs_checkout_completes_for_logged_in_tutor.png",
     "video": "test-results/tests-test-content-py-test-dbs-checkout-completes-for-logged-in-tutor-chromium/video.webm",
     "step": null,
     "console_errors": [
-      "[console:error] Failed to load resource: the server responded with a status of 401 ()",
+      "[console:warning] Third-party cookie will be blocked. Learn more in the Issues tab.",
+      "[console:warning] Third-party cookie will be blocked. Learn more in the Issues tab.",
+      "[console:warning] Third-party cookie will be blocked. Learn more in the Issues tab.",
+      "[console:warning] Third-party cookie will be blocked. Learn more in the Issues tab.",
+      "[console:warning] Third-party cookie will be blocked. Learn more in the Issues tab.",
+      "[console:warning] Third-party cookie will be blocked. Learn more in the Issues tab.",
+      "[console:warning] Third-party cookie will be blocked. Learn more in the Issues tab.",
       "[console:warning] [WooCommerce] An inline or unknown script accessed wc.wcBlocksData without proper dependency declaration. This script should declare \"wc-blocks-data-store\" as a dependency.",
-      "[console:error] Failed to load resource: the server responded with a status of 401 ()",
-      "[console:error] Failed to load resource: the server responded with a status of 401 ()",
-      "[console:warning] Third-party cookie will be blocked. Learn more in the Issues tab.",
-      "[console:warning] Third-party cookie will be blocked. Learn more in the Issues tab.",
-      "[console:warning] Third-party cookie will be blocked. Learn more in the Issues tab.",
-      "[console:warning] Third-party cookie will be blocked. Learn more in the Issues tab.",
       "[console:error] Failed to load resource: the server responded with a status of 401 ()",
       "[console:error] Failed to load resource: the server responded with a status of 401 ()"
     ],
@@ -125,12 +121,12 @@
       "requestStorageAccess not allowed"
     ],
     "failed_requests": [
-      "GET https://0638e6ce6a0e.w.hcaptcha.com/logo.png \u2014 net::ERR_ABORTED",
-      "GET https://1e6515faa82d.w.hcaptcha.com/logo.png \u2014 net::ERR_ABORTED",
-      "  [response 401] POST https://api.stripe.com/v1/consumers/sessions/lookup",
-      "  [response 401] POST https://api.stripe.com/v1/consumers/sessions/lookup",
-      "  [response 401] POST https://api.stripe.com/v1/consumers/sessions/lookup",
-      "  [response 401] POST https://api.stripe.com/v1/consumers/sessions/lookup",
+      "GET https://m.stripe.network/out-4.5.45.js \u2014 net::ERR_ABORTED",
+      "GET https://api.stripe.com/v1/elements/sessions?deferred_intent[mode]=payment&deferred_intent[amount]=7146&deferred_intent[currency]=gbp&deferred_intent[payment_method_types][0]=card&deferred_intent[payment_method_types][1]=link&currency=gbp&key=pk_test_5182e7KDIH3kBTRJvqCzPYKBZJ52IWXPsYe23guUGstzsTdW6uF8GLawZPbEp1PiGKAAAeBTvpJoXxzxzWH76EJba00WrBPKTM7&_stripe_version=2026-03-25.dahlia&elements_init_source=stripe.elements&referrer_host=otdev1602.wpengine.com&stripe_js_id=cb0c05d0-efc0-477f-ab89-9f5b26803942&locale=en-GB&browser_timezone=UTC&type=deferred_intent \u2014 net::ERR_ABORTED",
+      "GET https://merchant-ui-api.stripe.com/link/get-cookie?referrer_host=otdev1602.wpengine.com \u2014 net::ERR_ABORTED",
+      "GET https://api.stripe.com/v1/elements/sessions?deferred_intent[mode]=payment&deferred_intent[amount]=7146&deferred_intent[currency]=gbp&deferred_intent[payment_method_types][0]=card&currency=gbp&key=pk_test_5182e7KDIH3kBTRJvqCzPYKBZJ52IWXPsYe23guUGstzsTdW6uF8GLawZPbEp1PiGKAAAeBTvpJoXxzxzWH76EJba00WrBPKTM7&_stripe_version=2026-03-25.dahlia&elements_init_source=stripe.elements&referrer_host=otdev1602.wpengine.com&stripe_js_id=cb0c05d0-efc0-477f-ab89-9f5b26803942&locale=en-GB&browser_timezone=UTC&type=deferred_intent \u2014 net::ERR_ABORTED",
+      "GET https://js.stripe.com/v3/fingerprinted/js/elements-inner-accessory-render-cf7de3439807d691481dd0c72a8a4f02.js \u2014 net::ERR_ABORTED",
+      "GET https://7afd6486274d.w.hcaptcha.com/logo.png \u2014 net::ERR_ABORTED",
       "  [response 401] POST https://api.stripe.com/v1/consumers/sessions/lookup",
       "  [response 401] POST https://api.stripe.com/v1/consumers/sessions/lookup",
       "  [response 401] POST https://api.stripe.com/v1/consumers/sessions/lookup",
@@ -206,7 +202,7 @@
     "page_errors": [],
     "failed_requests": [
       "  [response 401] POST https://merchant-ui-api.stripe.com/elements/wallet-config",
-      "  [response 401] POST https://api.stripe.com/v1/payment_intents/pi_3UDkRvDIH3kBTRJv1QWwSGPI/confirm"
+      "  [response 401] POST https://api.stripe.com/v1/payment_intents/pi_3UE6pFDIH3kBTRJv0chEsn5K/confirm"
     ]
   },
   "test_client_dashboard_shows_course_bookings": {
@@ -218,38 +214,14 @@
   "test_homepage_loads": {
     "video": "test-results/tests-test-homepage-py-test-homepage-loads-chromium/video.webm"
   },
-  "test_stage3_job_renders_applicant_cards": {
-    "video": "test-results/tests-test-job-connection-py-test-stage3-job-renders-applicant-cards-chromium/video.webm"
-  },
-  "test_connect_with_tutor_triggers_modal": {
-    "video": "test-results/tests-test-job-connection-py-test-connect-with-tutor-triggers-modal-chromium/video.webm"
-  },
-  "test_accept_terms_modal_renders": {
-    "video": "test-results/tests-test-job-connection-py-test-accept-terms-modal-renders-chromium/video.webm"
-  },
-  "test_logged_out_stage3_sees_login_modal": {
-    "video": "test-results/tests-test-job-connection-py-test-logged-out-stage3-sees-login-modal-chromium/video.webm"
-  },
-  "test_stripe_return_auto_triggers_modal": {
-    "video": "test-results/tests-test-job-connection-py-test-stripe-return-auto-triggers-modal-chromium/video.webm"
-  },
-  "test_accept_terms_advances_to_stage4": {
-    "video": "test-results/tests-test-job-connection-py-test-accept-terms-advances-to-stage4-chromium/video.webm"
-  },
   "test_magic_link_auto_login": {
     "video": "test-results/tests-test-job-connection-py-test-magic-link-auto-login-chromium/video.webm"
-  },
-  "test_client_stage4_job_shows_connected_tutor": {
-    "video": "test-results/tests-test-job-connection-py-test-client-stage4-job-shows-connected-tutor-chromium/video.webm"
   },
   "test_live_job_shows_timesheet_feedback": {
     "video": "test-results/tests-test-job-connection-py-test-live-job-shows-timesheet-feedback-chromium/video.webm"
   },
   "test_first_time_client_prompted_to_set_password": {
     "video": "test-results/tests-test-job-connection-py-test-first-time-client-prompted-to-set-password-chromium/video.webm"
-  },
-  "test_tutor_dashboard_active_jobs_renders_cards": {
-    "video": "test-results/tests-test-job-connection-py-test-tutor-dashboard-active-jobs-renders-cards-chromium/video.webm"
   },
   "test_manifest_matches_pytest_functions": {
     "video": "test-results/tests-test-manifest-drift-py-test-manifest-matches-pytest-functions-chromium/video.webm"
@@ -282,22 +254,303 @@
     "video": "test-results/tests-test-paper-shop-py-test-papers-load-more-chromium/video.webm"
   },
   "test_general_basket_checkout_flow": {
-    "message": "Failed \u2014 Page.goto: Target page, context or browser has been closed \u2014 navigating to \"https://otdev1602.wpengine.com/checkout/\", waiting until \"domcontentloaded\" [4 failed request(s), e.g. 'GET https://otdev1602.wpengine.com/wp-includes/js/dist/private-apis.min.js?ver=eb85f28c4c729bb4f002\u2026'; 4 console error/warning(s)]",
+    "message": "Failed \u2014 Timeout 30000ms exceeded. [12 failed request(s), e.g. 'GET https://otdev1602.wpengine.com/wp-includes/js/dist/autop.min.js \u2014 net::ERR_FAILED'; 47 console error/warning(s)]",
     "screenshot": null,
     "video": "test-results/tests-test-paper-shop-py-test-general-basket-checkout-flow-chromium/video.webm",
     "step": null,
     "console_errors": [
-      "[console:error] Failed to load resource: net::ERR_FAILED",
-      "[console:error] Failed to load resource: net::ERR_FAILED",
-      "[console:error] Failed to load resource: net::ERR_FAILED",
-      "[console:error] Failed to load resource: net::ERR_FAILED"
+      "[console:warning] Third-party cookie will be blocked. Learn more in the Issues tab.",
+      "[console:warning] Third-party cookie will be blocked. Learn more in the Issues tab.",
+      "[console:warning] Third-party cookie will be blocked. Learn more in the Issues tab.",
+      "[console:warning] Third-party cookie will be blocked. Learn more in the Issues tab.",
+      "[console:warning] Third-party cookie will be blocked. Learn more in the Issues tab.",
+      "[console:warning] Third-party cookie will be blocked. Learn more in the Issues tab.",
+      "[console:warning] Third-party cookie will be blocked. Learn more in the Issues tab.",
+      "[console:warning] [WooCommerce] An inline or unknown script accessed wc.wcBlocksData without proper dependency declaration. This script should declare \"wc-blocks-data-store\" as a dependency.",
+      "[console:error] Failed to load resource: the server responded with a status of 401 ()",
+      "[console:error] Failed to load resource: the server responded with a status of 401 ()"
     ],
     "page_errors": [],
     "failed_requests": [
-      "GET https://otdev1602.wpengine.com/wp-includes/js/dist/private-apis.min.js?ver=eb85f28c4c729bb4f002 \u2014 net::ERR_FAILED",
-      "GET https://otdev1602.wpengine.com/wp-includes/js/dist/url.min.js?ver=7b0de086d4ae11d55704 \u2014 net::ERR_FAILED",
-      "GET https://m.stripe.network/out-4.5.45.js \u2014 net::ERR_ABORTED",
-      "GET https://b.stripecdn.com/stripethirdparty-srv/assets/v33.10/HCaptchaInvisible.html?id=c7b04c08-8abb-4ee7-a914-582cf524b773&origin=https%3A%2F%2Fjs.stripe.com \u2014 net::ERR_ABORTED"
+      "GET https://otdev1602.wpengine.com/wp-includes/js/dist/plugins.min.js \u2014 net::ERR_FAILED",
+      "GET https://otdev1602.wpengine.com/wp-includes/js/dist/wordcount.min.js \u2014 net::ERR_FAILED",
+      "GET https://otdev1602.wpengine.com/wp-content/plugins/woocommerce/assets/client/blocks/wc-blocks-registry.js?ver=8cf98119f62dbfe139c2 \u2014 net::ERR_FAILED",
+      "GET https://otdev1602.wpengine.com/wp-content/plugins/woocommerce/assets/client/blocks/wc-settings.js?ver=5cdaba16c87338181b77 \u2014 net::ERR_FAILED",
+      "GET https://otdev1602.wpengine.com/wp-includes/js/dist/api-fetch.min.js?ver=6f2a4faeee3c722b1e57 \u2014 net::ERR_FAILED",
+      "GET https://m.stripe.network/inner.html \u2014 net::ERR_ABORTED",
+      "GET https://otdev1602.wpengine.com/wp-content/plugins/woocommerce/assets/client/blocks/wc-blocks-middleware.js?ver=2c049fe250c153b7cac8 \u2014 net::ERR_FAILED",
+      "GET https://216789d4ded6.w.hcaptcha.com/logo.png \u2014 net::ERR_ABORTED",
+      "  [response 401] POST https://api.stripe.com/v1/consumers/sessions/lookup",
+      "  [response 401] POST https://api.stripe.com/v1/consumers/sessions/lookup"
     ]
+  },
+  "test_tutor_registration_page_loads": {
+    "video": "test-results/tests-test-recruitment-py-test-tutor-registration-page-loads-chromium/video.webm"
+  },
+  "test_tutor_registration_submits": {
+    "video": "test-results/tests-test-recruitment-py-test-tutor-registration-submits-chromium/video.webm"
+  },
+  "test_tutor_full_application_flow": {
+    "message": "Failed \u2014 Locator expected to be visible \u2014 waiting for locator(\"form#isappreadyForm\") [13 JS error(s), e.g. 'requestStorageAccess not allowed'; 4 failed request(s), e.g. 'GET https://www.google.com/recaptcha/api2/webworker.js?hl=en&v=8x-4t2pegToiW8KmThtO4AQt \u2014 net::ERR_\u2026'; 12 console error/warning(s)]",
+    "screenshot": "screenshots/test_tutor_full_application_flow.png",
+    "video": "test-results/tests-test-recruitment-py-test-tutor-full-application-flow-chromium/video.webm",
+    "step": null,
+    "console_errors": [
+      "[console:error] requestStorageAccess: Permission denied.",
+      "[console:error] requestStorageAccess: Permission denied.",
+      "[console:error] requestStorageAccess: Permission denied.",
+      "[console:error] requestStorageAccess: Permission denied.",
+      "[console:error] requestStorageAccess: Permission denied.",
+      "[console:error] requestStorageAccess: Permission denied.",
+      "[console:error] requestStorageAccess: Permission denied.",
+      "[console:error] requestStorageAccess: Permission denied.",
+      "[console:error] requestStorageAccess: Permission denied.",
+      "[console:error] requestStorageAccess: Permission denied."
+    ],
+    "page_errors": [
+      "requestStorageAccess not allowed",
+      "reCAPTCHA Timeout",
+      "requestStorageAccess not allowed",
+      "requestStorageAccess not allowed",
+      "requestStorageAccess not allowed",
+      "requestStorageAccess not allowed",
+      "requestStorageAccess not allowed",
+      "requestStorageAccess not allowed",
+      "reCAPTCHA Timeout",
+      "requestStorageAccess not allowed"
+    ],
+    "failed_requests": [
+      "GET https://www.google.com/recaptcha/api2/webworker.js?hl=en&v=8x-4t2pegToiW8KmThtO4AQt \u2014 net::ERR_ABORTED",
+      "GET https://www.gstatic.com/recaptcha/api2/logo_48.png \u2014 net::ERR_ABORTED",
+      "GET https://fonts.gstatic.com/s/roboto/v48/KFO7CnqEu92Fr1ME7kSn66aGLdTylUAMa3yUBA.woff2 \u2014 net::ERR_ABORTED",
+      "POST https://otdev1602.wpengine.com/wp-admin/admin-ajax.php?_=1789042539786 \u2014 net::ERR_ABORTED"
+    ]
+  },
+  "test_logged_out_application_page_has_fields": {
+    "video": "test-results/tests-test-recruitment-py-test-logged-out-application-page-has-fields-chromium/video.webm"
+  },
+  "test_client_role_on_application_page": {
+    "video": "test-results/tests-test-recruitment-py-test-client-role-on-application-page-chromium/video.webm"
+  },
+  "test_reference_form_loads_for_incomplete": {
+    "video": "test-results/tests-test-recruitment-py-test-reference-form-loads-for-incomplete-chromium/video.webm"
+  },
+  "test_reference_revisiting_submitted_url_redirects_away": {
+    "video": "test-results/tests-test-recruitment-py-test-reference-revisiting-submitted-url-redirects-away-chromium/video.webm"
+  },
+  "test_reference_form_submission_sets_submitted": {
+    "video": "test-results/tests-test-recruitment-py-test-reference-form-submission-sets-submitted-chromium/video.webm"
+  },
+  "test_add_to_cart_updates_session_storage": {
+    "video": "test-results/tests-test-request-builder-py-test-add-to-cart-updates-session-storage-chromium/video.webm"
+  },
+  "test_request_count_badge_increments": {
+    "video": "test-results/tests-test-request-builder-py-test-request-count-badge-increments-chromium/video.webm"
+  },
+  "test_remove_tutor_updates_url": {
+    "video": "test-results/tests-test-request-builder-py-test-remove-tutor-updates-url-chromium/video.webm"
+  },
+  "test_rest_schools_endpoint_filters_by_subject": {
+    "video": "test-results/tests-test-rest-api-py-test-rest-schools-endpoint-filters-by-subject-chromium/video.webm"
+  },
+  "test_rest_papers_endpoint_filters_by_subject": {
+    "video": "test-results/tests-test-rest-api-py-test-rest-papers-endpoint-filters-by-subject-chromium/video.webm"
+  },
+  "test_rest_endpoint_rejects_logged_out_request": {
+    "video": "test-results/tests-test-rest-api-py-test-rest-endpoint-rejects-logged-out-request-chromium/video.webm"
+  },
+  "test_school_listing_page_loads": {
+    "video": "test-results/tests-test-schools-py-test-school-listing-page-loads-chromium/video.webm"
+  },
+  "test_school_text_search_ajax": {
+    "video": "test-results/tests-test-schools-py-test-school-text-search-ajax-chromium/video.webm"
+  },
+  "test_school_filter_form_returns_results": {
+    "video": "test-results/tests-test-schools-py-test-school-filter-form-returns-results-chromium/video.webm"
+  },
+  "test_school_profile_loads": {
+    "video": "test-results/tests-test-schools-py-test-school-profile-loads-chromium/video.webm"
+  },
+  "test_school_profile_json_ld_present": {
+    "video": "test-results/tests-test-schools-py-test-school-profile-json-ld-present-chromium/video.webm"
+  },
+  "test_school_profile_linked_papers": {
+    "video": "test-results/tests-test-schools-py-test-school-profile-linked-papers-chromium/video.webm"
+  },
+  "test_tutor_search_page_loads": {
+    "video": "test-results/tests-test-search-py-test-tutor-search-page-loads-chromium/video.webm"
+  },
+  "test_tutor_search_returns_results": {
+    "video": "test-results/tests-test-search-py-test-tutor-search-returns-results-chromium/video.webm"
+  },
+  "test_tutor_profile_loads": {
+    "video": "test-results/tests-test-search-py-test-tutor-profile-loads-chromium/video.webm"
+  },
+  "test_subject_with_levels_reveals_level_dropdown": {
+    "video": "test-results/tests-test-search-py-test-subject-with-levels-reveals-level-dropdown-chromium/video.webm"
+  },
+  "test_school_entrance_subject_reveals_school_filter": {
+    "video": "test-results/tests-test-search-py-test-school-entrance-subject-reveals-school-filter-chromium/video.webm"
+  },
+  "test_home_delivery_reveals_location_filter": {
+    "video": "test-results/tests-test-search-py-test-home-delivery-reveals-location-filter-chromium/video.webm"
+  },
+  "test_detailed_filters_reveal_sen_and_badges": {
+    "video": "test-results/tests-test-search-py-test-detailed-filters-reveal-sen-and-badges-chromium/video.webm"
+  },
+  "test_availability_grid_appears_and_accepts_input": {
+    "video": "test-results/tests-test-search-py-test-availability-grid-appears-and-accepts-input-chromium/video.webm"
+  },
+  "test_full_search_subject_level_home_location": {
+    "video": "test-results/tests-test-search-py-test-full-search-subject-level-home-location-chromium/video.webm"
+  },
+  "test_meet_now_button_visible_on_eligible_tutor": {
+    "video": "test-results/tests-test-search-py-test-meet-now-button-visible-on-eligible-tutor-chromium/video.webm"
+  },
+  "test_meet_now_button_absent_on_ineligible_tutor": {
+    "video": "test-results/tests-test-search-py-test-meet-now-button-absent-on-ineligible-tutor-chromium/video.webm"
+  },
+  "test_availability_summary_on_profile": {
+    "video": "test-results/tests-test-search-py-test-availability-summary-on-profile-chromium/video.webm"
+  },
+  "test_tutor_profile_schema_json_ld_present": {
+    "video": "test-results/tests-test-search-py-test-tutor-profile-schema-json-ld-present-chromium/video.webm"
+  },
+  "test_day_time_search_excludes_outcome_2": {
+    "video": "test-results/tests-test-search-py-test-day-time-search-excludes-outcome-2-chromium/video.webm"
+  },
+  "test_day_time_search_excludes_outcome_3": {
+    "video": "test-results/tests-test-search-py-test-day-time-search-excludes-outcome-3-chromium/video.webm"
+  },
+  "test_day_time_search_includes_outcome_1": {
+    "video": "test-results/tests-test-search-py-test-day-time-search-includes-outcome-1-chromium/video.webm"
+  },
+  "test_day_time_search_total_count_reflects_exclusion": {
+    "video": "test-results/tests-test-search-py-test-day-time-search-total-count-reflects-exclusion-chromium/video.webm"
+  },
+  "test_admin_day_time_search_applies_same_outcome_filter": {
+    "video": "test-results/tests-test-search-py-test-admin-day-time-search-applies-same-outcome-filter-chromium/video.webm"
+  },
+  "test_outcome_2_shows_waitlist_and_future_date_on_tutor_card": {
+    "video": "test-results/tests-test-search-py-test-outcome-2-shows-waitlist-and-future-date-on-tutor-card-chromium/video.webm"
+  },
+  "test_outcome_3_shows_generic_fallback_on_tutor_card": {
+    "video": "test-results/tests-test-search-py-test-outcome-3-shows-generic-fallback-on-tutor-card-chromium/video.webm"
+  },
+  "test_tutor_listing_schema_json_ld_present": {
+    "video": "test-results/tests-test-search-py-test-tutor-listing-schema-json-ld-present-chromium/video.webm"
+  },
+  "test_add_card_checkout_session_returns_stripe_session": {
+    "video": "test-results/tests-test-stripe-billing-py-test-add-card-checkout-session-returns-stripe-session-chromium/video.webm"
+  },
+  "test_post_checkout_return_saves_card_and_sets_client_active": {
+    "message": "Failed \u2014 Locator.fill: Timeout 30000ms exceeded. \u2014 waiting for locator(\"#cardNumber\") [1 JS error(s), e.g. 'requestStorageAccess not allowed'; 1 failed request(s), e.g. '[response 401] POST https://api.stripe.com/v1/payment_pages/cs_test_c1fzVnxXjBmIQ8kkhohnQWH34rmnhZA\u2026'; 8 console error/warning(s)]",
+    "screenshot": "screenshots/test_post_checkout_return_saves_card_and_sets_client_active.png",
+    "video": "test-results/tests-test-stripe-billing-py-test-post-checkout-return-saves-card-and-sets-client-active-chromium/video.webm",
+    "step": null,
+    "console_errors": [
+      "[console:error] requestStorageAccess: Permission denied.",
+      "[console:warning] Third-party cookie will be blocked. Learn more in the Issues tab.",
+      "[console:warning] <link rel=preload> uses an unsupported `as` value",
+      "[console:warning] <link rel=preload> uses an unsupported `as` value",
+      "[console:error] Failed to load resource: the server responded with a status of 401 ()",
+      "[console:warning] Third-party cookie will be blocked. Learn more in the Issues tab.",
+      "[console:warning] Third-party cookie will be blocked. Learn more in the Issues tab.",
+      "[console:warning] Third-party cookie will be blocked. Learn more in the Issues tab."
+    ],
+    "page_errors": [
+      "requestStorageAccess not allowed"
+    ],
+    "failed_requests": [
+      "  [response 401] POST https://api.stripe.com/v1/payment_pages/cs_test_c1fzVnxXjBmIQ8kkhohnQWH34rmnhZAJPMBlNcbGkULbnUWoomsERUxwJj/init"
+    ]
+  },
+  "test_prepaid_card_rejected": {
+    "message": "Failed \u2014 Locator.fill: Timeout 30000ms exceeded. \u2014 waiting for locator(\"#cardNumber\") [1 JS error(s), e.g. 'requestStorageAccess not allowed'; 1 failed request(s), e.g. '[response 401] POST https://api.stripe.com/v1/payment_pages/cs_test_c1CMkgob9SvFgdQvRlmcowPVFgyct9H\u2026'; 8 console error/warning(s)]",
+    "screenshot": "screenshots/test_prepaid_card_rejected.png",
+    "video": "test-results/tests-test-stripe-billing-py-test-prepaid-card-rejected-chromium/video.webm",
+    "step": null,
+    "console_errors": [
+      "[console:error] requestStorageAccess: Permission denied.",
+      "[console:warning] Third-party cookie will be blocked. Learn more in the Issues tab.",
+      "[console:warning] <link rel=preload> uses an unsupported `as` value",
+      "[console:warning] <link rel=preload> uses an unsupported `as` value",
+      "[console:error] Failed to load resource: the server responded with a status of 401 ()",
+      "[console:warning] Third-party cookie will be blocked. Learn more in the Issues tab.",
+      "[console:warning] Third-party cookie will be blocked. Learn more in the Issues tab.",
+      "[console:warning] Third-party cookie will be blocked. Learn more in the Issues tab."
+    ],
+    "page_errors": [
+      "requestStorageAccess not allowed"
+    ],
+    "failed_requests": [
+      "  [response 401] POST https://api.stripe.com/v1/payment_pages/cs_test_c1CMkgob9SvFgdQvRlmcowPVFgyct9H55OI93jIU3Nc41ORXzFLmGBp3L4/init"
+    ]
+  },
+  "test_tutor_dashboard_loads": {
+    "video": "test-results/tests-test-tutor-dashboard-py-test-tutor-dashboard-loads-chromium/video.webm"
+  },
+  "test_tutor_dashboard_jobs_board": {
+    "video": "test-results/tests-test-tutor-dashboard-py-test-tutor-dashboard-jobs-board-chromium/video.webm"
+  },
+  "test_tutor_dashboard_timesheet_entry": {
+    "video": "test-results/tests-test-tutor-dashboard-py-test-tutor-dashboard-timesheet-entry-chromium/video.webm"
+  },
+  "test_tutor_jobs_board_filter_returns_results": {
+    "video": "test-results/tests-test-tutor-dashboard-py-test-tutor-jobs-board-filter-returns-results-chromium/video.webm"
+  },
+  "test_tutor_stripe_connect_section_renders": {
+    "video": "test-results/tests-test-tutor-dashboard-py-test-tutor-stripe-connect-section-renders-chromium/video.webm"
+  },
+  "test_tutor_availability_grid_renders": {
+    "video": "test-results/tests-test-tutor-dashboard-py-test-tutor-availability-grid-renders-chromium/video.webm"
+  },
+  "test_tutor_availability_grid_saves": {
+    "video": "test-results/tests-test-tutor-dashboard-py-test-tutor-availability-grid-saves-chromium/video.webm"
+  },
+  "test_tutor_dashboard_invoices_renders": {
+    "video": "test-results/tests-test-tutor-dashboard-py-test-tutor-dashboard-invoices-renders-chromium/video.webm"
+  },
+  "test_timesheet_wizard_renders_stripe_connect_check": {
+    "message": "Failed \u2014 Locator expected to be visible \u2014 waiting for locator(\"#timesheet h2:has-text('Connect to Stripe')\") [2 JS error(s), e.g. 'requestStorageAccess not allowed'; 1 failed request(s), e.g. 'GET https://otdev1602.wpengine.com/wp-admin/admin-ajax.php?action=ot_dash_ajax_handle&content=recom\u2026'; 2 console error/warning(s)]",
+    "screenshot": "screenshots/test_timesheet_wizard_renders_stripe_connect_check.png",
+    "video": "test-results/tests-test-tutor-dashboard-py-test-timesheet-wizard-renders-stripe-connect-check-chromium/video.webm",
+    "step": null,
+    "console_errors": [
+      "[console:error] requestStorageAccess: Permission denied.",
+      "[console:error] requestStorageAccess: Permission denied."
+    ],
+    "page_errors": [
+      "requestStorageAccess not allowed",
+      "requestStorageAccess not allowed"
+    ],
+    "failed_requests": [
+      "GET https://otdev1602.wpengine.com/wp-admin/admin-ajax.php?action=ot_dash_ajax_handle&content=recommended_jobs&user_id=20049 \u2014 net::ERR_ABORTED"
+    ]
+  },
+  "test_eb_job_timesheet_submission_creates_timesheet_and_redirects": {
+    "video": "test-results/tests-test-tutor-dashboard-py-test-eb-job-timesheet-submission-creates-timesheet-and-redirects-chromium/video.webm"
+  },
+  "test_duplicate_timesheet_check_shows_warning": {
+    "video": "test-results/tests-test-tutor-dashboard-py-test-duplicate-timesheet-check-shows-warning-chromium/video.webm"
+  },
+  "test_bill_timesheet_in_stripe_creates_real_invoice": {
+    "video": "test-results/tests-test-tutor-dashboard-py-test-bill-timesheet-in-stripe-creates-real-invoice-chromium/video.webm"
+  },
+  "test_whatsapp_template_preview_rejects_path_traversal": {
+    "message": "Failed \u2014 Expected 200 (graceful no-match), got 403 for '../../../../wp-config' [1 JS error(s), e.g. 'requestStorageAccess not allowed'; 1 console error/warning(s)]",
+    "screenshot": "screenshots/test_whatsapp_template_preview_rejects_path_traversal.png",
+    "video": "test-results/tests-test-whatsapp-py-test-whatsapp-template-preview-rejects-path-traversal-chromium/video.webm",
+    "step": null,
+    "console_errors": [
+      "[console:error] requestStorageAccess: Permission denied."
+    ],
+    "page_errors": [
+      "requestStorageAccess not allowed"
+    ],
+    "failed_requests": []
+  },
+  "test_whatsapp_template_preview_resolves_real_template": {
+    "video": "test-results/tests-test-whatsapp-py-test-whatsapp-template-preview-resolves-real-template-chromium/video.webm"
   }
 }

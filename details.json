@@ -75,8 +75,8 @@
     "video": "test-results/tests-test-content-py-test-cem-product-page-loads-chromium/video.webm"
   },
   "test_cem_checkout_captures_fields_to_order": {
-    "message": "Failed \u2014 Locator.fill: Timeout 30000ms exceeded. \u2014 waiting for frame_locator(\"iframe[title='Secure payment input frame']\").locator(\"[name=\\\"number\\\"]\") [1 JS error(s), e.g. '(0 , w.default) is not a function'; 3 failed request(s), e.g. 'GET https://api.stripe.com/v1/elements/sessions?deferred_intent[mode]=payment&deferred_intent[amoun\u2026'; 16 console error/warning(s)]",
-    "screenshot": "screenshots/test_cem_checkout_captures_fields_to_order.png",
+    "message": "Failed \u2014 Timeout 30000ms exceeded. [5 failed request(s), e.g. 'GET https://js.stripe.com/dahlia/stripe.js \u2014 net::ERR_BLOCKED_BY_ORB'; 36 console error/warning(s)]",
+    "screenshot": null,
     "video": "test-results/tests-test-content-py-test-cem-checkout-captures-fields-to-order-chromium/video.webm",
     "step": null,
     "console_errors": [
@@ -85,23 +85,23 @@
       "[console:warning] Third-party cookie will be blocked. Learn more in the Issues tab.",
       "[console:warning] Third-party cookie will be blocked. Learn more in the Issues tab.",
       "[console:warning] Third-party cookie will be blocked. Learn more in the Issues tab.",
-      "[console:error] Failed to load resource: net::ERR_FAILED",
-      "[console:error] TypeError: j(...) is not a function\n    at https://otdev1602.wpengine.com/wp-content/plugins/woocommerce/assets/client/blocks/checkout-frontend.js:5:4237\n    at Id (https://otdev1602.wpengine.com/wp-includes/js/dist/vendor/react-dom.min.js:165:137)\n    at Xb (https://otdev1602.wpengine.com/wp-includes/js/dist/vendor/react-dom.min.js:200:284)\n    at Li (https://otdev1602.wpengine.com/wp-includes/js/dist/vendor/react-dom.min.js:189:119)\n    at db (https://otdev1602.wpengine.com/wp-includes/js/dist/vendor/react-dom.min.js:79:182)\n    at Rk (https://otdev1602.wpengine.com/wp-includes/js/dist/vendor/react-dom.min.js:198:175)\n    at xb (https://otdev1602.wpengine.com/wp-includes/js/dist/vendor/react-dom.min.js:196:166)\n    at Ni (https://otdev1602.wpengine.com/wp-includes/js/dist/vendor/react-dom.min.js:187:246)\n    at S (https://otdev1602.wpengine.com/wp-includes/js/dist/vendor/react.min.js:17:25)\n    at MessagePort.U (https://otdev1602.wpengine.com/wp-includes/js/dist/vendor/react.min.js:21:229)",
-      "[console:error] Failed to load resource: net::ERR_FAILED",
       "[console:warning] Third-party cookie will be blocked. Learn more in the Issues tab.",
-      "[console:warning] Third-party cookie will be blocked. Learn more in the Issues tab."
+      "[console:warning] Third-party cookie will be blocked. Learn more in the Issues tab.",
+      "[console:warning] [WooCommerce] An inline or unknown script accessed wc.wcBlocksData without proper dependency declaration. This script should declare \"wc-blocks-data-store\" as a dependency.",
+      "[console:error] Failed to load resource: the server responded with a status of 401 ()",
+      "[console:error] Failed to load resource: the server responded with a status of 401 ()"
     ],
-    "page_errors": [
-      "(0 , w.default) is not a function"
-    ],
+    "page_errors": [],
     "failed_requests": [
-      "GET https://api.stripe.com/v1/elements/sessions?deferred_intent[mode]=payment&deferred_intent[amount]=9750&deferred_intent[currency]=gbp&deferred_intent[payment_method_types][0]=card&currency=gbp&key=pk_test_5182e7KDIH3kBTRJvqCzPYKBZJ52IWXPsYe23guUGstzsTdW6uF8GLawZPbEp1PiGKAAAeBTvpJoXxzxzWH76EJba00WrBPKTM7&_stripe_version=2026-03-25.dahlia&elements_init_source=stripe.elements&referrer_host=otdev1602.wpengine.com&stripe_js_id=59538ea5-959e-454c-a1c5-434744b26289&locale=en-GB&browser_timezone=UTC&type=deferred_intent \u2014 net::ERR_ABORTED",
-      "GET https://api.stripe.com/v1/elements/sessions?deferred_intent[mode]=payment&deferred_intent[amount]=9750&deferred_intent[currency]=gbp&deferred_intent[payment_method_types][0]=card&deferred_intent[payment_method_types][1]=link&currency=gbp&key=pk_test_5182e7KDIH3kBTRJvqCzPYKBZJ52IWXPsYe23guUGstzsTdW6uF8GLawZPbEp1PiGKAAAeBTvpJoXxzxzWH76EJba00WrBPKTM7&_stripe_version=2026-03-25.dahlia&elements_init_source=stripe.elements&referrer_host=otdev1602.wpengine.com&stripe_js_id=59538ea5-959e-454c-a1c5-434744b26289&locale=en-GB&browser_timezone=UTC&type=deferred_intent \u2014 net::ERR_ABORTED",
-      "GET https://otdev1602.wpengine.com/wp-includes/js/dist/dom-ready.min.js \u2014 net::ERR_FAILED"
+      "GET https://js.stripe.com/dahlia/stripe.js \u2014 net::ERR_BLOCKED_BY_ORB",
+      "GET https://js.stripe.com/dahlia/stripe.js \u2014 net::ERR_BLOCKED_BY_ORB",
+      "GET https://efda2ac7c00a.w.hcaptcha.com/logo.png \u2014 net::ERR_ABORTED",
+      "  [response 401] POST https://api.stripe.com/v1/consumers/sessions/lookup",
+      "  [response 401] POST https://api.stripe.com/v1/consumers/sessions/lookup"
     ]
   },
   "test_dbs_checkout_completes_for_logged_in_tutor": {
-    "message": "Failed \u2014 Timeout 30000ms exceeded. [1 JS error(s), e.g. 'requestStorageAccess not allowed'; 11 failed request(s), e.g. 'GET https://otdev1602.wpengine.com/wp-admin/admin-ajax.php?action=ot_dash_ajax_handle&content=recom\u2026'; 61 console error/warning(s)]",
+    "message": "Failed \u2014 Timeout 30000ms exceeded. [1 JS error(s), e.g. 'requestStorageAccess not allowed'; 16 failed request(s), e.g. 'GET https://otdev1602.wpengine.com/wp-admin/admin-ajax.php?action=ot_dash_ajax_handle&content=recom\u2026'; 72 console error/warning(s)]",
     "screenshot": "screenshots/test_dbs_checkout_completes_for_logged_in_tutor.png",
     "video": "test-results/tests-test-content-py-test-dbs-checkout-completes-for-logged-in-tutor-chromium/video.webm",
     "step": null,
@@ -121,12 +121,12 @@
       "requestStorageAccess not allowed"
     ],
     "failed_requests": [
-      "GET https://m.stripe.network/out-4.5.45.js \u2014 net::ERR_ABORTED",
-      "GET https://api.stripe.com/v1/elements/sessions?deferred_intent[mode]=payment&deferred_intent[amount]=7146&deferred_intent[currency]=gbp&deferred_intent[payment_method_types][0]=card&deferred_intent[payment_method_types][1]=link&currency=gbp&key=pk_test_5182e7KDIH3kBTRJvqCzPYKBZJ52IWXPsYe23guUGstzsTdW6uF8GLawZPbEp1PiGKAAAeBTvpJoXxzxzWH76EJba00WrBPKTM7&_stripe_version=2026-03-25.dahlia&elements_init_source=stripe.elements&referrer_host=otdev1602.wpengine.com&stripe_js_id=cb0c05d0-efc0-477f-ab89-9f5b26803942&locale=en-GB&browser_timezone=UTC&type=deferred_intent \u2014 net::ERR_ABORTED",
       "GET https://merchant-ui-api.stripe.com/link/get-cookie?referrer_host=otdev1602.wpengine.com \u2014 net::ERR_ABORTED",
-      "GET https://api.stripe.com/v1/elements/sessions?deferred_intent[mode]=payment&deferred_intent[amount]=7146&deferred_intent[currency]=gbp&deferred_intent[payment_method_types][0]=card&currency=gbp&key=pk_test_5182e7KDIH3kBTRJvqCzPYKBZJ52IWXPsYe23guUGstzsTdW6uF8GLawZPbEp1PiGKAAAeBTvpJoXxzxzWH76EJba00WrBPKTM7&_stripe_version=2026-03-25.dahlia&elements_init_source=stripe.elements&referrer_host=otdev1602.wpengine.com&stripe_js_id=cb0c05d0-efc0-477f-ab89-9f5b26803942&locale=en-GB&browser_timezone=UTC&type=deferred_intent \u2014 net::ERR_ABORTED",
-      "GET https://js.stripe.com/v3/fingerprinted/js/elements-inner-accessory-render-cf7de3439807d691481dd0c72a8a4f02.js \u2014 net::ERR_ABORTED",
-      "GET https://7afd6486274d.w.hcaptcha.com/logo.png \u2014 net::ERR_ABORTED",
+      "GET https://api.stripe.com/v1/elements/sessions?deferred_intent[mode]=payment&deferred_intent[amount]=7146&deferred_intent[currency]=gbp&deferred_intent[payment_method_types][0]=card&deferred_intent[payment_method_types][1]=link&currency=gbp&key=pk_test_5182e7KDIH3kBTRJvqCzPYKBZJ52IWXPsYe23guUGstzsTdW6uF8GLawZPbEp1PiGKAAAeBTvpJoXxzxzWH76EJba00WrBPKTM7&_stripe_version=2026-03-25.dahlia&elements_init_source=stripe.elements&referrer_host=otdev1602.wpengine.com&stripe_js_id=940a3896-9dd5-4007-9d03-f5fbf933602d&locale=en-GB&browser_timezone=UTC&type=deferred_intent \u2014 net::ERR_ABORTED",
+      "POST https://r.stripe.com/b \u2014 net::ERR_ABORTED",
+      "GET https://api.stripe.com/v1/elements/sessions?deferred_intent[mode]=payment&deferred_intent[amount]=7146&deferred_intent[currency]=gbp&deferred_intent[payment_method_types][0]=card&currency=gbp&key=pk_test_5182e7KDIH3kBTRJvqCzPYKBZJ52IWXPsYe23guUGstzsTdW6uF8GLawZPbEp1PiGKAAAeBTvpJoXxzxzWH76EJba00WrBPKTM7&_stripe_version=2026-03-25.dahlia&elements_init_source=stripe.elements&referrer_host=otdev1602.wpengine.com&stripe_js_id=940a3896-9dd5-4007-9d03-f5fbf933602d&locale=en-GB&browser_timezone=UTC&type=deferred_intent \u2014 net::ERR_ABORTED",
+      "POST https://r.stripe.com/b \u2014 net::ERR_ABORTED",
+      "GET https://9a25686cd338.w.hcaptcha.com/logo.png \u2014 net::ERR_ABORTED",
       "  [response 401] POST https://api.stripe.com/v1/consumers/sessions/lookup",
       "  [response 401] POST https://api.stripe.com/v1/consumers/sessions/lookup",
       "  [response 401] POST https://api.stripe.com/v1/consumers/sessions/lookup",
@@ -202,7 +202,7 @@
     "page_errors": [],
     "failed_requests": [
       "  [response 401] POST https://merchant-ui-api.stripe.com/elements/wallet-config",
-      "  [response 401] POST https://api.stripe.com/v1/payment_intents/pi_3UE6pFDIH3kBTRJv0chEsn5K/confirm"
+      "  [response 401] POST https://api.stripe.com/v1/payment_intents/pi_3UETJ3DIH3kBTRJv1A31BBXE/confirm"
     ]
   },
   "test_client_dashboard_shows_course_bookings": {
@@ -254,8 +254,8 @@
     "video": "test-results/tests-test-paper-shop-py-test-papers-load-more-chromium/video.webm"
   },
   "test_general_basket_checkout_flow": {
-    "message": "Failed \u2014 Timeout 30000ms exceeded. [12 failed request(s), e.g. 'GET https://otdev1602.wpengine.com/wp-includes/js/dist/autop.min.js \u2014 net::ERR_FAILED'; 47 console error/warning(s)]",
-    "screenshot": null,
+    "message": "Failed \u2014 Timeout 30000ms exceeded. [1 JS error(s), e.g. \"Cannot read properties of undefined (reading 'withFilteredAttributes')\"; 9 failed request(s), e.g. 'GET https://otdev1602.wpengine.com/wp-includes/js/dist/vendor/react-jsx-runtime.min.js?ver=18.3.1 \u2014\u2026'; 48 console error/warning(s)]",
+    "screenshot": "screenshots/test_general_basket_checkout_flow.png",
     "video": "test-results/tests-test-paper-shop-py-test-general-basket-checkout-flow-chromium/video.webm",
     "step": null,
     "console_errors": [
@@ -270,16 +270,17 @@
       "[console:error] Failed to load resource: the server responded with a status of 401 ()",
       "[console:error] Failed to load resource: the server responded with a status of 401 ()"
     ],
-    "page_errors": [],
+    "page_errors": [
+      "Cannot read properties of undefined (reading 'withFilteredAttributes')"
+    ],
     "failed_requests": [
-      "GET https://otdev1602.wpengine.com/wp-includes/js/dist/plugins.min.js \u2014 net::ERR_FAILED",
-      "GET https://otdev1602.wpengine.com/wp-includes/js/dist/wordcount.min.js \u2014 net::ERR_FAILED",
-      "GET https://otdev1602.wpengine.com/wp-content/plugins/woocommerce/assets/client/blocks/wc-blocks-registry.js?ver=8cf98119f62dbfe139c2 \u2014 net::ERR_FAILED",
-      "GET https://otdev1602.wpengine.com/wp-content/plugins/woocommerce/assets/client/blocks/wc-settings.js?ver=5cdaba16c87338181b77 \u2014 net::ERR_FAILED",
-      "GET https://otdev1602.wpengine.com/wp-includes/js/dist/api-fetch.min.js?ver=6f2a4faeee3c722b1e57 \u2014 net::ERR_FAILED",
-      "GET https://m.stripe.network/inner.html \u2014 net::ERR_ABORTED",
-      "GET https://otdev1602.wpengine.com/wp-content/plugins/woocommerce/assets/client/blocks/wc-blocks-middleware.js?ver=2c049fe250c153b7cac8 \u2014 net::ERR_FAILED",
-      "GET https://216789d4ded6.w.hcaptcha.com/logo.png \u2014 net::ERR_ABORTED",
+      "GET https://otdev1602.wpengine.com/wp-includes/js/dist/vendor/react-jsx-runtime.min.js?ver=18.3.1 \u2014 net::ERR_FAILED",
+      "GET https://otdev1602.wpengine.com/wp-content/plugins/woocommerce/assets/client/blocks/blocks-checkout.js?ver=1082650d449aab026b31 \u2014 net::ERR_FAILED",
+      "GET https://otdev1602.wpengine.com/wp-content/plugins/woocommerce/assets/client/blocks/blocks-components.js \u2014 net::ERR_FAILED",
+      "GET https://otdev1602.wpengine.com/wp-content/plugins/woocommerce/assets/client/blocks/blocks-checkout.js \u2014 net::ERR_FAILED",
+      "GET https://otdev1602.wpengine.com/wp-content/plugins/woocommerce/assets/client/blocks/wc-blocks-shared-context.js \u2014 net::ERR_FAILED",
+      "GET https://otdev1602.wpengine.com/wp-content/plugins/woocommerce/assets/client/blocks/wc-blocks-shared-hocs.js \u2014 net::ERR_FAILED",
+      "GET https://26bf7b278a98.w.hcaptcha.com/logo.png \u2014 net::ERR_ABORTED",
       "  [response 401] POST https://api.stripe.com/v1/consumers/sessions/lookup",
       "  [response 401] POST https://api.stripe.com/v1/consumers/sessions/lookup"
     ]
@@ -291,14 +292,14 @@
     "video": "test-results/tests-test-recruitment-py-test-tutor-registration-submits-chromium/video.webm"
   },
   "test_tutor_full_application_flow": {
-    "message": "Failed \u2014 Locator expected to be visible \u2014 waiting for locator(\"form#isappreadyForm\") [13 JS error(s), e.g. 'requestStorageAccess not allowed'; 4 failed request(s), e.g. 'GET https://www.google.com/recaptcha/api2/webworker.js?hl=en&v=8x-4t2pegToiW8KmThtO4AQt \u2014 net::ERR_\u2026'; 12 console error/warning(s)]",
+    "message": "Failed \u2014 Locator expected to be visible \u2014 waiting for locator(\"form#isappreadyForm\") [14 JS error(s), e.g. 'requestStorageAccess not allowed'; 3 failed request(s), e.g. 'POST https://csp.withgoogle.com/csp/frame-ancestors/38fac9d5b82543fc4729580d18ff2d3d \u2014 net::ERR_BLO\u2026'; 13 console error/warning(s)]",
     "screenshot": "screenshots/test_tutor_full_application_flow.png",
     "video": "test-results/tests-test-recruitment-py-test-tutor-full-application-flow-chromium/video.webm",
     "step": null,
     "console_errors": [
       "[console:error] requestStorageAccess: Permission denied.",
       "[console:error] requestStorageAccess: Permission denied.",
-      "[console:error] requestStorageAccess: Permission denied.",
+      "[console:error] [Report Only] Refused to frame 'https://www.google.com/' because an ancestor violates the following Content Security Policy directive: \"frame-ancestors 'self'\".\n",
       "[console:error] requestStorageAccess: Permission denied.",
       "[console:error] requestStorageAccess: Permission denied.",
       "[console:error] requestStorageAccess: Permission denied.",
@@ -308,7 +309,6 @@
       "[console:error] requestStorageAccess: Permission denied."
     ],
     "page_errors": [
-      "requestStorageAccess not allowed",
       "reCAPTCHA Timeout",
       "requestStorageAccess not allowed",
       "requestStorageAccess not allowed",
@@ -317,13 +317,13 @@
       "requestStorageAccess not allowed",
       "requestStorageAccess not allowed",
       "reCAPTCHA Timeout",
+      "requestStorageAccess not allowed",
       "requestStorageAccess not allowed"
     ],
     "failed_requests": [
+      "POST https://csp.withgoogle.com/csp/frame-ancestors/38fac9d5b82543fc4729580d18ff2d3d \u2014 net::ERR_BLOCKED_BY_ORB",
       "GET https://www.google.com/recaptcha/api2/webworker.js?hl=en&v=8x-4t2pegToiW8KmThtO4AQt \u2014 net::ERR_ABORTED",
-      "GET https://www.gstatic.com/recaptcha/api2/logo_48.png \u2014 net::ERR_ABORTED",
-      "GET https://fonts.gstatic.com/s/roboto/v48/KFO7CnqEu92Fr1ME7kSn66aGLdTylUAMa3yUBA.woff2 \u2014 net::ERR_ABORTED",
-      "POST https://otdev1602.wpengine.com/wp-admin/admin-ajax.php?_=1789042539786 \u2014 net::ERR_ABORTED"
+      "POST https://otdev1602.wpengine.com/wp-admin/admin-ajax.php?_=1789128954635 \u2014 net::ERR_ABORTED"
     ]
   },
   "test_logged_out_application_page_has_fields": {
@@ -444,7 +444,7 @@
     "video": "test-results/tests-test-stripe-billing-py-test-add-card-checkout-session-returns-stripe-session-chromium/video.webm"
   },
   "test_post_checkout_return_saves_card_and_sets_client_active": {
-    "message": "Failed \u2014 Locator.fill: Timeout 30000ms exceeded. \u2014 waiting for locator(\"#cardNumber\") [1 JS error(s), e.g. 'requestStorageAccess not allowed'; 1 failed request(s), e.g. '[response 401] POST https://api.stripe.com/v1/payment_pages/cs_test_c1fzVnxXjBmIQ8kkhohnQWH34rmnhZA\u2026'; 8 console error/warning(s)]",
+    "message": "Failed \u2014 Locator.fill: Timeout 30000ms exceeded. \u2014 waiting for locator(\"#cardNumber\") [1 JS error(s), e.g. 'requestStorageAccess not allowed'; 1 failed request(s), e.g. '[response 401] POST https://api.stripe.com/v1/payment_pages/cs_test_c12ngh3p1iSTASXQADf3MQoD0W28Z7Z\u2026'; 8 console error/warning(s)]",
     "screenshot": "screenshots/test_post_checkout_return_saves_card_and_sets_client_active.png",
     "video": "test-results/tests-test-stripe-billing-py-test-post-checkout-return-saves-card-and-sets-client-active-chromium/video.webm",
     "step": null,
@@ -462,11 +462,11 @@
       "requestStorageAccess not allowed"
     ],
     "failed_requests": [
-      "  [response 401] POST https://api.stripe.com/v1/payment_pages/cs_test_c1fzVnxXjBmIQ8kkhohnQWH34rmnhZAJPMBlNcbGkULbnUWoomsERUxwJj/init"
+      "  [response 401] POST https://api.stripe.com/v1/payment_pages/cs_test_c12ngh3p1iSTASXQADf3MQoD0W28Z7ZLGi8z5pXmnQ1YNPGKpX60d6JaSE/init"
     ]
   },
   "test_prepaid_card_rejected": {
-    "message": "Failed \u2014 Locator.fill: Timeout 30000ms exceeded. \u2014 waiting for locator(\"#cardNumber\") [1 JS error(s), e.g. 'requestStorageAccess not allowed'; 1 failed request(s), e.g. '[response 401] POST https://api.stripe.com/v1/payment_pages/cs_test_c1CMkgob9SvFgdQvRlmcowPVFgyct9H\u2026'; 8 console error/warning(s)]",
+    "message": "Failed \u2014 Locator.fill: Timeout 30000ms exceeded. \u2014 waiting for locator(\"#cardNumber\") [1 JS error(s), e.g. 'requestStorageAccess not allowed'; 1 failed request(s), e.g. '[response 401] POST https://api.stripe.com/v1/payment_pages/cs_test_c1OcULHhQrEfT5h9rXueXXMvPNe1gKn\u2026'; 8 console error/warning(s)]",
     "screenshot": "screenshots/test_prepaid_card_rejected.png",
     "video": "test-results/tests-test-stripe-billing-py-test-prepaid-card-rejected-chromium/video.webm",
     "step": null,
@@ -484,7 +484,7 @@
       "requestStorageAccess not allowed"
     ],
     "failed_requests": [
-      "  [response 401] POST https://api.stripe.com/v1/payment_pages/cs_test_c1CMkgob9SvFgdQvRlmcowPVFgyct9H55OI93jIU3Nc41ORXzFLmGBp3L4/init"
+      "  [response 401] POST https://api.stripe.com/v1/payment_pages/cs_test_c1OcULHhQrEfT5h9rXueXXMvPNe1gKn0tDFg65YndgMAKvuyaFaJ20BsC4/init"
     ]
   },
   "test_tutor_dashboard_loads": {
